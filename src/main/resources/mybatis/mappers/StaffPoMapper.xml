@@ -11,4 +11,9 @@
 		`created_time`,
 		`modified_time`
 	</sql>
+	<select id="selectByEmail" parameterType="string">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM staff WHERE email = #{email, jdbcType=VARCHAR}
+	</select>
 </mapper>

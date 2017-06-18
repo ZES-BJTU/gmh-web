@@ -11,4 +11,10 @@ public class StaffPo extends Po {
 
     private static final long serialVersionUID = 1L;
 
+    private String            email;
+
+    private String            password;
+
+    private String            salt;
+
 }
