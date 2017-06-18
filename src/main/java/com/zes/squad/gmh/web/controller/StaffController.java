@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.base.Strings;
+import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.vo.StaffVo;
 import com.zes.squad.gmh.web.service.StaffService;
 
 @RequestMapping("/staff")
@@ -28,7 +30,8 @@ public class StaffController extends BaseController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "密码不能为空");
         }
         StaffDto staffDto = staffService.loginWithEmail(account, password);
-        return JsonResult.success();
+        StaffVo staffVo = CommonConverter.map(staffDto, StaffVo.class);
+        return JsonResult.success(staffVo);
     }
 
 }
