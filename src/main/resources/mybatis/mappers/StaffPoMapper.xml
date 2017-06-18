@@ -3,15 +3,18 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.StaffMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.StaffPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="salt" jdbcType="VARCHAR" property="salt" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,
+		`id`,`email`,`password`,`salt`,
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="selectByEmail" parameterType="string">
+	<select id="selectByEmail" parameterType="string" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM staff WHERE email = #{email, jdbcType=VARCHAR}
