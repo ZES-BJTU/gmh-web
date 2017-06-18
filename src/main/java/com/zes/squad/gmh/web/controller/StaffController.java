@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.web.common.JsonResult;
+import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.service.StaffService;
 
 @RequestMapping("/staff")
@@ -26,7 +27,8 @@ public class StaffController extends BaseController {
         if (Strings.isNullOrEmpty(password)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "密码不能为空");
         }
-        return null;
+        StaffDto staffDto = staffService.loginWithEmail(account, password);
+        return JsonResult.success();
     }
 
 }
