@@ -21,6 +21,7 @@
 	<bean id="jedisConnectionFactory"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
 		<property name="poolConfig" ref="jedisPoolConfig" />
+		<property name="usePool" value="true" />
 		<property name="hostName" value="${redis.host}" />
 		<property name="port" value="${redis.port}" />
 		<property name="password" value="${redis.password}" />
@@ -31,6 +32,14 @@
 	<!-- 配置redisTemplate -->
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 		<property name="connectionFactory" ref="jedisConnectionFactory" />
+		<property name="keySerializer">
+			<bean
+				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<property name="valueSerializer">
+			<bean
+				class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+		</property>
 	</bean>
 
 </beans>
