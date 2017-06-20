@@ -20,9 +20,8 @@
 
 	<mvc:annotation-driven />
 
-	<mvc:resources mapping="/gmh/static/**" location="/gmh/static/">
-		<mvc:cache-control />
-	</mvc:resources>
+	<!-- 访问静态资源, 不使用defaultservlet处理静态资源 -->
+	<mvc:resources mapping="/gmh/static/**" location="/gmh/static/" />
 
 	<mvc:interceptors>
 		<mvc:interceptor>
