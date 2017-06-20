@@ -6,7 +6,7 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
-    <import resource="classpath:spring/aop.xml"/>
+	<import resource="classpath:spring/aop.xml" />
 
 	<context:component-scan base-package="com.zes.squad.gmh.web"
 		use-default-filters="false">
@@ -17,15 +17,15 @@
 		<context:include-filter type="annotation"
 			expression="org.springframework.stereotype.Component" />
 	</context:component-scan>
-	
+
 	<mvc:annotation-driven />
 
-	<mvc:default-servlet-handler />
+	<!-- <mvc:default-servlet-handler /> -->
 
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**" />
-			<mvc:exclude-mapping path="" />
+			<mvc:exclude-mapping path="/staff/login" />
 			<bean class="com.zes.squad.gmh.web.interceptor.AuthInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>
