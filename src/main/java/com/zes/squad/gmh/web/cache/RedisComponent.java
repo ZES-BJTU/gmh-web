@@ -1,4 +1,4 @@
-package com.zes.squad.gmh.web.component;
+package com.zes.squad.gmh.web.cache;
 
 import java.io.Serializable;
 import java.util.List;
