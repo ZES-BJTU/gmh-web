@@ -20,7 +20,9 @@
 
 	<mvc:annotation-driven />
 
-	<!-- <mvc:default-servlet-handler /> -->
+	<mvc:resources mapping="/gmh/static/**" location="/gmh/static/">
+		<mvc:cache-control />
+	</mvc:resources>
 
 	<mvc:interceptors>
 		<mvc:interceptor>
