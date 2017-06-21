@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//src/main/java=UTF-8
+encoding//src/main/java/com/zes/squad/gmh/web/mail/MailHelper.java=UTF-8
 encoding//src/main/profiles/local=UTF-8
 encoding//src/main/profiles/local/redis.properties=UTF-8
 encoding//src/main/resources=UTF-8

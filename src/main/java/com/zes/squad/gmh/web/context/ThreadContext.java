@@ -1,0 +1,28 @@
+package com.zes.squad.gmh.web.context;
+
+import com.zes.squad.gmh.web.entity.dto.StaffDto;
+
+public class ThreadContext {
+
+    public static ThreadLocal<StaffDto> threadLocal = new ThreadLocal<StaffDto>() {
+
+        @Override
+        public StaffDto initialValue() {
+            return new StaffDto();
+        }
+
+    };
+
+    public void bind(StaffDto staff) {
+        threadLocal.set(staff);
+    }
+
+    public StaffDto getCurrentStaff() {
+        return threadLocal.get();
+    }
+
+    public void unBind() {
+        threadLocal.remove();
+    }
+
+}

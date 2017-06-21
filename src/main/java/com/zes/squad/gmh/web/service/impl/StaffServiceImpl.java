@@ -32,4 +32,34 @@ public class StaffServiceImpl implements StaffService {
         return staffDto;
     }
 
+    @Override
+    public StaffDto queryStaffByTokeb(String token) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void changePassword(String originalPassword, String newPassword) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void logout(Long id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void sendAuthCode(String email) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void validateAuthCode(String email, String authCode) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

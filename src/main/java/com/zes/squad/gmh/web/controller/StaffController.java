@@ -3,6 +3,7 @@ package com.zes.squad.gmh.web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.base.Strings;
@@ -22,7 +23,7 @@ public class StaffController extends BaseController {
 
     @RequestMapping("/login")
     @ResponseBody
-    public JsonResult<?> doLoginWithEmail(String account, String password) {
+    public JsonResult<StaffVo> doLoginWithEmail(String account, String password) {
         if (Strings.isNullOrEmpty(account)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户名不能为空");
         }
@@ -35,6 +36,40 @@ public class StaffController extends BaseController {
         }
         StaffVo staffVo = CommonConverter.map(staffDto, StaffVo.class);
         return JsonResult.success(staffVo);
+    }
+
+    @RequestMapping(path = "/changePassword", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResult<Void> doChangePassword(String originalPassword, String newPassword) {
+        if (Strings.isNullOrEmpty(originalPassword)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "原密码不能为空");
+        }
+        if (Strings.isNullOrEmpty(newPassword)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "新密码不能为空");
+        }
+        if (originalPassword.equals(newPassword)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "新密码不能和原密码相同");
+        }
+        staffService.changePassword(originalPassword, newPassword);
+        return JsonResult.success();
+    }
+
+    @RequestMapping("/logout")
+    @ResponseBody
+    public JsonResult<Void> doLogout() {
+        return null;
+    }
+
+    @RequestMapping("/getAuthCode")
+    @ResponseBody
+    public JsonResult<Void> doSendAuthCode(String email) {
+        return null;
+    }
+
+    @RequestMapping(path = "/validateAuthCode", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResult<Void> doValidateAuthCode(String email, String authCode) {
+        return null;
     }
 
 }
