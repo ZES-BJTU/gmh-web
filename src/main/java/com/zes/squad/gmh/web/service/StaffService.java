@@ -1,6 +1,7 @@
 package com.zes.squad.gmh.web.service;
 
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.po.StaffPo;
 
 public interface StaffService {
 
@@ -12,5 +13,9 @@ public interface StaffService {
      * @return
      */
     StaffDto loginWithEmail(String account, String password);
+
+	int insert(StaffDto dto);
+    
+
 
 }

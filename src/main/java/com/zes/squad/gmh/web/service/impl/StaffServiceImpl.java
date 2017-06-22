@@ -1,5 +1,7 @@
 package com.zes.squad.gmh.web.service.impl;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,16 @@ public class StaffServiceImpl implements StaffService {
         }
         StaffDto staffDto = CommonConverter.map(staffPo, StaffDto.class);
         return staffDto;
+    }
+    @Override
+    public int insert(StaffDto dto){
+    	String salt = UUID.randomUUID().toString().replaceAll("\\-","");
+    	String password = EncryptUtils.MD5(dto.getEmail() + salt + dto.getPassword());
+    	dto.setSalt(salt);
+    	dto.setPassword(password);
+    	StaffPo po = CommonConverter.map(dto, StaffPo.class);
+    	int i = staffMapper.insert(po);
+    	return i;
     }
 
 }

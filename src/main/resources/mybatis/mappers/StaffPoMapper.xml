@@ -19,4 +19,7 @@
 		<include refid="Base_Column_List" />
 		FROM staff WHERE email = #{email, jdbcType=VARCHAR}
 	</select>
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo" >
+		insert into staff(email,password,salt) values(#{email},#{password},#{salt})
+	</insert>
 </mapper>
