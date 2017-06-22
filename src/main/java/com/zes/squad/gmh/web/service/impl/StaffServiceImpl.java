@@ -33,7 +33,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public StaffDto queryStaffByTokeb(String token) {
+    public StaffDto queryStaffByToken(String token) {
         // TODO Auto-generated method stub
         return null;
     }

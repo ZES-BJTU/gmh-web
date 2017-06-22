@@ -16,7 +16,7 @@ import com.zes.squad.gmh.web.service.StaffService;
 
 @RequestMapping("/staff")
 @Controller
-public class StaffController extends BaseController {
+public class StaffController {
 
     @Autowired
     private StaffService staffService;

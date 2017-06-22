@@ -19,7 +19,7 @@ public interface StaffService {
      * @param token
      * @return
      */
-    StaffDto queryStaffByTokeb(String token);
+    StaffDto queryStaffByToken(String token);
 
     /**
      * 修改密码
