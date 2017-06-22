@@ -1,14 +1,9 @@
 package com.zes.squad.gmh.web.mail;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -21,7 +16,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.collections.MapUtils;
 
@@ -31,55 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MailHelper {
-    public static void sendAttachmentEmail(MailParams params, File[] files) throws IOException {
-        Message msg = new MimeMessage(getEmailSession(params.getProps()));
-        try {
-            InternetAddress sender = new InternetAddress(MailProperties.get("mail.smtp.sender"));
-            msg.setFrom(sender);
-            InternetAddress[] recipientsTO = generateAddress(params.getReceiversTO());
-            msg.setRecipients(RecipientType.TO, recipientsTO);
-            if (params.getReceiversCC() != null && params.getReceiversCC().length != 0) {
-                InternetAddress[] recipientsCC = generateAddress(params.getReceiversCC());
-                msg.setRecipients(RecipientType.CC, recipientsCC);
-            }
-            if (params.getReceiversBCC() != null && params.getReceiversBCC().length != 0) {
-                InternetAddress[] recipientsBCC = generateAddress(params.getReceiversBCC());
-                msg.setRecipients(RecipientType.BCC, recipientsBCC);
-            }
-            if (params.getReplys() != null && params.getReplys().length != 0) {
-                InternetAddress[] replysTo = generateAddress(params.getReplys());
-                msg.setReplyTo(replysTo);
-            }
-            msg.setSentDate(new Date());
-            msg.setSubject(params.getSubject());
-            MimeMultipart multipart = new MimeMultipart();
-            MimeBodyPart bodyPart = new MimeBodyPart();
-            bodyPart.setContent(params.getContent(), params.getContentType());
-            //处理附件
-            multipart.addBodyPart(bodyPart);
-            MimeBodyPart attachBodyPart = null;
-            if (files != null) {
-                for (File file : files) {
-                    attachBodyPart = new MimeBodyPart();
-                    FileDataSource fds = new FileDataSource(file);
-                    attachBodyPart.setDataHandler(new DataHandler(fds));
-                    attachBodyPart.setFileName(MimeUtility.encodeWord(file.getName()));
-                    multipart.addBodyPart(attachBodyPart);
-                }
-            }
-            msg.setContent(multipart);
-            Transport.send(msg);
-        } catch (MessagingException e) {
-            log.error("构建邮件message出错", e);
-        } catch (UnsupportedEncodingException e) {
-            log.error("构建邮件编码出错", e);
-        }
-    }
+
+    private static final String HOST     = "mail.smtp.host";
+    private static final String SENDER   = "mail.smtp.sender";
+    private static final String PASSWORD = "mail.smtp.password";
+    private static final String AUTH     = "mail.smtp.auth";
 
     public static void sendTextEmail(MailParams params) {
         Message msg = new MimeMessage(getEmailSession(params.getProps()));
         try {
-            InternetAddress sender = new InternetAddress(MailProperties.get("mail.smtp.sender"));
+            InternetAddress sender = new InternetAddress(MailProperties.get(SENDER));
             msg.setFrom(sender);
             InternetAddress[] recipientsTO = generateAddress(params.getReceiversTO());
             msg.setRecipients(RecipientType.TO, recipientsTO);
@@ -104,14 +59,14 @@ public class MailHelper {
             msg.setContent(multipart);
             Transport.send(msg);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            log.error("发送邮件失败, exception is", e);
         }
     }
 
     private static Session getEmailSession(Map<String, Object> props) {
         Properties properties = System.getProperties();
-        properties.put("mail.smtp.host", MailProperties.get("mail.smtp.host"));
-        properties.put("mail.smtp.auth", "true");
+        properties.put(HOST, MailProperties.get(HOST));
+        properties.put(AUTH, "true");
         if (!MapUtils.isEmpty(props)) {
             for (Map.Entry<String, Object> prop : props.entrySet()) {
                 properties.put(prop.getKey(), prop.getValue());
@@ -121,8 +76,7 @@ public class MailHelper {
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(MailProperties.get("mail.smtp.sender"),
-                        MailProperties.get("mail.smtp.password"));
+                return new PasswordAuthentication(MailProperties.get(SENDER), MailProperties.get(PASSWORD));
             }
         });
         return session;
@@ -134,5 +88,15 @@ public class MailHelper {
             results[i] = new InternetAddress(inputs[i]);
         }
         return results;
+    }
+
+    public static void main(String[] args) {
+        MailParams params = new MailParams();
+        params.setSubject("验证码");
+        params.setContent("123456");
+        String[] receiversTO = { "1120726720@qq.com" };
+        params.setReceiversTO(receiversTO);
+        params.setContentType("text/plain; charset=utf-8");
+        sendTextEmail(params);
     }
 }
