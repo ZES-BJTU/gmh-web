@@ -12,7 +12,7 @@ import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.ShopDto;
 import com.zes.squad.gmh.web.entity.param.ShopParam;
-import com.zes.squad.gmh.web.entity.po.ShopPo;
+import com.zes.squad.gmh.web.entity.vo.ShopVo;
 import com.zes.squad.gmh.web.service.ShopService;
 
 @RequestMapping("/shop")
@@ -26,9 +26,9 @@ public class ShopController {
     @ResponseBody
     public JsonResult<?> getAll(){
 		
-        List<ShopPo> poList = new ArrayList<ShopPo>();
-        poList = shopService.getAll();
-    	return JsonResult.success(poList);
+        List<ShopVo> voList = new ArrayList<ShopVo>();
+        voList = shopService.getAll();
+    	return JsonResult.success(voList);
     }
 	
 	@RequestMapping("/insert")
