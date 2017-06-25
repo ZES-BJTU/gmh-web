@@ -17,12 +17,23 @@
 		`created_time`,
 		`modified_time`
 	</sql>
+	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM staff WHERE id = #{id, jdbcType=BIGINT}
+	</select>
 	<select id="selectByEmail" parameterType="string" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM staff WHERE email = #{email, jdbcType=VARCHAR}
 	</select>
-	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo" >
-		insert into staff(email,password,salt) values(#{email},#{password},#{salt})
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
+		insert into
+		staff(email,password,salt)
+		values(#{email},#{password},#{salt})
 	</insert>
+	<update id="updatePassword">
+		UPDATE staff SET `password` = #{password,
+		jdbcType=VARCHAR} WHERE `id` = #{id, jdbcType=BIGINT}
+	</update>
 </mapper>

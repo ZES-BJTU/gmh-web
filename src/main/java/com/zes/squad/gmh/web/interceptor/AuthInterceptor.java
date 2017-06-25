@@ -48,7 +48,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                            ModelAndView modelAndView)
             throws Exception {
         ThreadContext.threadLocalStaff.remove();
-        System.out.println(ThreadContext.threadLocalStaff.get());
     }
 
     private void sendJsonResponse(HttpServletResponse response, Object obj) {

@@ -71,24 +71,41 @@ public class StaffController extends BaseController {
     @RequestMapping("/logout")
     @ResponseBody
     public JsonResult<Void> doLogout() {
-        return null;
+        StaffDto staff = getStaff();
+        staffService.logout(staff.getId());
+        unBind();
+        return JsonResult.success();
     }
 
     @RequestMapping(path = "/info", method = RequestMethod.GET)
+    @ResponseBody
     public JsonResult<StaffVo> doGetStaffInfo() {
-        return null;
+        StaffDto staff = getStaff();
+        StaffVo staffVo = CommonConverter.map(staff, StaffVo.class);
+        return JsonResult.success(staffVo);
     }
 
     @RequestMapping("/getAuthCode")
     @ResponseBody
     public JsonResult<Void> doSendAuthCode(String email) {
-        return null;
+        if (Strings.isNullOrEmpty(email)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "邮箱不能为空");
+        }
+        staffService.sendAuthCode(email);
+        return JsonResult.success();
     }
 
     @RequestMapping(path = "/validateAuthCode", method = RequestMethod.POST)
     @ResponseBody
     public JsonResult<Void> doValidateAuthCode(String email, String authCode) {
-        return null;
+        if (Strings.isNullOrEmpty(email)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "邮箱不能为空");
+        }
+        if (Strings.isNullOrEmpty(authCode)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "验证码不能为空");
+        }
+        staffService.validateAuthCode(email, authCode);
+        return JsonResult.success();
     }
 
 }

@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.constant.RequestConsts;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
+import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.service.StaffService;
 
@@ -29,6 +30,10 @@ public class BaseController {
         }
         StaffDto staff = staffService.queryStaffByToken(token);
         return staff;
+    }
+
+    public void unBind() {
+        ThreadContext.threadLocalStaff.remove();
     }
 
 }
