@@ -55,17 +55,6 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public int insert(StaffDto dto) {
-        String salt = UUID.randomUUID().toString().replaceAll("\\-", "");
-        String password = EncryptUtils.MD5(dto.getEmail() + salt + dto.getPassword());
-        dto.setSalt(salt);
-        dto.setPassword(password);
-        StaffPo po = CommonConverter.map(dto, StaffPo.class);
-        int i = staffMapper.insert(po);
-        return i;
-    }
-
-    @Override
     public StaffDto queryStaffByToken(String token) {
         return null;
     }
