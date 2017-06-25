@@ -9,8 +9,12 @@ public class StaffVo {
 
     private String email;
 
-    private String password;
+    private Long   storeId;
 
-    private String salt;
+    private String principalName;
+
+    private String principalMobile;
+
+    private String token;
 
 }

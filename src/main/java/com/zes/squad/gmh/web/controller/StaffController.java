@@ -31,15 +31,16 @@ public class StaffController extends BaseController {
         if (Strings.isNullOrEmpty(password)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "密码不能为空");
         }
-        
+
         StaffDto staffDto = staffService.loginWithEmail(account, password);
         StaffVo staffVo = CommonConverter.map(staffDto, StaffVo.class);
         return JsonResult.success(staffVo);
     }
+
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<Integer> insert(StaffParam param){
-    	if (Strings.isNullOrEmpty(param.getEmail())) {
+    public JsonResult<Integer> insert(StaffParam param) {
+        if (Strings.isNullOrEmpty(param.getEmail())) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户名不能为空");
         }
         if (Strings.isNullOrEmpty(param.getPassword())) {
@@ -47,7 +48,7 @@ public class StaffController extends BaseController {
         }
         StaffDto dto = CommonConverter.map(param, StaffDto.class);
         int i = staffService.insert(dto);
-    	return JsonResult.success(i);
+        return JsonResult.success(i);
     }
 
     @RequestMapping(path = "/changePassword", method = RequestMethod.POST)
@@ -70,6 +71,11 @@ public class StaffController extends BaseController {
     @RequestMapping("/logout")
     @ResponseBody
     public JsonResult<Void> doLogout() {
+        return null;
+    }
+
+    @RequestMapping(path = "/info", method = RequestMethod.GET)
+    public JsonResult<StaffVo> doGetStaffInfo() {
         return null;
     }
 

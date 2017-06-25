@@ -5,7 +5,7 @@
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="staff_id" jdbcType="BIGINT" property="staffId" />
 		<result column="token" jdbcType="VARCHAR" property="token" />
-		<result column="login_time" jdbcType="DATETIME" property="loginTime" />
+		<result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
@@ -29,11 +29,11 @@
 		#{staffId,
 		jdbcType=BIGINT},
 		#{token, jdbcType=VARCHAR},
-		#{loginTime,jdbcType=DATETIME})
+		#{loginTime,jdbcType=TIMESTAMP})
 		ON DUPLICATE KEY UPDATE
 		token =
-		#{token,jdbcType=VARCHAR};
+		#{token,jdbcType=VARCHAR},
 		login_time = #{loginTime, jdbcType =
-		DATETIME}
+		TIMESTAMP}
 	</insert>
 </mapper>
