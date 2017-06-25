@@ -14,6 +14,15 @@ public interface StaffService {
     StaffDto loginWithEmail(String account, String password);
 
     /**
+     * 新增
+     * 
+     * @param dto
+     * @return
+     */
+	int insert(StaffDto dto);
+    
+
+    /**
      * 根据token查询用户信息
      * 
      * @param token
@@ -24,10 +33,11 @@ public interface StaffService {
     /**
      * 修改密码
      * 
+     * @param id
      * @param originalPassword
      * @param newPassword
      */
-    void changePassword(String originalPassword, String newPassword);
+    void changePassword(Long id, String originalPassword, String newPassword);
 
     /**
      * 登出

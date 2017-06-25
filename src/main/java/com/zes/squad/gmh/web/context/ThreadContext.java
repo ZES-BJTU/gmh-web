@@ -13,7 +13,7 @@ public class ThreadContext {
 
     };
 
-    public StaffDto getCurrentStaff() {
+    public static StaffDto getCurrentStaff() {
         return threadLocalStaff.get();
     }
 

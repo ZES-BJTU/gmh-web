@@ -11,12 +11,14 @@ import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.param.StaffParam;
+import com.zes.squad.gmh.web.entity.po.StaffPo;
 import com.zes.squad.gmh.web.entity.vo.StaffVo;
 import com.zes.squad.gmh.web.service.StaffService;
 
 @RequestMapping("/staff")
 @Controller
-public class StaffController {
+public class StaffController extends BaseController {
 
     @Autowired
     private StaffService staffService;
@@ -31,11 +33,21 @@ public class StaffController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "密码不能为空");
         }
         StaffDto staffDto = staffService.loginWithEmail(account, password);
-        if (staffDto == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION.getCode(), "登录未知错误");
-        }
         StaffVo staffVo = CommonConverter.map(staffDto, StaffVo.class);
         return JsonResult.success(staffVo);
+    }
+    @RequestMapping("/insert")
+    @ResponseBody
+    public JsonResult<?> insert(StaffParam param){
+    	if (Strings.isNullOrEmpty(param.getEmail())) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户名不能为空");
+        }
+        if (Strings.isNullOrEmpty(param.getPassword())) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "密码不能为空");
+        }
+        StaffDto dto = CommonConverter.map(param, StaffDto.class);
+        int i = staffService.insert(dto);
+    	return JsonResult.success(i);
     }
 
     @RequestMapping(path = "/changePassword", method = RequestMethod.POST)
@@ -50,7 +62,8 @@ public class StaffController {
         if (originalPassword.equals(newPassword)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "新密码不能和原密码相同");
         }
-        staffService.changePassword(originalPassword, newPassword);
+        StaffDto staff = getStaff();
+        staffService.changePassword(staff.getId(), originalPassword, newPassword);
         return JsonResult.success();
     }
 
