@@ -42,15 +42,27 @@ public class StaffServiceImpl implements StaffService {
         staffDto.setToken(token);
         return staffDto;
     }
+
     @Override
-    public int insert(StaffDto dto){
-    	String salt = UUID.randomUUID().toString().replaceAll("\\-","");
-    	String password = EncryptUtils.MD5(dto.getEmail() + salt + dto.getPassword());
-    	dto.setSalt(salt);
-    	dto.setPassword(password);
-    	StaffPo po = CommonConverter.map(dto, StaffPo.class);
-    	int i = staffMapper.insert(po);
-    	return i;
+    public int insert(StaffDto dto) {
+        String salt = UUID.randomUUID().toString().replaceAll("\\-", "");
+        String password = EncryptUtils.MD5(dto.getEmail() + salt + dto.getPassword());
+        dto.setSalt(salt);
+        dto.setPassword(password);
+        StaffPo po = CommonConverter.map(dto, StaffPo.class);
+        int i = staffMapper.insert(po);
+        return i;
+    }
+
+    @Override
+    public int insert(StaffDto dto) {
+        String salt = UUID.randomUUID().toString().replaceAll("\\-", "");
+        String password = EncryptUtils.MD5(dto.getEmail() + salt + dto.getPassword());
+        dto.setSalt(salt);
+        dto.setPassword(password);
+        StaffPo po = CommonConverter.map(dto, StaffPo.class);
+        int i = staffMapper.insert(po);
+        return i;
     }
 
     @Override
@@ -75,7 +87,6 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public void validateAuthCode(String email, String authCode) {
-        // TODO Auto-generated method stub
 
     }
 
