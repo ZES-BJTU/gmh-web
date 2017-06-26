@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
@@ -28,6 +29,12 @@ public class EmployeeServiceImpl implements EmployeeService{
 			voList.add(CommonConverter.map(poList.get(i),EmployeeVo.class));
 		}
 		return voList;
+	}
+	public EmployeeDto insert(EmployeeDto dto){
+		EmployeePo po = CommonConverter.map(dto, EmployeePo.class);
+		Long i = emMapper.insert(po);
+		EmployeeDto newDto = CommonConverter.map(po, EmployeeDto.class);
+		return newDto;
 	}
 	
 }

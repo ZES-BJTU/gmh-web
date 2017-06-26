@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.EmployeeJobMapper">
+	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.EmployeeJobPo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<id column="em_id" jdbcType="BIGINT" property="emId" />
+		<id column="job_id" jdbcType="BIGINT" property="jobId" />
+		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		`id`,`em_id`,`job_id`,
+		`created_time`,
+		`modified_time`
+	</sql>
+	<select id="getAll" resultMap="BaseResultMap">
+		select * from em_job
+	</select>
+	<insert id="insert" parameterType="Long" >
+		insert into em_job(em_id,job_id) values(#{0},#{1})
+	</insert>
+</mapper>

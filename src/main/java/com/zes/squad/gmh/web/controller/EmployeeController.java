@@ -8,8 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.web.common.JsonResult;
+import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
+import com.zes.squad.gmh.web.entity.param.EmployeeParam;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
+import com.zes.squad.gmh.web.service.EmployeeJobService;
 import com.zes.squad.gmh.web.service.EmployeeService;
 
 @RequestMapping("/employee")
@@ -17,12 +21,25 @@ import com.zes.squad.gmh.web.service.EmployeeService;
 public class EmployeeController {
 	@Autowired
     private EmployeeService employeeService;
-	
+	@Autowired
+    private EmployeeJobService employeeJobService;
 	@RequestMapping("/getAll")
 	@ResponseBody
 	public JsonResult<?> getAll(){
 		List<EmployeeVo> voList = new ArrayList<EmployeeVo>();
 		voList = employeeService.getAll();
 		return JsonResult.success(voList);
+	}
+	
+	@RequestMapping("/insert")
+	@ResponseBody
+	public JsonResult<?> insert(EmployeeParam param,Long[] jobId){
+
+		EmployeeDto dto = CommonConverter.map(param, EmployeeDto.class);
+		EmployeeDto newDto = employeeService.insert(dto);
+		if(newDto.getId()!=null)
+			employeeJobService.insert(newDto.getId(), jobId);
+		EmployeeVo vo = CommonConverter.map(newDto, EmployeeVo.class);
+		return JsonResult.success(vo);
 	}
 }
