@@ -39,7 +39,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
         StaffDto staff = staffService.queryStaffByToken(token);
-        ThreadContext.threadLocalStaff.set(staff);
+        ThreadContext.threadLocal.set(staff);
         return true;
     }
 
@@ -47,7 +47,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                            ModelAndView modelAndView)
             throws Exception {
-        ThreadContext.threadLocalStaff.remove();
+        ThreadContext.threadLocal.remove();
     }
 
     private void sendJsonResponse(HttpServletResponse response, Object obj) {

@@ -1,16 +1,21 @@
 package com.zes.squad.gmh.web.entity.dto;
 
+import java.io.Serializable;
+
 import lombok.Data;
 
 @Data
-public class StaffDto {
+public class StaffDto implements Serializable {
 
-    private Long   id;
-
-    private String email;
-
-    private String password;
-
-    private String salt;
+    private static final long serialVersionUID = 1L;
+    
+    private Long              id;
+    private String            email;
+    private String            password;
+    private String            salt;
+    private Long              storeId;
+    private String            principalName;
+    private String            principalMobile;
+    private String            token;
 
 }

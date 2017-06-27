@@ -1,7 +1,6 @@
 package com.zes.squad.gmh.web.service;
 
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
-import com.zes.squad.gmh.web.entity.po.StaffPo;
 
 public interface StaffService {
 
@@ -34,10 +33,11 @@ public interface StaffService {
     /**
      * 修改密码
      * 
+     * @param id
      * @param originalPassword
      * @param newPassword
      */
-    void changePassword(String originalPassword, String newPassword);
+    void changePassword(Long id, String originalPassword, String newPassword);
 
     /**
      * 登出

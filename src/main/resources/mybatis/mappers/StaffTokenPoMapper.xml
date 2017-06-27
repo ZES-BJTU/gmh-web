@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.StaffTokenMapper">
+	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.StaffTokenPo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="staff_id" jdbcType="BIGINT" property="staffId" />
+		<result column="token" jdbcType="VARCHAR" property="token" />
+		<result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
+		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		`id`,`staff_id`,`token`,`login_time`,
+		`created_time`,
+		`modified_time`
+	</sql>
+	<select id="selectByStaffId" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM staff_token WHERE staff_id = #{staffId, jdbcType=BIGINT}
+	</select>
+	<select id="selectByToken" parameterType="string" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM staff_token WHERE token = #{token, jdbcType=VARCHAR}
+	</select>
+	<insert id="insertOrUpdateToken">
+		<selectKey resultType="long" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO staff_token(staff_id, token, login_time)
+		VALUES(
+		#{staffId,
+		jdbcType=BIGINT},
+		#{token, jdbcType=VARCHAR},
+		#{loginTime,jdbcType=TIMESTAMP})
+		ON DUPLICATE KEY UPDATE
+		token =
+		#{token,jdbcType=VARCHAR},
+		login_time = #{loginTime, jdbcType =
+		TIMESTAMP}
+	</insert>
+	<delete id="deleteByToken" parameterType="string">
+		DELETE FROM staff_token WHERE token = #{token, jdbcType=VARCHAR}
+	</delete>
+</mapper>
