@@ -17,8 +17,4 @@ public class ThreadContext {
         return threadLocal.get();
     }
 
-    public void unBind() {
-        threadLocal.remove();
-    }
-
 }
