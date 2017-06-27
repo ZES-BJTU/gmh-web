@@ -19,4 +19,9 @@
 	<insert id="insert" parameterType="Long" >
 		insert into em_job(em_id,job_id) values(#{0},#{1})
 	</insert>
+	<delete id="delByEmId" parameterType="Long">
+		delete from em_job 
+		where
+		em_id=#{emId}
+	</delete>
 </mapper>

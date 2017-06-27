@@ -42,4 +42,22 @@ public class EmployeeController {
 		EmployeeVo vo = CommonConverter.map(newDto, EmployeeVo.class);
 		return JsonResult.success(vo);
 	}
+	@RequestMapping("/leave")
+	@ResponseBody
+	public JsonResult<?> leave(Long[] id){
+		int i = 0;
+		i = employeeService.leave(id);
+		return JsonResult.success(i);		
+	}
+	@RequestMapping("/update")
+	@ResponseBody
+	public JsonResult<?> update(EmployeeParam param,Long[] jobId){
+		EmployeeDto dto = CommonConverter.map(param, EmployeeDto.class);
+		int i = employeeService.update(dto, jobId);
+		if(i>0)
+			return JsonResult.success(i);
+		else
+			return JsonResult.fail(i, "error");
+		
+	}
 }

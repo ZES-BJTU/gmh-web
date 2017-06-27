@@ -19,13 +19,27 @@
 		`modified_time`
 	</sql>
 	<select id="getAll" resultMap="BaseResultMap">
-		select * from employee
+		select * from employee where is_work=1
 	</select>
-	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo" useGeneratedKeys="true" keyProperty="id">
-		
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo" useGeneratedKeys="true" keyProperty="id">		
 		insert into
 		employee(em_name,sex,phone,shop_id,entry_date,quit_date,is_work)
 		values
-		(#{emName},#{sex},#{phone},#{shopId},#{entryDate},#{quitDate},#{isWork})
+		(#{emName},#{sex},#{phone},#{shopId},#{entryDate},#{quitDate},'1')
 	</insert>
+	<update id="leave" parameterType="Map" >
+		update employee set
+		is_work=0,
+		quit_date=#{leave}
+		where 
+		id=#{id}
+	</update>
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo" >
+		update employee set
+		em_name=#{emName},
+		sex=#{sex},
+		phone=#{phone}
+		where 
+		id=#{id}
+	</update>
 </mapper>

@@ -19,5 +19,8 @@ public class EmployeeJobServiceImpl implements EmployeeJobService{
 		}
 		return job;
 	}
-	
+	public int delByEmId(Long emId){
+		int i = emJobMapper.delByEmId(emId);
+		return i;
+	}
 }

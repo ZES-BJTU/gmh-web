@@ -9,4 +9,6 @@ public interface EmployeeService {
 	
 	List<EmployeeVo> getAll();
 	EmployeeDto insert(EmployeeDto dto);
+	int leave(Long[] id);
+	int update(EmployeeDto dto,Long[] jobId);
 }
