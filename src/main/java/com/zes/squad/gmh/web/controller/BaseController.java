@@ -33,7 +33,7 @@ public class BaseController {
     }
 
     public void unBind() {
-        ThreadContext.threadLocalStaff.remove();
+        ThreadContext.threadLocal.remove();
     }
 
 }
