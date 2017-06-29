@@ -81,3 +81,17 @@ CREATE TABLE `staff_token` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2017-06-28 22:21:36
+
+DROP TABLE IF EXISTS `project_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `project_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `top_type` int(11) DEFAULT NULL COMMENT '顶层分类：\n1：美甲\n2：美睫\n3：美容\n4：产品',
+  `type_name` varchar(45) DEFAULT NULL,
+  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
