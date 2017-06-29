@@ -24,7 +24,7 @@
 	<mvc:resources mapping="/gmh/static/**" location="/gmh/static/" />
 	<mvc:resources mapping="/error/**" location="/WEB-INF/views/error/" />
 
-	<mvc:interceptors>
+<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**" />
 			<mvc:exclude-mapping path="/staff/login" />
