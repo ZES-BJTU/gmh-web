@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.zes.squad.gmh.web.common.JsonResult;
+import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
+import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.service.ProjectTypeService;
 
@@ -30,6 +32,8 @@ public class ProjectTypeController {
 	@RequestMapping("/insert")
 	@ResponseBody
 	public JsonResult<?> insert(ProjectTypeDto dto){
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		dto.setStoreId(staffDto.getStoreId());
 		int i = ptService.insert(dto);
 		if(i>0)
 			return JsonResult.success(i);

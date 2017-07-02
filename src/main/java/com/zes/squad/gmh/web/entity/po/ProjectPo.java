@@ -7,9 +7,8 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class ProjectTypePo extends Po{
-	private static final long serialVersionUID = 1L;
-	private Long storeId;
-	private int topType;
-	private String typeName;
+public class ProjectPo extends Po{
+
+	private Long projectType;
+	private String projectName;
 }

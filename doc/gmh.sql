@@ -94,4 +94,5 @@ CREATE TABLE `project_type` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
+ALTER TABLE `project_type` 
+ADD COLUMN `store_id` BIGINT(20) NULL AFTER `id`;

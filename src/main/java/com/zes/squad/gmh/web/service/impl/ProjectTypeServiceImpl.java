@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
+import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.mapper.ProjectTypeMapper;
@@ -20,7 +22,8 @@ public class ProjectTypeServiceImpl implements ProjectTypeService{
 	
 	public List<ProjectTypeVo> getAll(){
 		List<ProjectTypePo> poList = new ArrayList<ProjectTypePo>();
-		poList = ptMapper.getAll();
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		poList = ptMapper.getAll(staffDto.getStoreId());
 		List<ProjectTypeVo> voList = new ArrayList<ProjectTypeVo>();
 		if(poList.size()==0)
 			return null;

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
+import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
@@ -26,8 +28,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 	private EmployeeJobMapper emJobMapper;
 	
 	public List<EmployeeVo> getAll(){
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
 		List<EmployeePo> poList = new ArrayList<EmployeePo>();
-		poList = emMapper.getAll();
+		poList = emMapper.getAll(staffDto.getStoreId());
 		List<EmployeeVo> voList = new ArrayList<EmployeeVo>();
 		if(poList.size()==0)
 			return null;

@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.web.common.JsonResult;
+import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
+import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.param.EmployeeParam;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.service.EmployeeJobService;
@@ -26,6 +28,8 @@ public class EmployeeController {
 	@RequestMapping("/getAll")
 	@ResponseBody
 	public JsonResult<?> getAll(){
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		
 		List<EmployeeVo> voList = new ArrayList<EmployeeVo>();
 		voList = employeeService.getAll();
 		return JsonResult.success(voList);
@@ -34,8 +38,9 @@ public class EmployeeController {
 	@RequestMapping("/insert")
 	@ResponseBody
 	public JsonResult<?> insert(EmployeeParam param,Long[] jobId){
-
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
 		EmployeeDto dto = CommonConverter.map(param, EmployeeDto.class);
+		dto.setShopId(staffDto.getStoreId());
 		EmployeeDto newDto = employeeService.insert(dto);
 		if(newDto.getId()!=null)
 			employeeJobService.insert(newDto.getId(), jobId);
