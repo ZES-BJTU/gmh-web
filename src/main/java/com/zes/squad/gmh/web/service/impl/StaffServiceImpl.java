@@ -96,11 +96,11 @@ public class StaffServiceImpl implements StaffService {
     public void changePassword(Long id, String originalPassword, String newPassword) {
         StaffPo staffPo = staffMapper.selectById(id);
         if (staffPo == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "获取用户信息失败");
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "未找到用户");
         }
         String oldEncryptPassword = EncryptUtils.MD5(staffPo.getEmail() + staffPo.getSalt() + originalPassword);
         if (!staffPo.getPassword().equals(oldEncryptPassword)) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "密码输入错误");
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "原密码输入错误");
         }
         String newEncryptPassword = EncryptUtils.MD5(staffPo.getEmail() + staffPo.getSalt() + newPassword);
         staffMapper.updatePassword(id, newEncryptPassword);
@@ -110,7 +110,7 @@ public class StaffServiceImpl implements StaffService {
     public void logout(Long id) {
         StaffTokenPo staffTokenPo = staffTokenMapper.selectByStaffId(id);
         if (staffTokenPo == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "获取用户信息失败");
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "未找到用户");
         }
         String token = staffTokenPo.getToken();
         //清除redis
@@ -124,7 +124,7 @@ public class StaffServiceImpl implements StaffService {
     public void sendAuthCode(String email) {
         StaffPo staffPo = staffMapper.selectByEmail(email);
         if (staffPo == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "获取用户信息失败");
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "未找到用户");
         }
         String authCode = generateRandomAuthCode(6);
         boolean isCacheValid = redisComponent.isValid();
@@ -137,8 +137,7 @@ public class StaffServiceImpl implements StaffService {
         mailParams.setContentType("text/plain; charset=utf-8");
         mailParams.setContent("尊敬的用户:\r\n您好! 您当前正在使用光美焕忘记密码服务, 请将收到的验证码填写到系统指定位置, 验证码有效期10分钟.\r\n验证码: " + authCode);
         MailHelper.sendTextEmail(mailParams);
-        redisComponent.put(String.format(CACHE_KEY_AUTH_CODE_PREFIX, email + "_" + authCode), authCode,
-                RedisConsts.TEN_MINUTE);
+        redisComponent.put(String.format(CACHE_KEY_AUTH_CODE_PREFIX, email), authCode, RedisConsts.TEN_MINUTE);
     }
 
     @Override
@@ -151,7 +150,7 @@ public class StaffServiceImpl implements StaffService {
         if (!isCacheValid) {
             throw new GmhException(ErrorCodeEnum.CACHE_EXCEPTION, "验证码验证失败, 服务暂时不可用");
         }
-        String cacheKey = String.format(CACHE_KEY_AUTH_CODE_PREFIX, email + "_" + authCode);
+        String cacheKey = String.format(CACHE_KEY_AUTH_CODE_PREFIX, email);
         String redisAuthCode = redisComponent.get(cacheKey, String.class);
         if (Strings.isNullOrEmpty(redisAuthCode)) {
             throw new GmhException(ErrorCodeEnum.CACHE_EXCEPTION, "验证码已过期, 请重新获取验证码");
@@ -159,6 +158,7 @@ public class StaffServiceImpl implements StaffService {
         if (!redisAuthCode.equals(authCode)) {
             throw new GmhException(ErrorCodeEnum.CACHE_EXCEPTION, "验证码错误, 请重新输入验证码");
         }
+        redisComponent.delete(cacheKey);
     }
 
     private String generateRandomAuthCode(int length) {
@@ -183,6 +183,7 @@ public class StaffServiceImpl implements StaffService {
         StaffDto staffDto = CommonConverter.map(staffPo, StaffDto.class);
         staffDto.setPassword(null);
         staffDto.setSalt(null);
+        staffDto.setToken(token);
         return staffDto;
     }
 

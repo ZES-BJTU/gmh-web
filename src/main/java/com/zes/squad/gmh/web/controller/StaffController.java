@@ -22,7 +22,7 @@ public class StaffController extends BaseController {
     @Autowired
     private StaffService staffService;
 
-    @RequestMapping("/login")
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
     @ResponseBody
     public JsonResult<StaffVo> doLoginWithEmail(String account, String password) {
         if (Strings.isNullOrEmpty(account)) {
@@ -54,7 +54,7 @@ public class StaffController extends BaseController {
         return JsonResult.success();
     }
 
-    @RequestMapping("/logout")
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
     @ResponseBody
     public JsonResult<Void> doLogout() {
         StaffDto staff = getStaff();
@@ -71,7 +71,7 @@ public class StaffController extends BaseController {
         return JsonResult.success(staffVo);
     }
 
-    @RequestMapping("/getAuthCode")
+    @RequestMapping(path = "/getAuthCode", method = RequestMethod.GET)
     @ResponseBody
     public JsonResult<Void> doSendAuthCode(String email) {
         if (Strings.isNullOrEmpty(email)) {

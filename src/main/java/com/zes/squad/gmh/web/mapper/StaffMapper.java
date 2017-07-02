@@ -1,5 +1,7 @@
 package com.zes.squad.gmh.web.mapper;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.zes.squad.gmh.web.entity.po.StaffPo;
 
 public interface StaffMapper {
@@ -32,6 +34,6 @@ public interface StaffMapper {
      * @param password
      * @return
      */
-    int updatePassword(Long id, String password);
+    int updatePassword(@Param("id") Long id, @Param("password") String password);
 
 }

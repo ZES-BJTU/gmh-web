@@ -90,13 +90,4 @@ public class MailHelper {
         return results;
     }
 
-    public static void main(String[] args) {
-        MailParams params = new MailParams();
-        params.setSubject("验证码");
-        params.setContent("123456");
-        String[] receiversTO = { "1120726720@qq.com" };
-        params.setReceiversTO(receiversTO);
-        params.setContentType("text/plain; charset=utf-8");
-        sendTextEmail(params);
-    }
 }
