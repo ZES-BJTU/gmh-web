@@ -173,7 +173,7 @@ public class StaffServiceImpl implements StaffService {
     private StaffDto queryStaffWithToken(String token) {
         StaffTokenPo staffTokenPo = staffTokenMapper.selectByToken(token);
         if (staffTokenPo == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "根据token[" + token + "]获取用户信息失败");
+            throw new GmhException(ErrorCodeEnum.WEB_EXCEPTION_AUTH_FAIL, "登录已过期, 请重新登录");
         }
         StaffPo staffPo = staffMapper.selectById(staffTokenPo.getStaffId());
         if (staffPo == null) {

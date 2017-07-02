@@ -35,7 +35,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         if (Strings.isNullOrEmpty(token)) {
             log.error("获取用户token失败, token is {}.", token);
             sendJsonResponse(response,
-                    JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请先登录"));
+                    JsonResult.fail(ErrorCodeEnum.WEB_EXCEPTION_AUTH_FAIL.getCode(), "请先登录"));
             return false;
         }
         StaffDto staff = staffService.queryStaffByToken(token);
