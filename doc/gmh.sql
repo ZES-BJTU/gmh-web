@@ -96,3 +96,12 @@ CREATE TABLE `project_type` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 ALTER TABLE `project_type` 
 ADD COLUMN `store_id` BIGINT(20) NULL AFTER `id`;
+
+CREATE TABLE `project` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_id` int(11) DEFAULT NULL,
+  `project_name` varchar(45) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+)
