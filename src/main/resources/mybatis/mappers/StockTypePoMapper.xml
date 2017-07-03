@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.StockTypeMapper">
+	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.StockTypePo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<id column="store_id" jdbcType="BIGINT" property="storeId" />
+		<id column="type_name" jdbcType="VARCHAR" property="typeName" />
+		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		`id`,`store_id`,`type_name`,
+		`created_time`,
+		`modified_time`
+	</sql>
+	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
+		select * from stock_type where store_id=#{storeId}
+	</select>
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StockTypePo">
+		insert into stock_type(store_id,type_name)
+		values
+		(#{storeId},#{typeName})
+	</insert>
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StockTypePo">
+		update stock_type 
+		set
+		type_name=#{typeName}
+		where
+		id=#{id}
+	</update>
+	<delete id="delById" parameterType="Long">
+		delete from stock_type where 
+		id=#{id}
+	</delete>
+</mapper>
