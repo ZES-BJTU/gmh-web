@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ProjectVo {
-	private Long projectType;
+	private Long typeId;
 	private String projectName;
 }

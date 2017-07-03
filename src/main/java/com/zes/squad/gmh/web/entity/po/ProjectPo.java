@@ -9,6 +9,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class ProjectPo extends Po{
 
-	private Long projectType;
+	private Long typeId;
 	private String projectName;
 }

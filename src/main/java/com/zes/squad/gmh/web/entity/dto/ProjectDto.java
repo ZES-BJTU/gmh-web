@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class ProjectDto {
 	private Long id;
-	private Long projectType;
+	private Long typeId;
 	private String projectName;
 }

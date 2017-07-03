@@ -3,34 +3,34 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.ProjectMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.ProjectPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
-		<id column="project_type" jdbcType="BIGINT" property="projectType" />
+		<id column="type_id" jdbcType="BIGINT" property="typeId" />
 		<id column="project_name" jdbcType="VARCHAR" property="projectName" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`project_type`,`projectName`,
+		`id`,`type_id`,`projectName`,
 		`created_time`,
 		`modified_time`
 	</sql>
 	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from project where project_type in
+		select * from project where type_id in
 		(select id from project_type where
 			store_id=#{storeId}
 		)
 	</select>
 	<select id="getByType" parameterType="Long" resultMap="BaseResultMap">
-		select * from project where project_type=#{projectType}
+		select * from project where type_id=#{typeId}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ProjectPo">
-		insert into project(project_type,project_name)
+		insert into project(type_id,project_name)
 		values
-		(#{projectType},#{projectName})
+		(#{typeId},#{projectName})
 	</insert>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.ProjectPo">
 		update project
 		set
-		project_type=#{projectType},
+		type_id=#{typeId},
 		project_name=#{projectName}
 		where
 		id=#{id}

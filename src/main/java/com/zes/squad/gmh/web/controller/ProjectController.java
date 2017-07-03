@@ -32,9 +32,9 @@ public class ProjectController {
 	}
 	@RequestMapping("/getByType")
 	@ResponseBody
-	public JsonResult<?> getBytype(Long projectType){
+	public JsonResult<?> getBytype(Long typeId){
 		List<ProjectVo> voList = new ArrayList<ProjectVo>();
-		voList = projectService.getBytype(projectType);	
+		voList = projectService.getBytype(typeId);	
 		return JsonResult.success(voList);
 	}
 	@RequestMapping("/insert")
