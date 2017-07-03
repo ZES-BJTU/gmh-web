@@ -47,7 +47,7 @@ public class ProjectTypeServiceImpl implements ProjectTypeService{
 	public int delByIds(Long[] id){
 		int i = 0;
 		for(int j=0;j<id.length;j++){
-			i = ptMapper.delById(id[j]);
+			i = i + ptMapper.delById(id[j]);
 		}
 		return i;
 		
