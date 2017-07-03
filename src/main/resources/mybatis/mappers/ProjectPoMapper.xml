@@ -14,7 +14,10 @@
 		`modified_time`
 	</sql>
 	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from project
+		select * from project where project_type in
+		(select id from project_type where
+			store_id=#{storeId}
+		)
 	</select>
 	<select id="getByType" parameterType="Long" resultMap="BaseResultMap">
 		select * from project where project_type=#{projectType}

@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectDto;
+import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ProjectPo;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.entity.vo.ProjectVo;
@@ -21,7 +23,8 @@ public class ProjectServiceImpl implements ProjectService{
 	public List<ProjectVo> getAll() {
 		List<ProjectPo> poList = new ArrayList<ProjectPo>();
 		List<ProjectVo> voList = new ArrayList<ProjectVo>();
-		poList = projectMapper.getAll();
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		poList = projectMapper.getAll(staffDto.getStoreId());
 		for(int i=0;i<poList.size();i++){
 			voList.add(CommonConverter.map(poList.get(i),ProjectVo.class));
 		}
