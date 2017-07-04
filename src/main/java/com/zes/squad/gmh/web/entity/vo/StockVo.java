@@ -3,8 +3,10 @@ package com.zes.squad.gmh.web.entity.vo;
 import lombok.Data;
 
 @Data
-public class ProjectVo {
+public class StockVo {
 	private Long id;
 	private Long typeId;
-	private String projectName;
+	private String stockName;
+	private String unit;
+	private int amount;
 }

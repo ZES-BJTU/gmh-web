@@ -1,42 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zes.squad.gmh.web.mapper.ProjectMapper">
-	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.ProjectPo">
+<mapper namespace="com.zes.squad.gmh.web.mapper.StockMapper">
+	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.StockPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<id column="type_id" jdbcType="BIGINT" property="typeId" />
-		<id column="project_name" jdbcType="VARCHAR" property="projectName" />
+		<id column="stock_name" jdbcType="VARCHAR" property="stockName" />
+		<id column="unit" jdbcType="VARCHAR" property="unit" />
+		<id column="amount" jdbcType="NUMERIC" property="amount" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`type_id`,`project_name`,
+		`id`,`type_id`,`stock_name`,`unit`,`amount`
 		`created_time`,
 		`modified_time`
 	</sql>
 	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from project where type_id in
-		(select id from project_type where
+		select * from stock where type_id in
+		(select id from stock_type where
 			store_id=#{storeId}
 		)
 	</select>
 	<select id="getByType" parameterType="Long" resultMap="BaseResultMap">
-		select * from project where type_id=#{typeId}
+		select * from stock where type_id=#{typeId}
 	</select>
-	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ProjectPo">
-		insert into project(type_id,project_name)
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StockPo">
+		insert into stock(type_id,stock_name,unit,amount)
 		values
-		(#{typeId},#{projectName})
+		(#{typeId},#{stockName},#{unit},#{amount})
 	</insert>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.ProjectPo">
-		update project
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StockPo">
+		update stock
 		set
 		type_id=#{typeId},
-		project_name=#{projectName}
+		stock_name=#{stockName},
+		unit=#{unit},
+		amount=#{amount}
 		where
 		id=#{id}
 	</update>
 	<delete id="delById" parameterType="Long">
-		delete from project where 
+		delete from stock where 
 		id=#{id}
 	</delete>
 </mapper>
