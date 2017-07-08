@@ -159,3 +159,20 @@ left join(
 select id as pid,level_name from member_level) as t
 on
 member.level_id=t.pid
+
+CREATE TABLE `appointment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `store_id` int(11) DEFAULT NULL,
+  `member_id` int(11) DEFAULT NULL,
+  `member_id` VARCHAR(25) DEFAULT NULL,
+  `project_id` int(11) DEFAULT NULL,
+  `employee_id` int(11) DEFAULT NULL,
+  `begin_time` timestamp(6) NULL DEFAULT NULL,
+  `end_time` timestamp(6) NULL DEFAULT NULL,
+  `status` int(11) DEFAULT NULL COMMENT '状态\n1：待完成\n2：已完成\n3：已取消',
+  `is_line` int(11) DEFAULT NULL COMMENT '是否点排\n1：是\n0：否',
+  `remark` VARCHAR(200) DEFAULT NULL,
+  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+)

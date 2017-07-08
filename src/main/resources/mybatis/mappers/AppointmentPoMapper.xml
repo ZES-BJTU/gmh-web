@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.AppointmentMapper">
+	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.AppointmentPo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="store_id" jdbcType="BIGINT" property="storeId" />
+		<result column="member_id" jdbcType="BIGINT" property="memberId" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="project_id" jdbcType="BIGINT" property="projectId" />
+		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
+		<result column="begin_time" jdbcType="DATE" property="beginTime" />
+		<result column="end_time" jdbcType="DATE" property="endTime" />
+		<result column="status" jdbcType="NUMERIC" property="status" />
+		<result column="is_line" jdbcType="NUMERIC" property="isLine" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+	</resultMap>
+	<resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.AppointmentVo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="store_id" jdbcType="BIGINT" property="storeId" />
+		<result column="member_id" jdbcType="BIGINT" property="memberId" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="member_name" jdbcType="VARCHAR" property="memberName" />
+		<result column="project_id" jdbcType="BIGINT" property="projectId" />
+		<result column="project_name" jdbcType="VARCHAR" property="projectName" />
+		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
+		<result column="employee_name" jdbcType="VARCHAR" property="employeeName" />
+		<result column="begin_time" jdbcType="DATE" property="beginTime" />
+		<result column="end_time" jdbcType="DATE" property="endTime" />
+		<result column="status" jdbcType="NUMERIC" property="status" />
+		<result column="is_line" jdbcType="NUMERIC" property="isLine" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		`id`,`store_id`,`member_id`,`phone`,`project_id`,`employee_id`,`begin_time`,`end_time`,`status`,`is_line`,`remark`,
+		`created_time`,
+		`modified_time`
+	</sql>
+	<select id="getAll" parameterType="Long" resultMap="VoResultMap">
+		select * from appointment_vo where store_id=#{storeId}
+	</select>
+	<select id="getByPhone" parameterType="String" resultMap="VoResultMap">
+		select * from appointment_vo where phone=#{phone}
+	</select>
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.AppointmentPo">
+		insert into appointment(store_id,member_id,phone,project_id,employee_id,begin_time,end_time,status,is_line,remark)
+		values
+		(#{storeId},#{memberId},#{phone},#{projectId},#{employeeId},#{beginTime},#{endTime},1,#{isLine},#{remark})
+	</insert>
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.AppointmentPo">
+		update appointment
+		set
+		member_id=#{memberId},
+		phone=#{phone},
+		project_id=#{projectId},
+		employee_id=#{employeeId},
+		begin_time=#{beginTime},
+		end_time=#{endTime},
+		status=#{status},
+		is_line=#{isLine},
+		remark=#{remark}
+		where
+		id=#{id}
+	</update>
+	<update id="cancel" parameterType="Long">
+		update appointment
+		set
+		status=3,
+		where
+		id=#{id}
+	</update>
+	<update id="finish" parameterType="Long">
+		update appointment
+		set
+		status=2,
+		where
+		id=#{id}
+	</update>
+	<delete id="delById" parameterType="Long">
+		delete from appointment where 
+		id=#{id}
+	</delete>
+</mapper>
