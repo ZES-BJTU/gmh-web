@@ -40,20 +40,32 @@
 	<select id="getAll" parameterType="Long" resultMap="VoResultMap">
 		select * from member_vo where store_id=#{storeId}
 	</select>
+	<select id="getByPhone" parameterType="String" resultMap="VoResultMap">
+		select * from member_vo where phone=#{phone}
+	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
-		insert into member_level(store_id,level_name)
+		insert into member(store_id,level_id,phone,member_name,sex,birthday,join_date,valid_date,nail_money,beauty_money,remark)
 		values
-		(#{storeId},#{levelName})
+		(#{storeId},#{levelId},#{phone},#{memberName},#{sex},#{birthday},#{joinDate},#{validDate},#{nailMoney},#{beautyMoney},#{remark})
 	</insert>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
-		update member_level 
+		update member
 		set
-		level_name=#{levelName}
+		level_id=#{levelId},
+		phone=#{phone},
+		member_name=#{memberName},
+		sex=#{sex},
+		birthday=#{birthday},
+		join_date=#{joinDate},
+		valid_date=#{validDate},
+		nail_money=#{nailMoney},
+		beauty_money=#{beautyMoney},
+		remark=#{remark}
 		where
 		id=#{id}
 	</update>
 	<delete id="delById" parameterType="Long">
-		delete from member_level where 
+		delete from member where 
 		id=#{id}
 	</delete>
 </mapper>

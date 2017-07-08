@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.zes.squad.gmh.web.common.JsonResult;
+import com.zes.squad.gmh.web.entity.dto.MemberDto;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
 import com.zes.squad.gmh.web.service.MemberService;
 
@@ -24,5 +25,47 @@ public class MemberController {
 		List<MemberVo> voList = new ArrayList<MemberVo>();
 		voList = memberService.getAll();		
 		return JsonResult.success(voList);
+	}
+	
+	@RequestMapping("/insert")
+	@ResponseBody
+	public JsonResult<?> insert(MemberDto dto){
+		MemberVo vo = memberService.getByPhone(dto.getPhone());
+		if(vo!=null){
+			return JsonResult.fail(0, "该手机号已注册");
+		}
+		int i = memberService.insert(dto);
+		if(i>0)
+			return JsonResult.success(i);
+		else
+			return JsonResult.fail(0, "新增失败");	
+	}
+	@RequestMapping("/update")
+	@ResponseBody
+	public JsonResult<?> update(MemberDto dto){
+		int i = memberService.update(dto);
+		if(i>0)
+			return JsonResult.success(i);
+		else
+			return JsonResult.fail(0, "修改失败");
+	}
+	@RequestMapping("/delete")
+	@ResponseBody
+	public JsonResult<?> delete(Long[] id){
+		int i = 0;
+		i = memberService.delByIds(id);
+		if(i>0)
+			return JsonResult.success(i);
+		else 
+			return JsonResult.fail(0, "发生错误，没有数据被修改");
+	}
+	@RequestMapping("/getByPhone")
+	@ResponseBody
+	public JsonResult<?> getByPhone(String phone){
+		MemberVo vo = memberService.getByPhone(phone);
+		if(vo==null)
+			return JsonResult.fail(0, "没有该会员");
+		else
+			return JsonResult.success(vo);
 	}
 }
