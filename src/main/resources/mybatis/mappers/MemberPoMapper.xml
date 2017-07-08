@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.MemberMapper">
+	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.MemberPo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="store_id" jdbcType="BIGINT" property="storeId" />
+		<result column="level_id" jdbcType="BIGINT" property="levelId" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="member_name" jdbcType="VARCHAR" property="memberName" />
+		<result column="sex" jdbcType="NUMERIC" property="sex" />
+		<result column="birthday" jdbcType="DATE" property="birthday" />
+		<result column="join_date" jdbcType="DATE" property="joinDate" />
+		<result column="valid_date" jdbcType="DATE" property="validDate" />
+		<result column="nail_money" jdbcType="FLOAT" property="nailMoney" />
+		<result column="beauty_money" jdbcType="FLOAT" property="beautyMoney" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+	</resultMap>
+	<resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.MemberVo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="store_id" jdbcType="BIGINT" property="storeId" />
+		<result column="level_id" jdbcType="BIGINT" property="levelId" />
+		<result column="level_name" jdbcType="VARCHAR" property="levelName" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="member_name" jdbcType="VARCHAR" property="memberName" />
+		<result column="sex" jdbcType="NUMERIC" property="sex" />
+		<result column="birthday" jdbcType="DATE" property="birthday" />
+		<result column="join_date" jdbcType="DATE" property="joinDate" />
+		<result column="valid_date" jdbcType="DATE" property="validDate" />
+		<result column="nail_money" jdbcType="FLOAT" property="nailMoney" />
+		<result column="beauty_money" jdbcType="FLOAT" property="beautyMoney" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		`id`,`store_id`,`level_id`,`phone`,`member_name`,`sex`,`birthday`,`join_date`,`valid_date`,`nail_money`,`beauty_money`,`remark`,
+		`created_time`,
+		`modified_time`
+	</sql>
+	<select id="getAll" parameterType="Long" resultMap="VoResultMap">
+		select * from member_vo where store_id=#{storeId}
+	</select>
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
+		insert into member_level(store_id,level_name)
+		values
+		(#{storeId},#{levelName})
+	</insert>
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
+		update member_level 
+		set
+		level_name=#{levelName}
+		where
+		id=#{id}
+	</update>
+	<delete id="delById" parameterType="Long">
+		delete from member_level where 
+		id=#{id}
+	</delete>
+</mapper>

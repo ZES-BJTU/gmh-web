@@ -125,3 +125,37 @@ CREATE TABLE `stock` (
   `modified_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 )
+
+CREATE TABLE `member_level` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `store_id` int(11) DEFAULT NULL,
+  `level_name` varchar(45) DEFAULT NULL,
+  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+)
+
+CREATE TABLE `member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `store_id` int(11) DEFAULT NULL,
+  `level_id` int(11) DEFAULT NULL,
+  `phone` VARCHAR(45) DEFAULT NULL,
+  `member_name` varchar(45) DEFAULT NULL,
+  `sex` int(11) DEFAULT NULL COMMENT '0:女\n1：男',
+  `birthday` date DEFAULT NULL,
+  `join_date` date DEFAULT NULL,
+  `valid_date` date DEFAULT NULL,
+  `nail_money` float DEFAULT NULL COMMENT '美甲美睫储值',
+  `beauty_money` float DEFAULT NULL COMMENT '美容、产品储值',
+  `remark` varchar(200) DEFAULT NULL,
+  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+)
+
+create view member_vo as
+select * from member 
+left join(
+select id as pid,level_name from member_level) as t
+on
+member.level_id=t.pid

@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zes.squad.gmh.web.mapper.StockTypeMapper">
-	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.StockTypePo">
+<mapper namespace="com.zes.squad.gmh.web.mapper.MemberLevelMapper">
+	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="type_name" jdbcType="VARCHAR" property="typeName" />
+		<result column="level_name" jdbcType="VARCHAR" property="levelName" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`store_id`,`type_name`,
+		`id`,`store_id`,`level_name`,
 		`created_time`,
 		`modified_time`
 	</sql>
 	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from stock_type where store_id=#{storeId}
+		select * from member_level where store_id=#{storeId}
 	</select>
-	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StockTypePo">
-		insert into stock_type(store_id,type_name)
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
+		insert into member_level(store_id,level_name)
 		values
-		(#{storeId},#{typeName})
+		(#{storeId},#{levelName})
 	</insert>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StockTypePo">
-		update stock_type 
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
+		update member_level 
 		set
-		type_name=#{typeName}
+		level_name=#{levelName}
 		where
 		id=#{id}
 	</update>
 	<delete id="delById" parameterType="Long">
-		delete from stock_type where 
+		delete from member_level where 
 		id=#{id}
 	</delete>
 </mapper>

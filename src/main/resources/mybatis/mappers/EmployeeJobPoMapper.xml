@@ -3,8 +3,8 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.EmployeeJobMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.EmployeeJobPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
-		<id column="em_id" jdbcType="BIGINT" property="emId" />
-		<id column="job_id" jdbcType="BIGINT" property="jobId" />
+		<result column="em_id" jdbcType="BIGINT" property="emId" />
+		<result column="job_id" jdbcType="BIGINT" property="jobId" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>

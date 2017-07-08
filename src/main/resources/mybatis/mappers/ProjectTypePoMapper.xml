@@ -3,9 +3,9 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.ProjectTypeMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.ProjectTypePo">
 		<id column="id" jdbcType="BIGINT" property="id" />
-		<id column="store_id" jdbcType="BIGINT" property="storeId" />
-		<id column="top_type" jdbcType="NUMERIC" property="topType" />
-		<id column="type_name" jdbcType="VARCHAR" property="typeName" />
+		<result column="store_id" jdbcType="BIGINT" property="storeId" />
+		<result column="top_type" jdbcType="NUMERIC" property="topType" />
+		<result column="type_name" jdbcType="VARCHAR" property="typeName" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>

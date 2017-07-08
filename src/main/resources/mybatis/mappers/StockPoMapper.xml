@@ -3,10 +3,10 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.StockMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.StockPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
-		<id column="type_id" jdbcType="BIGINT" property="typeId" />
-		<id column="stock_name" jdbcType="VARCHAR" property="stockName" />
-		<id column="unit" jdbcType="VARCHAR" property="unit" />
-		<id column="amount" jdbcType="NUMERIC" property="amount" />
+		<result column="type_id" jdbcType="BIGINT" property="typeId" />
+		<result column="stock_name" jdbcType="VARCHAR" property="stockName" />
+		<result column="unit" jdbcType="VARCHAR" property="unit" />
+		<result column="amount" jdbcType="NUMERIC" property="amount" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
