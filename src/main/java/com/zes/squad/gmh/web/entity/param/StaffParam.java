@@ -13,8 +13,5 @@ public class StaffParam {
     
     private Long staffLevel;
 
-    private String password;
-
-    private String salt;
 
 }
