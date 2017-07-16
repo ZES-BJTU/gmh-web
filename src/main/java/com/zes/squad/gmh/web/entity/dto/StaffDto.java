@@ -14,6 +14,7 @@ public class StaffDto implements Serializable {
     private String            password;
     private String            salt;
     private Long              storeId;
+    private Long			  staffLevel;
     private String            principalName;
     private String            principalMobile;
     private String            token;
