@@ -8,6 +8,10 @@ public class StaffParam {
 	private Long   id;
 
     private String email;
+    
+    private Long storeId;
+    
+    private Long staffLevel;
 
     private String password;
 

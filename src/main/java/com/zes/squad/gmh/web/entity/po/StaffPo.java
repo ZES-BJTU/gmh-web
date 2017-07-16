@@ -28,6 +28,10 @@ public class StaffPo extends Po {
      */
     private Long              storeId;
     /**
+     * 等级
+     */
+    private Long staffLevel;
+    /**
      * 负责人姓名
      */
     private String            principalName;
