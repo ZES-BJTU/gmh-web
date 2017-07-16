@@ -62,7 +62,7 @@ public class EmployeeController {
 		if(i>0)
 			return JsonResult.success(i);
 		else
-			return JsonResult.fail(i, "error");
+			return JsonResult.fail(1, "error");
 		
 	}
 }

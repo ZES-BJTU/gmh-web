@@ -42,7 +42,7 @@ public class StockController {
 		if(i>0)
 			return JsonResult.success(i);
 		else
-			return JsonResult.fail(0, "新增失败");	
+			return JsonResult.fail(10006, "新增失败");	
 	}
 	@RequestMapping("/update")
 	@ResponseBody
@@ -51,7 +51,7 @@ public class StockController {
 		if(i>0)
 			return JsonResult.success(i);
 		else
-			return JsonResult.fail(0, "修改失败");
+			return JsonResult.fail(10006, "修改失败");
 	}
 	@RequestMapping("/delete")
 	@ResponseBody
@@ -61,7 +61,7 @@ public class StockController {
 		if(i>0)
 			return JsonResult.success(i);
 		else 
-			return JsonResult.fail(0, "发生错误，没有数据被修改");
+			return JsonResult.fail(10006, "发生错误，没有数据被修改");
 	}
 	
 }
