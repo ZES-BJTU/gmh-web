@@ -7,14 +7,14 @@
 		<result column="password" jdbcType="VARCHAR" property="password" />
 		<result column="salt" jdbcType="VARCHAR" property="salt" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="store_level" jdbcType="BIGINT" property="storeLevel" />
+		<result column="staff_level" jdbcType="BIGINT" property="staffLevel" />
 		<result column="principal_name" jdbcType="VARCHAR" property="principalName" />
 		<result column="principal_mobile" jdbcType="VARCHAR" property="principalMobile" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`email`,`password`,`salt`,`store_id`,`store_level`,`principal_name`,`principal_mobile`,
+		`id`,`email`,`password`,`salt`,`store_id`,`staff_level`,`principal_name`,`principal_mobile`,
 		`created_time`,
 		`modified_time`
 	</sql>
