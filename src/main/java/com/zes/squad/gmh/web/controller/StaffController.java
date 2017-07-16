@@ -100,9 +100,6 @@ public class StaffController extends BaseController {
         if (Strings.isNullOrEmpty(param.getEmail())) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户名不能为空");
         }
-        if (Strings.isNullOrEmpty(param.getPassword())) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "密码不能为空");
-        }
         StaffDto dto = CommonConverter.map(param, StaffDto.class);
         int i = staffService.insert(dto);
         return JsonResult.success(i);
