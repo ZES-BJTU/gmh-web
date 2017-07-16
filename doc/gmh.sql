@@ -37,6 +37,8 @@ CREATE TABLE `staff` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+alter table staff add `level` INTEGER COMMENT '级别';
+
 --
 -- Dumping data for table `staff`
 --

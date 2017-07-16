@@ -17,4 +17,6 @@ public class StaffVo {
 
     private String token;
 
+    private Long   staffLevel;
+
 }
