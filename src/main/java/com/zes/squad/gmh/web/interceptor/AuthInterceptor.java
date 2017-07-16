@@ -31,16 +31,20 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        String token = request.getHeader(RequestConsts.X_TOKEN);
-        if (Strings.isNullOrEmpty(token)) {
-            log.error("获取用户token失败, token is {}.", token);
-            sendJsonResponse(response,
-                    JsonResult.fail(ErrorCodeEnum.WEB_EXCEPTION_AUTH_FAIL.getCode(), "请先登录"));
+        try {
+            String token = request.getHeader(RequestConsts.X_TOKEN);
+            if (Strings.isNullOrEmpty(token)) {
+                log.error("获取用户token失败, token is {}.", token);
+                sendJsonResponse(response, JsonResult.fail(ErrorCodeEnum.WEB_EXCEPTION_AUTH_FAIL.getCode(), "请先登录"));
+                return false;
+            }
+            StaffDto staff = staffService.queryStaffByToken(token);
+            ThreadContext.threadLocal.set(staff);
+            return true;
+        } catch (Exception e) {
+            sendJsonResponse(response, JsonResult.fail(ErrorCodeEnum.WEB_EXCEPTION_AUTH_FAIL.getCode(), "登录已过期，请重新登录"));
             return false;
         }
-        StaffDto staff = staffService.queryStaffByToken(token);
-        ThreadContext.threadLocal.set(staff);
-        return true;
     }
 
     @Override
