@@ -18,7 +18,7 @@
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
+	<select id="listByPage" parameterType="Long" resultMap="BaseResultMap">
 		select * from employee where 
 		is_work=1
 		and
