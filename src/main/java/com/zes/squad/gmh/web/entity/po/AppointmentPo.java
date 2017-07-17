@@ -17,7 +17,7 @@ public class AppointmentPo extends Po{
 	Long employeeId;
 	Date beginTime;
 	Date endTime;
-	int status;
+	Integer status;
 	int isLine;
 	String remark;
 }

@@ -6,6 +6,6 @@ import lombok.Data;
 public class ProjectTypeVo {
 
 	private Long id;
-	private int topType;
+	private Integer topType;
 	private String typeName;
 }

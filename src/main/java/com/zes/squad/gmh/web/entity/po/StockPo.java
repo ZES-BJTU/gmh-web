@@ -14,5 +14,5 @@ public class StockPo extends Po{
 	private Long typeId;
 	private String stockName;
 	private String unit;
-	private int amount;
+	private Integer amount;
 }

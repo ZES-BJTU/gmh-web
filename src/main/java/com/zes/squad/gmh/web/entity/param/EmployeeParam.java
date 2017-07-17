@@ -9,7 +9,7 @@ public class EmployeeParam {
 
 	private Long id;
 	private String emName;
-	private int sex;
+	private Integer sex;
 	private String phone;
 	private Long shopId;
 	private Date entryDate;

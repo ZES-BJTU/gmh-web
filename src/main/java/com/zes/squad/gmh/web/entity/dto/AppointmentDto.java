@@ -13,7 +13,7 @@ public class AppointmentDto {
 	Long employeeId;
 	Date beginTime;
 	Date endTime;
-	int status;
+	Integer status;
 	int isLine;
 	String remark;
 }

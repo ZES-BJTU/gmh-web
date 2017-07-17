@@ -10,6 +10,6 @@ import lombok.ToString;
 public class ProjectTypePo extends Po{
 	private static final long serialVersionUID = 1L;
 	private Long storeId;
-	private int topType;
+	private Integer topType;
 	private String typeName;
 }

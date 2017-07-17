@@ -11,7 +11,7 @@ public class MemberVo {
 	String levelName;
 	String phone;
 	String memberName;
-	int sex;
+	Integer sex;
 	Date birthday;
 	Date joinDate;
 	Date validDate;

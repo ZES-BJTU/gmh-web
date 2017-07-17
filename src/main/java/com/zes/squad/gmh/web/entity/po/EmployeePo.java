@@ -13,7 +13,7 @@ public class EmployeePo extends Po{
 
 	private static final long serialVersionUID = 1L;
 	private String emName;
-	private int sex;
+	private Integer sex;
 	private String phone;
 	private Long shopId;
 	private Date entryDate;
