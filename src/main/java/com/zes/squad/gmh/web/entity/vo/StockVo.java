@@ -9,4 +9,5 @@ public class StockVo {
 	private String stockName;
 	private String unit;
 	private Integer amount;
+
 }
