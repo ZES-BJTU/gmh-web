@@ -8,5 +8,6 @@ public class StockVo {
 	private Long typeId;
 	private String stockName;
 	private String unit;
-	private int amount;
+	private Integer amount;
+
 }

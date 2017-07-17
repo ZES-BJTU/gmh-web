@@ -14,7 +14,7 @@ public class AppointmentVo {
 	String employeeName;
 	Date beginTime;
 	Date endTime;
-	int status;
+	Integer status;
 	int isLine;
 	String remark;
 }
