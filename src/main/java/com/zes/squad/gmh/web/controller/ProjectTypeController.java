@@ -29,6 +29,13 @@ public class ProjectTypeController {
 		voList = ptService.getAll();		
 		return JsonResult.success(voList);
 	}
+	@RequestMapping("/getByTopType")
+	@ResponseBody
+	public JsonResult<?> getByTopType(int topType){
+		List<ProjectTypeVo> voList = new ArrayList<ProjectTypeVo>();
+		voList = ptService.getByTopType(topType);		
+		return JsonResult.success(voList);
+	}
 	@RequestMapping("/insert")
 	@ResponseBody
 	public JsonResult<?> insert(ProjectTypeDto dto){

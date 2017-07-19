@@ -13,4 +13,6 @@ public interface ShopMapper {
 	int delById(Long id);
 	
 	List<ShopPo> getAll();
+	
+	List<ShopPo> search(String searchString);
 }

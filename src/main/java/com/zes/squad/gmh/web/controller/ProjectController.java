@@ -8,11 +8,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.ProjectDto;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.entity.vo.ProjectVo;
 import com.zes.squad.gmh.web.service.ProjectService;
 
@@ -30,6 +34,16 @@ public class ProjectController {
 		voList = projectService.getAll();		
 		return JsonResult.success(voList);
 	}
+	@RequestMapping("/listByPage")
+    @ResponseBody
+    public JsonResult<PagedList<ProjectVo>> doListByPage(Integer pageNum, Integer pageSize) {
+
+        PagedList<ProjectDto> pagedListDto = projectService.listByPage(pageNum, pageSize);
+        PagedList<ProjectVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ProjectVo.class);
+
+        return JsonResult.success(pagedListVo);
+    }
+
 	@RequestMapping("/getByType")
 	@ResponseBody
 	public JsonResult<?> getBytype(Long typeId){

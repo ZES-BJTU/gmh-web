@@ -8,6 +8,7 @@ import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 public interface ProjectTypeService {
 
 	List<ProjectTypeVo> getAll();
+	List<ProjectTypeVo> getByTopType(int topType);
 	int insert(ProjectTypeDto dto);
 	int update(ProjectTypeDto dto);
 	int delByIds(Long[] Id);

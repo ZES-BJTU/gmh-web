@@ -17,6 +17,9 @@
 	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
 		select * from project_type where store_id=#{storeId}
 	</select>
+	<select id="getByTopType" parameterType="Map" resultMap="BaseResultMap">
+		select * from project_type where top_type=#{topType} and store_id=#{storeId}
+	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ProjectTypePo">
 		insert into project_type(store_id,top_type,type_name)
 		values

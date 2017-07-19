@@ -6,9 +6,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
+import com.zes.squad.gmh.web.entity.dto.MemberLevelDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
@@ -61,5 +65,17 @@ public class MemberServiceImpl implements MemberService{
 		MemberVo vo = new MemberVo();
 		vo = memberMapper.getByPhone(phone);
 		return vo;
+	}
+
+	@Override
+	public PagedList<MemberVo> listByPage(Integer pageNum, Integer pageSize) {
+		StaffDto staff = ThreadContext.getCurrentStaff();
+        PageHelper.startPage(pageNum, pageSize);
+        List<MemberVo> memberVos = memberMapper.getAll(staff.getStoreId());
+        PageInfo<MemberVo> info = new PageInfo<>(memberVos);
+        PagedList<MemberVo> pagedList = CommonConverter.mapPageList(
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), memberVos),
+                MemberVo.class);
+        return pagedList;
 	}
 }

@@ -15,10 +15,11 @@
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="selectByEmail" parameterType="string" resultMap="BaseResultMap">
+	<select id="search" parameterType="String" resultMap="BaseResultMap">
 		SELECT
-		<include refid="Base_Column_List" />
-		FROM staff WHERE email = #{email, jdbcType=VARCHAR}
+		*
+		FROM shop WHERE concat_ws("",<include refid="Base_Column_List" />)
+		like concat('%',#{searchString},'%')
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo" >
 		insert into shop(shop_name,manager,phone,address) values(#{shopName},#{manager},#{phone},#{address})

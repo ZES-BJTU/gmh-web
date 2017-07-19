@@ -8,8 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
+import com.zes.squad.gmh.web.entity.dto.MemberLevelDto;
+import com.zes.squad.gmh.web.entity.vo.MemberLevelVo;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
 import com.zes.squad.gmh.web.service.MemberService;
 
@@ -26,7 +30,14 @@ public class MemberController {
 		voList = memberService.getAll();		
 		return JsonResult.success(voList);
 	}
-	
+	@RequestMapping("/listByPage")
+    @ResponseBody
+    public JsonResult<PagedList<MemberVo>> doListByPage(Integer pageNum, Integer pageSize) {
+
+        PagedList<MemberVo> pagedListVo = memberService.listByPage(pageNum, pageSize);
+        
+        return JsonResult.success(pagedListVo);
+    }
 	@RequestMapping("/insert")
 	@ResponseBody
 	public JsonResult<?> insert(MemberDto dto){

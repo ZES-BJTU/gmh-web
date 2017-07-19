@@ -6,10 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.ProjectDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.ProjectPo;
 import com.zes.squad.gmh.web.entity.vo.ProjectVo;
 import com.zes.squad.gmh.web.mapper.ProjectMapper;
@@ -30,6 +35,18 @@ public class ProjectServiceImpl implements ProjectService{
 		}
 		return voList;
 	}
+	
+	@Override
+    public PagedList<ProjectDto> listByPage(Integer pageNum, Integer pageSize) {
+        StaffDto staff = ThreadContext.getCurrentStaff();
+        PageHelper.startPage(pageNum, pageSize);
+        List<ProjectPo> projectPos = projectMapper.getAll(staff.getStoreId());
+        PageInfo<ProjectPo> info = new PageInfo<>(projectPos);
+        PagedList<ProjectDto> pagedList = CommonConverter.mapPageList(
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), projectPos),
+                ProjectDto.class);
+        return pagedList;
+    }
 
 	@Override
 	public List<ProjectVo> getBytype(Long typeId) {

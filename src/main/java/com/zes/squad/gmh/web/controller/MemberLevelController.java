@@ -8,10 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.MemberLevelDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.entity.vo.MemberLevelVo;
 import com.zes.squad.gmh.web.service.MemberLevelService;
 
@@ -19,21 +23,30 @@ import com.zes.squad.gmh.web.service.MemberLevelService;
 @Controller
 public class MemberLevelController {
 	@Autowired
-	private MemberLevelService ptService;
+	private MemberLevelService mlService;
 	
 	@RequestMapping("/getAll")
 	@ResponseBody
 	public JsonResult<?> getAll(){
 		List<MemberLevelVo> voList = new ArrayList<MemberLevelVo>();
-		voList = ptService.getAll();		
+		voList = mlService.getAll();		
 		return JsonResult.success(voList);
 	}
+	@RequestMapping("/listByPage")
+    @ResponseBody
+    public JsonResult<PagedList<MemberLevelVo>> doListByPage(Integer pageNum, Integer pageSize) {
+
+        PagedList<MemberLevelDto> pagedListDto = mlService.listByPage(pageNum, pageSize);
+        PagedList<MemberLevelVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, MemberLevelVo.class);
+
+        return JsonResult.success(pagedListVo);
+    }
 	@RequestMapping("/insert")
 	@ResponseBody
 	public JsonResult<?> insert(MemberLevelDto dto){
 		StaffDto staffDto = ThreadContext.getCurrentStaff();
 		dto.setStoreId(staffDto.getStoreId());
-		int i = ptService.insert(dto);
+		int i = mlService.insert(dto);
 		if(i>0)
 			return JsonResult.success(i);
 		else
@@ -42,7 +55,7 @@ public class MemberLevelController {
 	@RequestMapping("/update")
 	@ResponseBody
 	public JsonResult<?> update(MemberLevelDto dto){
-		int i = ptService.update(dto);
+		int i = mlService.update(dto);
 		if(i>0)
 			return JsonResult.success(i);
 		else
@@ -52,7 +65,7 @@ public class MemberLevelController {
 	@ResponseBody
 	public JsonResult<?> delete(Long[] id){
 		int i = 0;
-		i = ptService.delByIds(id);
+		i = mlService.delByIds(id);
 		if(i>0)
 			return JsonResult.success(i);
 		else 

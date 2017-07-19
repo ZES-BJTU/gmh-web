@@ -1,7 +1,9 @@
 package com.zes.squad.gmh.web.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,5 +53,21 @@ public class ProjectTypeServiceImpl implements ProjectTypeService{
 		}
 		return i;
 		
+	}
+	@Override
+	public List<ProjectTypeVo> getByTopType(int topType) {
+		List<ProjectTypePo> poList = new ArrayList<ProjectTypePo>();
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		Map map = new HashMap();
+		map.put("topType", topType);
+		map.put("storeId", staffDto.getStoreId());
+		poList = ptMapper.getByTopType(map);
+		List<ProjectTypeVo> voList = new ArrayList<ProjectTypeVo>();
+		if(poList.size()==0)
+			return null;
+		for(int i=0;i<poList.size();i++){
+			voList.add(CommonConverter.map(poList.get(i),ProjectTypeVo.class));
+		}
+		return voList;
 	}
 }

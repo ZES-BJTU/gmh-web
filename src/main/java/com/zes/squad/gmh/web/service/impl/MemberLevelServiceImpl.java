@@ -6,10 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.MemberLevelDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.vo.MemberLevelVo;
 import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
@@ -51,5 +56,16 @@ public class MemberLevelServiceImpl implements MemberLevelService{
 		}
 		return i;
 		
+	}
+	@Override
+	public PagedList<MemberLevelDto> listByPage(Integer pageNum, Integer pageSize) {
+		StaffDto staff = ThreadContext.getCurrentStaff();
+        PageHelper.startPage(pageNum, pageSize);
+        List<MemberLevelPo> memberLevelPos = mlMapper.getAll(staff.getStoreId());
+        PageInfo<MemberLevelPo> info = new PageInfo<>(memberLevelPos);
+        PagedList<MemberLevelDto> pagedList = CommonConverter.mapPageList(
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), memberLevelPos),
+                MemberLevelDto.class);
+        return pagedList;
 	}
 }
