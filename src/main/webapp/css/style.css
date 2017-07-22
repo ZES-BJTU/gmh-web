@@ -1,0 +1,86 @@
+body {
+  background-color: #ffffff;
+  font-family: "Microsoft Yahei" !important;
+}
+.light-blue-btn {
+  color: #ffffff;
+  background-color: #7bcad9;
+}
+.light-blue-btn:hover {
+  background-color: #49bfd6;
+}
+.grid.login-grid {
+  height: 100%;
+  margin: 0;
+  background: url('images/background.jpg') center no-repeat;
+  background-size: cover;
+}
+.grid.login-grid .login-column {
+  max-width: 400px;
+  margin-right: 100px;
+  background-color: #ffffff;
+  border-radius: 0.28571429rem;
+}
+.grid.login-grid .login-column .header {
+  color: #7bcad9;
+}
+.grid.login-grid .login-column #login .button {
+  color: #ffffff;
+  background-color: #7bcad9;
+}
+.grid.login-grid .login-column #login .button:hover {
+  background-color: #49bfd6;
+}
+#left-menu {
+  top: 53px;
+}
+#left-menu .item {
+  color: #909090;
+}
+#left-menu .item.active,
+#left-menu .item:hover {
+  color: #ffffff;
+  background-color: #7bcad9;
+  font-weight: normal;
+}
+#left-menu .item.active:after {
+  background-color: #7bcad9;
+}
+.ui.menu .item:before {
+  background: none;
+}
+.ui.menu.page-item .item {
+  color: #909090;
+}
+.ui.menu.page-item .item.active,
+.ui.menu.page-item .item:hover {
+  color: #ffffff;
+  background-color: #7bcad9;
+  font-weight: normal;
+}
+.main-wrapper {
+  position: relative;
+  top: 53px;
+  left: 210px;
+  padding: 20px;
+  width: calc(100% - 210px);
+}
+.ui.form.search {
+  margin-right: 70px;
+}
+.ui.form.search button {
+  color: #ffffff;
+  background-color: #7bcad9;
+}
+.ui.form.search button:hover {
+  background-color: #49bfd6;
+}
+.ui.table.theme {
+  border-top: 0.2em solid #7bcad9;
+}
+.ui.modal > .delete-action {
+  text-align: center;
+}
+.ui.selection.dropdown {
+  min-width: auto;
+}

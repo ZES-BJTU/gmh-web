@@ -1,0 +1,94 @@
+@theme-color : #7bcad9;
+@theme-color-darker : #49bfd6;
+@white-color : #ffffff;
+@gray-color : #909090;
+body {
+    background-color: @white-color;
+    font-family: "Microsoft Yahei"!important;
+}
+
+.light-blue-btn {
+    color: @white-color;
+    background-color: @theme-color;
+    &:hover {
+        background-color: @theme-color-darker;
+    }
+}
+
+.grid.login-grid {
+    height: 100%;
+    margin: 0;
+    background: url('images/background.jpg') center no-repeat;
+    ;
+    background-size: cover;
+    .login-column {
+        max-width: 400px;
+        margin-right: 100px;
+        background-color: @white-color;
+        border-radius: 0.28571429rem;
+        .header {
+            color: @theme-color;
+        }
+        #login {
+            .button {
+                .light-blue-btn;
+            }
+        }
+    }
+}
+
+#left-menu {
+    top: 53px;
+    .item {
+        color: @gray-color;
+        &.active,
+        &:hover {
+            color: @white-color;
+            background-color: @theme-color;
+            font-weight: normal;
+        }
+        &.active:after {
+            background-color: @theme-color;
+        }
+    }
+}
+
+.ui.menu .item:before {
+    background: none;
+}
+
+.ui.menu.page-item .item {
+    color: @gray-color;
+    &.active,
+    &:hover {
+        color: @white-color;
+        background-color: @theme-color;
+        font-weight: normal;
+    }
+}
+
+.main-wrapper {
+    position: relative;
+    top: 53px;
+    left: 210px;
+    padding: 20px;
+    width: calc(~"100% - 210px");
+}
+
+.ui.form.search {
+    margin-right: 70px;
+    button {
+        .light-blue-btn;
+    }
+}
+
+.ui.table.theme {
+    border-top: 0.2em solid @theme-color;
+}
+
+.ui.modal>.delete-action {
+    text-align: center;
+}
+.ui.selection.dropdown{
+    min-width: auto;
+}
