@@ -8,10 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.dto.ShopDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
+import com.zes.squad.gmh.web.entity.vo.ShopVo;
 import com.zes.squad.gmh.web.entity.vo.StockTypeVo;
 import com.zes.squad.gmh.web.service.StockTypeService;
 
@@ -22,12 +26,13 @@ public class StockTypeController {
 	@Autowired
 	private StockTypeService stService;
 	
-	@RequestMapping("/getAll")
+	@RequestMapping("/search")
 	@ResponseBody
-	public JsonResult<?> getAll(){
-		List<StockTypeVo> voList = new ArrayList<StockTypeVo>();
-		voList = stService.getAll();		
-		return JsonResult.success(voList);
+	public JsonResult<?> getAll(Integer pageNum, Integer pageSize,String searchString){
+		PagedList<StockTypeDto> pagedListDto = stService.searchListByPage(pageNum, pageSize,searchString);
+        PagedList<StockTypeVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, StockTypeVo.class);
+		
+		return JsonResult.success(pagedListVo);
 	}
 	@RequestMapping("/insert")
 	@ResponseBody

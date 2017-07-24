@@ -1,12 +1,17 @@
 package com.zes.squad.gmh.web.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
@@ -51,5 +56,19 @@ public class StockTypeServiceImpl implements StockTypeService{
 		}
 		return i;
 		
+	}
+	@Override
+	public PagedList<StockTypeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
+		PageHelper.startPage(pageNum, pageSize);
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		Map map = new HashMap();
+		map.put("storeId", staffDto.getStoreId());
+		map.put("searchString", searchString);
+        List<StockTypePo> stockTypePos = stMapper.search(map);
+        PageInfo<StockTypePo> info = new PageInfo<>(stockTypePos);
+        PagedList<StockTypeDto> pagedList = CommonConverter.mapPageList(
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), stockTypePos),
+                StockTypeDto.class);
+        return pagedList;
 	}
 }
