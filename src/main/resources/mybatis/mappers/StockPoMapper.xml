@@ -11,7 +11,7 @@
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`type_id`,`stock_name`,`unit`,`amount`
+		`id`,`type_id`,`stock_name`,`unit`,`amount`,
 		`created_time`,
 		`modified_time`
 	</sql>
@@ -43,4 +43,19 @@
 		delete from stock where 
 		id=#{id}
 	</delete>
+	<select id="search" parameterType="Map" resultMap="BaseResultMap">
+		select * from stock where type_id=#{typeId} and 
+		concat_ws("",<include refid="Base_Column_List" />)
+		like concat('%',#{searchString},'%')
+	</select>
+	<select id="searchWithoutType" parameterType="Map" resultMap="BaseResultMap">
+		select * from stock where type_id in 
+		<foreach item="item" index="index" collection="typeIds"
+			open="(" separator="," close=")" >
+		#{item}
+		</foreach>
+		and
+		concat_ws("",<include refid="Base_Column_List" />)
+		like concat('%',#{searchString},'%')
+	</select>
 </mapper>

@@ -8,8 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.StockDto;
+import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
+import com.zes.squad.gmh.web.entity.vo.StockTypeVo;
 import com.zes.squad.gmh.web.entity.vo.StockVo;
 import com.zes.squad.gmh.web.service.StockService;
 
@@ -20,12 +24,14 @@ public class StockController {
 	private StockService stockService;
 	
 
-	@RequestMapping("/getAll")
+	@RequestMapping("/search")
 	@ResponseBody
-	public JsonResult<?> getAll(){
-		List<StockVo> voList = new ArrayList<StockVo>();
-		voList = stockService.getAll();		
-		return JsonResult.success(voList);
+	public JsonResult<?> search(Integer pageNum, Integer pageSize,Long typeId, String searchString){
+		PagedList<StockDto> pagedListDto = stockService.searchListByPage(pageNum, pageSize,typeId,searchString);
+        PagedList<StockVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, StockVo.class);
+		
+
+		return JsonResult.success(pagedListVo);
 	}
 	@RequestMapping("/getByType")
 	@ResponseBody

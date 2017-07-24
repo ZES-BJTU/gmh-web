@@ -28,7 +28,7 @@ public class StockTypeController {
 	
 	@RequestMapping("/search")
 	@ResponseBody
-	public JsonResult<?> getAll(Integer pageNum, Integer pageSize,String searchString){
+	public JsonResult<?> search(Integer pageNum, Integer pageSize,String searchString){
 		PagedList<StockTypeDto> pagedListDto = stService.searchListByPage(pageNum, pageSize,searchString);
         PagedList<StockTypeVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, StockTypeVo.class);
 		
