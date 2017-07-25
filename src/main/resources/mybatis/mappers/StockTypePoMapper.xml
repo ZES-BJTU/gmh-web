@@ -34,7 +34,7 @@
 	</delete>
 	<select id="search" parameterType="Map" resultMap="BaseResultMap">
 		select * from stock_type where store_id=#{storeId} and 
-		concat_ws("",<include refid="Base_Column_List" />)
+		concat_ws("",type_name)
 		like concat('%',#{searchString},'%')
 	</select>
 </mapper>
