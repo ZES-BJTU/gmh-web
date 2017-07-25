@@ -8,11 +8,16 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
+import com.zes.squad.gmh.web.entity.po.StockTypePo;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.mapper.ProjectTypeMapper;
 import com.zes.squad.gmh.web.service.ProjectTypeService;
@@ -69,5 +74,19 @@ public class ProjectTypeServiceImpl implements ProjectTypeService{
 			voList.add(CommonConverter.map(poList.get(i),ProjectTypeVo.class));
 		}
 		return voList;
+	}
+	@Override
+	public PagedList<ProjectTypeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
+		PageHelper.startPage(pageNum, pageSize);
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		Map map = new HashMap();
+		map.put("storeId", staffDto.getStoreId());
+		map.put("searchString", searchString);
+        List<ProjectTypePo> projectTypePos = ptMapper.search(map);
+        PageInfo<ProjectTypePo> info = new PageInfo<>(projectTypePos);
+        PagedList<ProjectTypeDto> pagedList = CommonConverter.mapPageList(
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), projectTypePos),
+                ProjectTypeDto.class);
+        return pagedList;
 	}
 }

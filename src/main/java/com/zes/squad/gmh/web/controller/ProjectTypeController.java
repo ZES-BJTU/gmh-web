@@ -8,11 +8,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
+import com.zes.squad.gmh.web.entity.vo.StockTypeVo;
 import com.zes.squad.gmh.web.service.ProjectTypeService;
 
 @RequestMapping("/projectType")
@@ -28,6 +32,14 @@ public class ProjectTypeController {
 		List<ProjectTypeVo> voList = new ArrayList<ProjectTypeVo>();
 		voList = ptService.getAll();		
 		return JsonResult.success(voList);
+	}
+	@RequestMapping("/search")
+	@ResponseBody
+	public JsonResult<?> search(Integer pageNum, Integer pageSize,String searchString){
+		PagedList<ProjectTypeDto> pagedListDto = ptService.searchListByPage(pageNum, pageSize,searchString);
+        PagedList<ProjectTypeVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ProjectTypeVo.class);
+		
+		return JsonResult.success(pagedListVo);
 	}
 	@RequestMapping("/getByTopType")
 	@ResponseBody

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
+import com.zes.squad.gmh.web.entity.po.StockTypePo;
 
 public interface ProjectTypeMapper {
 
@@ -12,4 +13,5 @@ public interface ProjectTypeMapper {
 	int insert(ProjectTypePo po);
 	int update(ProjectTypePo po);
 	int delById(Long id);
+	List<ProjectTypePo> search(Map map);
 }

@@ -15,7 +15,9 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
+import com.zes.squad.gmh.web.entity.po.StockTypePo;
 import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
 import com.zes.squad.gmh.web.service.EmployeeService;
@@ -75,5 +77,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return i;
     }
-
+    @Override
+	public PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
+		PageHelper.startPage(pageNum, pageSize);
+		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		Map map = new HashMap();
+		map.put("storeId", staffDto.getStoreId());
+		map.put("searchString", searchString);
+        List<EmployeePo> employeePos = employeeMapper.search(map);
+        PageInfo<EmployeePo> info = new PageInfo<>(employeePos);
+        PagedList<EmployeeDto> pagedList = CommonConverter.mapPageList(
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), employeePos),
+                EmployeeDto.class);
+        return pagedList;
+	}
 }

@@ -45,4 +45,9 @@
 		where 
 		id=#{id}
 	</update>
+	<select id="search" parameterType="Map" resultMap="BaseResultMap">
+		select * from employee where shop_id=#{storeId} and 
+		concat_ws("",em_name,phone)
+		like concat('%',#{searchString},'%')
+	</select>
 </mapper>

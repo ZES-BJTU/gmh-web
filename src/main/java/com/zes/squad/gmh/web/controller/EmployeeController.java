@@ -10,9 +10,11 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
+import com.zes.squad.gmh.web.entity.dto.ShopDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.param.EmployeeParam;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
+import com.zes.squad.gmh.web.entity.vo.ShopVo;
 import com.zes.squad.gmh.web.service.EmployeeJobService;
 import com.zes.squad.gmh.web.service.EmployeeService;
 
@@ -30,6 +32,16 @@ public class EmployeeController {
     public JsonResult<PagedList<EmployeeVo>> doListByPage(Integer pageNum, Integer pageSize) {
 
         PagedList<EmployeeDto> pagedListDto = employeeService.listByPage(pageNum, pageSize);
+        PagedList<EmployeeVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, EmployeeVo.class);
+
+        return JsonResult.success(pagedListVo);
+    }
+    
+    @RequestMapping("/search")
+    @ResponseBody
+    public JsonResult<PagedList<EmployeeVo>> search(Integer pageNum, Integer pageSize,String searchString) {
+
+        PagedList<EmployeeDto> pagedListDto = employeeService.searchListByPage(pageNum, pageSize,searchString);
         PagedList<EmployeeVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, EmployeeVo.class);
 
         return JsonResult.success(pagedListVo);
