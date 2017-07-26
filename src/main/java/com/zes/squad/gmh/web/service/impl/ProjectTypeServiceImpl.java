@@ -76,13 +76,20 @@ public class ProjectTypeServiceImpl implements ProjectTypeService{
 		return voList;
 	}
 	@Override
-	public PagedList<ProjectTypeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
+	public PagedList<ProjectTypeDto> searchListByPage(Integer pageNum, Integer pageSize,Long topType, String searchString) {
 		PageHelper.startPage(pageNum, pageSize);
 		StaffDto staffDto = ThreadContext.getCurrentStaff();
+		List<ProjectTypePo> projectTypePos = new ArrayList<ProjectTypePo>();
 		Map map = new HashMap();
 		map.put("storeId", staffDto.getStoreId());
 		map.put("searchString", searchString);
-        List<ProjectTypePo> projectTypePos = ptMapper.search(map);
+		if(topType==null||topType==0L){
+			projectTypePos = ptMapper.search(map);
+		}else{
+			map.put("topType", topType);
+			projectTypePos = ptMapper.searchWithTop(map);
+		}
+        
         PageInfo<ProjectTypePo> info = new PageInfo<>(projectTypePos);
         PagedList<ProjectTypeDto> pagedList = CommonConverter.mapPageList(
                 PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), projectTypePos),

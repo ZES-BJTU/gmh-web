@@ -73,14 +73,14 @@ public class StockServiceImpl implements StockService{
 		for(int j=0;j<id.length;j++){
 			i = i + stockMapper.delById(id[j]);
 		}
-		return 0;
+		return i;
 	}
 	@Override
-	public PagedList<StockDto> searchListByPage(Integer pageNum, Integer pageSize,Long typeId, String searchString) {
+	public PagedList<StockVo> searchListByPage(Integer pageNum, Integer pageSize,Long typeId, String searchString) {
 		PageHelper.startPage(pageNum, pageSize);
 		StaffDto staffDto = ThreadContext.getCurrentStaff();
 		Map map = new HashMap();
-		List<StockPo> stockPos = new ArrayList<StockPo>();
+		List<StockVo> stockVos = new ArrayList<StockVo>();
 		List<StockTypePo> stockTypePos = stockTypeMapper.getAll(staffDto.getStoreId());
 		List typeIds = new ArrayList();
 		for(int i=0;i<stockTypePos.size();i++){
@@ -89,15 +89,15 @@ public class StockServiceImpl implements StockService{
 		map.put("searchString", searchString);
 		if(typeId==null||typeId==0L){
 			map.put("typeIds", typeIds);
-			stockPos = stockMapper.searchWithoutType(map);
+			stockVos = stockMapper.searchWithoutType(map);
 		}else{
 			map.put("typeId", typeId);
-			stockPos = stockMapper.search(map);
+			stockVos = stockMapper.search(map);
 		}      
-        PageInfo<StockPo> info = new PageInfo<>(stockPos);
-        PagedList<StockDto> pagedList = CommonConverter.mapPageList(
-                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), stockPos),
-                StockDto.class);
+        PageInfo<StockVo> info = new PageInfo<>(stockVos);
+        PagedList<StockVo> pagedList = CommonConverter.mapPageList(
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), stockVos),
+                StockVo.class);
         return pagedList;
 	}
 }

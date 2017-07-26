@@ -26,6 +26,14 @@ public class StockTypeController {
 	@Autowired
 	private StockTypeService stService;
 	
+	@RequestMapping("/getAll")
+	@ResponseBody
+	public JsonResult<?> getAll(){
+		List<StockTypeVo> stockTypeList = stService.getAll();
+		
+		return JsonResult.success(stockTypeList);
+	}
+	
 	@RequestMapping("/search")
 	@ResponseBody
 	public JsonResult<?> search(Integer pageNum, Integer pageSize,String searchString){

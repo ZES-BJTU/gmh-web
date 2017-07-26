@@ -42,4 +42,5 @@
 		concat_ws("",type_name)
 		like concat('%',#{searchString},'%')
 	</select>
+	
 </mapper>

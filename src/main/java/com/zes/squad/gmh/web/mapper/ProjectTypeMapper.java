@@ -14,4 +14,5 @@ public interface ProjectTypeMapper {
 	int update(ProjectTypePo po);
 	int delById(Long id);
 	List<ProjectTypePo> search(Map map);
+	List<ProjectTypePo> searchWithTop(Map map);
 }

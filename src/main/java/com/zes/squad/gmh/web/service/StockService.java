@@ -15,5 +15,5 @@ public interface StockService {
 	int insert(StockDto dto);
 	int update(StockDto dto);
 	int delByIds(Long[] Id);
-	PagedList<StockDto> searchListByPage(Integer pageNum, Integer pageSize,Long typeId, String searchString);
+	PagedList<StockVo> searchListByPage(Integer pageNum, Integer pageSize,Long typeId, String searchString);
 }

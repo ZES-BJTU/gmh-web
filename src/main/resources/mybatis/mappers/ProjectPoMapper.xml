@@ -39,4 +39,9 @@
 		delete from project where 
 		id=#{id}
 	</delete>
+	<select id="search" parameterType="Map" resultMap="BaseResultMap">
+		select * from project where store_id=#{storeId} and top_type=#{topType} and
+		concat_ws("",type_name)
+		like concat('%',#{searchString},'%')
+	</select>
 </mapper>

@@ -35,8 +35,8 @@ public class ProjectTypeController {
 	}
 	@RequestMapping("/search")
 	@ResponseBody
-	public JsonResult<?> search(Integer pageNum, Integer pageSize,String searchString){
-		PagedList<ProjectTypeDto> pagedListDto = ptService.searchListByPage(pageNum, pageSize,searchString);
+	public JsonResult<?> search(Integer pageNum, Integer pageSize,Long topType,String searchString){
+		PagedList<ProjectTypeDto> pagedListDto = ptService.searchListByPage(pageNum, pageSize,topType,searchString);
         PagedList<ProjectTypeVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ProjectTypeVo.class);
 		
 		return JsonResult.success(pagedListVo);

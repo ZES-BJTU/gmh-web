@@ -14,5 +14,5 @@ public interface ProjectTypeService {
 	int insert(ProjectTypeDto dto);
 	int update(ProjectTypeDto dto);
 	int delByIds(Long[] Id);
-	PagedList<ProjectTypeDto> searchListByPage(Integer pageNum, Integer pageSize,String searchString);
+	PagedList<ProjectTypeDto> searchListByPage(Integer pageNum, Integer pageSize,Long topType,String searchString);
 }
