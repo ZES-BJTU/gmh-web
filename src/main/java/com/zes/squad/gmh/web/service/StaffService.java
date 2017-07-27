@@ -67,4 +67,6 @@ public interface StaffService {
     PagedList<StaffVo> search(Integer pageNum, Integer pageSize, String searchString);
     
     int update(StaffDto dto);
+    
+    int delByIds(Long[] Id);
 }

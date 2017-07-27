@@ -210,4 +210,13 @@ public class StaffServiceImpl implements StaffService {
 		return i;
 	}
 
+	public int delByIds(Long[] id){
+		int i = 0;
+		for(int j=0;j<id.length;j++){
+			i = i + staffMapper.delById(id[j]);
+		}
+		return i;
+		
+	}
+
 }
