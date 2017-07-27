@@ -1,22 +1,28 @@
 package com.zes.squad.gmh.web.service.impl;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.constant.RedisConsts;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EncryptUtils;
 import com.zes.squad.gmh.web.cache.RedisComponent;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.po.StaffPo;
 import com.zes.squad.gmh.web.entity.po.StaffTokenPo;
+import com.zes.squad.gmh.web.entity.po.StockTypePo;
+import com.zes.squad.gmh.web.entity.vo.StaffVo;
 import com.zes.squad.gmh.web.mail.MailHelper;
 import com.zes.squad.gmh.web.mail.MailParams;
 import com.zes.squad.gmh.web.mapper.StaffMapper;
@@ -186,5 +192,15 @@ public class StaffServiceImpl implements StaffService {
         staffDto.setToken(token);
         return staffDto;
     }
+
+	@Override
+	public PagedList<StaffVo> search(Integer pageNum, Integer pageSize, String searchString) {
+		List<StaffVo> voList = staffMapper.search(searchString);
+		 PageInfo<StaffVo> info = new PageInfo<>(voList);
+	        PagedList<StaffVo> pagedList = CommonConverter.mapPageList(
+	                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), voList),
+	                StaffVo.class);
+		return pagedList;
+	}
 
 }

@@ -13,6 +13,15 @@
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
+	<resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.StaffVo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<result column="store_id" jdbcType="BIGINT" property="storeId" />
+		<result column="shop_name" jdbcType="VARCHAR" property="storeName" />
+		<result column="staff_level" jdbcType="BIGINT" property="staffLevel" />
+		<result column="principal_name" jdbcType="VARCHAR" property="principalName" />
+		<result column="principal_mobile" jdbcType="VARCHAR" property="principalMobile" />
+	</resultMap>
 	<sql id="Base_Column_List">
 		`id`,`email`,`password`,`salt`,`store_id`,`staff_level`,`principal_name`,`principal_mobile`,
 		`created_time`,
@@ -22,6 +31,11 @@
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM staff WHERE id = #{id, jdbcType=BIGINT}
+	</select>
+	<select id="search" parameterType="string" resultMap="VoResultMap">
+		select * from staff_vo where
+		concat_ws("",email,shop_name,principal_name,principal_mobile)
+		like concat('%',#{searchString},'%')
 	</select>
 	<select id="selectByEmail" parameterType="string" resultMap="BaseResultMap">
 		SELECT

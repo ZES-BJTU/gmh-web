@@ -8,11 +8,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.param.StaffParam;
 import com.zes.squad.gmh.web.entity.vo.StaffVo;
+import com.zes.squad.gmh.web.entity.vo.StockTypeVo;
 import com.zes.squad.gmh.web.service.StaffService;
 
 @RequestMapping("/staff")
@@ -37,6 +40,14 @@ public class StaffController extends BaseController {
         return JsonResult.success(staffVo);
     }
 
+    @RequestMapping("/search")
+	@ResponseBody
+	public JsonResult<?> search(Integer pageNum, Integer pageSize,String searchString){
+		PagedList<StaffVo> voList = staffService.search(pageNum, pageSize,searchString);
+        
+		
+		return JsonResult.success(voList);
+	}
     @RequestMapping(path = "/changePassword", method = RequestMethod.POST)
     @ResponseBody
     public JsonResult<Void> doChangePassword(String originalPassword, String newPassword) {

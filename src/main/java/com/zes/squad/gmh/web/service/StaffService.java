@@ -1,6 +1,8 @@
 package com.zes.squad.gmh.web.service;
 
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.vo.StaffVo;
 
 public interface StaffService {
 
@@ -61,4 +63,5 @@ public interface StaffService {
      */
     void validateAuthCode(String email, String authCode);
 
+    PagedList<StaffVo> search(Integer pageNum, Integer pageSize, String searchString);
 }
