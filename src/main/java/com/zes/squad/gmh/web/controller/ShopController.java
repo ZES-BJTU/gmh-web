@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.common.JsonResult;
-import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.ShopDto;
 import com.zes.squad.gmh.web.entity.param.ShopParam;
-import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.entity.vo.ShopVo;
 import com.zes.squad.gmh.web.service.ShopService;
 
@@ -22,19 +20,19 @@ import com.zes.squad.gmh.web.service.ShopService;
 @Controller
 public class ShopController {
 
-	@Autowired
+    @Autowired
     private ShopService shopService;
-	
-	@RequestMapping("/getAll")
+
+    @RequestMapping("/getAll")
     @ResponseBody
-    public JsonResult<?> getAll(){
-		
+    public JsonResult<?> getAll() {
+
         List<ShopVo> voList = new ArrayList<ShopVo>();
         voList = shopService.getAll();
-    	return JsonResult.success(voList);
+        return JsonResult.success(voList);
     }
-	
-	@RequestMapping("/listByPage")
+
+    @RequestMapping("/listByPage")
     @ResponseBody
     public JsonResult<PagedList<ShopVo>> doListByPage(Integer pageNum, Integer pageSize) {
 
@@ -43,38 +41,40 @@ public class ShopController {
 
         return JsonResult.success(pagedListVo);
     }
-	@RequestMapping("/search")
-    @ResponseBody
-    public JsonResult<PagedList<ShopVo>> search(Integer pageNum, Integer pageSize,String searchString) {
 
-        PagedList<ShopDto> pagedListDto = shopService.searchListByPage(pageNum, pageSize,searchString);
+    @RequestMapping("/search")
+    @ResponseBody
+    public JsonResult<PagedList<ShopVo>> search(Integer pageNum, Integer pageSize, String searchString) {
+
+        PagedList<ShopDto> pagedListDto = shopService.searchListByPage(pageNum, pageSize, searchString);
         PagedList<ShopVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ShopVo.class);
 
         return JsonResult.success(pagedListVo);
     }
-	@RequestMapping("/insert")
+
+    @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<?> insert(ShopParam param){
-  
+    public JsonResult<?> insert(ShopParam param) {
+
         ShopDto dto = CommonConverter.map(param, ShopDto.class);
         int i = shopService.insert(dto);
-    	return JsonResult.success(i);
+        return JsonResult.success(i);
     }
-	@RequestMapping("/update")
+
+    @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<?> update(ShopParam param){
-  
+    public JsonResult<?> update(ShopParam param) {
+
         ShopDto dto = CommonConverter.map(param, ShopDto.class);
         int i = shopService.update(dto);
-    	return JsonResult.success(i);
+        return JsonResult.success(i);
     }
-	
-	@RequestMapping("/delByIds")
-	@ResponseBody
-	public JsonResult<?> delByIds(Long[] id){
-		int i = shopService.delByIds(id);
-		return JsonResult.success(i);
-	}
-	
-	
+
+    @RequestMapping("/delByIds")
+    @ResponseBody
+    public JsonResult<?> delByIds(Long[] id) {
+        int i = shopService.delByIds(id);
+        return JsonResult.success(i);
+    }
+
 }
