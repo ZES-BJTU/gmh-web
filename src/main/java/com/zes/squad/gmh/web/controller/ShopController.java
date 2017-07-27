@@ -126,6 +126,9 @@ public class ShopController {
     @RequestMapping("/delByIds")
     @ResponseBody
     public JsonResult<?> delByIds(Long[] id) {
+        if (id == null || id.length == 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的店铺");
+        }
         int i = shopService.delByIds(id);
         return JsonResult.success(i);
     }

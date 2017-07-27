@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class MemberLevelDto {
-	Long id;
-	Long storeId;
-	String levelName;
+    public Long   id;
+    public Long   storeId;
+    public String levelName;
 }
