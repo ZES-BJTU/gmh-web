@@ -18,25 +18,29 @@
 	<select id="search" parameterType="String" resultMap="BaseResultMap">
 		SELECT
 		*
-		FROM shop WHERE concat_ws("",<include refid="Base_Column_List" />)
+		FROM shop WHERE concat_ws("",
+		<include refid="Base_Column_List" />
+		)
 		like concat('%',#{searchString},'%')
 	</select>
-	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo" >
-		insert into shop(shop_name,manager,phone,address) values(#{shopName},#{manager},#{phone},#{address})
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo">
+		insert into shop(shop_name,manager,phone,address)
+		values(#{shopName},#{manager},#{phone},#{address})
 	</insert>
 	<select id="getAll" resultMap="BaseResultMap">
 		select * from shop
 	</select>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo" >
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo">
 		update shop set
 		shop_name=#{shopName},
 		manager=#{manager},
 		phone=#{phone},
 		address=#{address}
-		where 
+		where
 		id=#{id}
 	</update>
 	<delete id="delById" parameterType="Long">
-		delete from shop where id=#{id}
+		delete from shop where
+		id=#{id}
 	</delete>
 </mapper>
