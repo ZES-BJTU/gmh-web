@@ -43,10 +43,17 @@ public class StaffController extends BaseController {
     @RequestMapping("/search")
 	@ResponseBody
 	public JsonResult<?> search(Integer pageNum, Integer pageSize,String searchString){
-		PagedList<StaffVo> voList = staffService.search(pageNum, pageSize,searchString);
-        
-		
+		PagedList<StaffVo> voList = staffService.search(pageNum, pageSize,searchString);    	
 		return JsonResult.success(voList);
+	}
+    @RequestMapping("/update")
+	@ResponseBody
+	public JsonResult<?> update(StaffDto dto){
+		int i = staffService.update(dto);
+		if(i>0)
+			return JsonResult.success(i);
+		else
+			return JsonResult.fail(10006, "修改失败");
 	}
     @RequestMapping(path = "/changePassword", method = RequestMethod.POST)
     @ResponseBody

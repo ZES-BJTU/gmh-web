@@ -51,4 +51,12 @@
 		UPDATE staff SET `password` = #{password,
 		jdbcType=VARCHAR} WHERE `id` = #{id, jdbcType=BIGINT}
 	</update>
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
+		update staff 
+		set
+		principal_name=#{principalName},
+		principal_mobile=#{principalMobile}
+		where
+		id=#{id}
+	</update>
 </mapper>

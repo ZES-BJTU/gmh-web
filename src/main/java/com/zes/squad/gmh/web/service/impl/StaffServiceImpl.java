@@ -18,7 +18,6 @@ import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EncryptUtils;
 import com.zes.squad.gmh.web.cache.RedisComponent;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
-import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.po.StaffPo;
 import com.zes.squad.gmh.web.entity.po.StaffTokenPo;
 import com.zes.squad.gmh.web.entity.po.StockTypePo;
@@ -201,6 +200,14 @@ public class StaffServiceImpl implements StaffService {
 	                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), voList),
 	                StaffVo.class);
 		return pagedList;
+	}
+
+	@Override
+	public int update(StaffDto dto) {
+		StaffPo po = CommonConverter.map(dto, StaffPo.class);
+		int i = 0;
+		i = staffMapper.update(po);
+		return i;
 	}
 
 }
