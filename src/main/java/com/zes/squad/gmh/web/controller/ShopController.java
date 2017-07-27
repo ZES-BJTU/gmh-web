@@ -50,7 +50,12 @@ public class ShopController {
     @RequestMapping("/search")
     @ResponseBody
     public JsonResult<PagedList<ShopVo>> search(Integer pageNum, Integer pageSize, String searchString) {
-
+        if (pageNum == null || pageNum < 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+        }
+        if (pageSize == null || pageSize < 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+        }
         PagedList<ShopDto> pagedListDto = shopService.searchListByPage(pageNum, pageSize, searchString);
         PagedList<ShopVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ShopVo.class);
 
