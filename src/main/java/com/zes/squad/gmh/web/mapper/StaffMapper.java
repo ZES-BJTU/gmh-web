@@ -43,4 +43,6 @@ public interface StaffMapper {
     List<StaffVo> search(String searchString);
     
     int update(StaffPo po);
+    
+    int delById(Long id);
 }

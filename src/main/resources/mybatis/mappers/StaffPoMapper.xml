@@ -44,8 +44,8 @@
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
 		insert into
-		staff(email,password,salt,store_id,staff_level)
-		values(#{email},#{password},#{salt},#{storeId},#{staffLevel})
+		staff(email,password,salt,store_id,staff_level,principal_name,principal_mobile)
+		values(#{email},#{password},#{salt},#{storeId},#{staffLevel},#{principalName},#{principalMobile})
 	</insert>
 	<update id="updatePassword">
 		UPDATE staff SET `password` = #{password,
@@ -59,4 +59,8 @@
 		where
 		id=#{id}
 	</update>
+	<delete id="delById" parameterType="Long">
+		delete from staff where 
+		id=#{id}
+	</delete>
 </mapper>
