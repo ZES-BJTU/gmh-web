@@ -7,15 +7,15 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class ShopPo extends Po{
+public class ShopPo extends Po {
 
-	private static final long serialVersionUID = 1L;
-	
-    private String shopName;
+    private static final long serialVersionUID = 1L;
 
-    private String manager;
+    private String            shopName;
 
-    private String phone;
-    
-    private String address;
+    private String            manager;
+
+    private String            phone;
+
+    private String            address;
 }

@@ -10,8 +10,8 @@ public class StaffVo {
     private String email;
 
     private Long   storeId;
-    
-    private String   storeName;
+
+    private String storeName;
 
     private String principalName;
 

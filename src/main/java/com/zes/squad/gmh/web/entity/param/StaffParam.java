@@ -5,13 +5,14 @@ import lombok.Data;
 @Data
 public class StaffParam {
 
-	private Long   id;
+    private Long   id;
 
     private String email;
-    
-    private Long storeId;
-    
-    private Long staffLevel;
 
+    private Long   storeId;
+
+    private Long   staffLevel;
+    private String principalName;
+    private String principalMobile;
 
 }

@@ -3,79 +3,84 @@ package com.zes.squad.gmh.web.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
-import com.zes.squad.gmh.web.entity.dto.MemberLevelDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
-import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
-import com.zes.squad.gmh.web.entity.vo.MemberLevelVo;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
+import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.service.MemberService;
 
 @Service("memberService")
-public class MemberServiceImpl implements MemberService{
-	@Autowired
-	private MemberMapper memberMapper;
-	
-	public List<MemberVo> getAll(){
-		List<MemberVo> voList = new ArrayList<MemberVo>();
-		StaffDto staffDto = ThreadContext.getCurrentStaff();
-		voList = memberMapper.getAll(staffDto.getStoreId());
-		return voList;
-	}
-	
-	@Override
-	public int insert(MemberDto dto) {
-		int i = 0;
-		StaffDto staffDto = ThreadContext.getCurrentStaff();
-		dto.setStoreId(staffDto.getStoreId());
-		MemberPo po = CommonConverter.map(dto, MemberPo.class);
-		i = memberMapper.insert(po);
-		return i;
-	}
+public class MemberServiceImpl implements MemberService {
 
-	@Override
-	public int update(MemberDto dto) {
-		int i = 0;
-		MemberPo po = CommonConverter.map(dto, MemberPo.class);
-		i = memberMapper.update(po);
-		return i;
-	}
+    @Autowired
+    private MemberMapper      memberMapper;
+    @Autowired
+    private MemberLevelMapper memberLevelMapper;
 
-	@Override
-	public int delByIds(Long[] id) {
-		int i = 0;
-		for(int j=0;j<id.length;j++){
-			i = i + memberMapper.delById(id[j]);
-		}
-		return 0;
-	}
+    public List<MemberVo> getAll() {
+        List<MemberVo> voList = new ArrayList<MemberVo>();
+        StaffDto staffDto = ThreadContext.getCurrentStaff();
+        voList = memberMapper.getAll(staffDto.getStoreId());
+        return voList;
+    }
 
-	@Override
-	public MemberVo getByPhone(String phone) {
-		MemberVo vo = new MemberVo();
-		vo = memberMapper.getByPhone(phone);
-		return vo;
-	}
+    @Override
+    public int insert(MemberDto dto) {
+        int i = 0;
+        StaffDto staffDto = ThreadContext.getCurrentStaff();
+        dto.setStoreId(staffDto.getStoreId());
+        MemberPo po = CommonConverter.map(dto, MemberPo.class);
+        i = memberMapper.insert(po);
+        return i;
+    }
 
-	@Override
-	public PagedList<MemberVo> listByPage(Integer pageNum, Integer pageSize) {
-		StaffDto staff = ThreadContext.getCurrentStaff();
+    @Override
+    public int update(MemberDto dto) {
+        int i = 0;
+        MemberPo po = CommonConverter.map(dto, MemberPo.class);
+        i = memberMapper.update(po);
+        return i;
+    }
+
+    @Override
+    public int delByIds(Long[] id) {
+        int i = 0;
+        for (int j = 0; j < id.length; j++) {
+            i = i + memberMapper.delById(id[j]);
+        }
+        return 0;
+    }
+
+    @Override
+    public MemberVo getByPhone(String phone) {
+        MemberVo vo = new MemberVo();
+        vo = memberMapper.getByPhone(phone);
+        return vo;
+    }
+
+    @Override
+    public PagedList<MemberVo> listByPage(Integer pageNum, Integer pageSize) {
+        StaffDto staff = ThreadContext.getCurrentStaff();
         PageHelper.startPage(pageNum, pageSize);
         List<MemberVo> memberVos = memberMapper.getAll(staff.getStoreId());
+        if (CollectionUtils.isEmpty(memberVos)) {
+            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+        }
         PageInfo<MemberVo> info = new PageInfo<>(memberVos);
         PagedList<MemberVo> pagedList = CommonConverter.mapPageList(
-                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), memberVos),
-                MemberVo.class);
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), memberVos), MemberVo.class);
         return pagedList;
-	}
+    }
 }

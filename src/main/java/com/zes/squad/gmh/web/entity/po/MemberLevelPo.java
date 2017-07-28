@@ -9,6 +9,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class MemberLevelPo extends Po {
     private static final long serialVersionUID = 1L;
-    Long                      storeId;
-    String                    levelName;
+    private Long              storeId;
+    private String            levelName;
 }

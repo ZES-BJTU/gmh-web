@@ -3,19 +3,20 @@ package com.zes.squad.gmh.web.entity.vo;
 import java.util.Date;
 
 import lombok.Data;
+
 @Data
 public class MemberVo {
-	Long id;
-	Long storeId;
-	Long levelId;
-	String levelName;
-	String phone;
-	String memberName;
-	Integer sex;
-	Date birthday;
-	Date joinDate;
-	Date validDate;
-	float nailMoney;
-	float beautyMoney;
-	String remark;
+    private Long    id;
+    private Long    storeId;
+    private Long    levelId;
+    private String  levelName;
+    private String  phone;
+    private String  memberName;
+    private Integer sex;
+    private Date    birthday;
+    private Date    joinDate;
+    private Date    validDate;
+    private float   nailMoney;
+    private float   beautyMoney;
+    private String  remark;
 }

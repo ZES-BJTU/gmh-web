@@ -11,13 +11,13 @@
 		<result column="birthday" jdbcType="DATE" property="birthday" />
 		<result column="join_date" jdbcType="DATE" property="joinDate" />
 		<result column="valid_date" jdbcType="DATE" property="validDate" />
-		<result column="nail_money" jdbcType="FLOAT" property="nailMoney" />
-		<result column="beauty_money" jdbcType="FLOAT" property="beautyMoney" />
+		<result column="nail_money" jdbcType="DECIMAL" property="nailMoney" />
+		<result column="beauty_money" jdbcType="DECIMAL" property="beautyMoney" />
 		<result column="remark" jdbcType="VARCHAR" property="remark" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
-	<resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.MemberVo">
+	<!-- <resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.MemberVo">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
 		<result column="level_id" jdbcType="BIGINT" property="levelId" />
@@ -31,20 +31,23 @@
 		<result column="nail_money" jdbcType="FLOAT" property="nailMoney" />
 		<result column="beauty_money" jdbcType="FLOAT" property="beautyMoney" />
 		<result column="remark" jdbcType="VARCHAR" property="remark" />
-	</resultMap>
+	</resultMap> -->
 	<sql id="Base_Column_List">
 		`id`,`store_id`,`level_id`,`phone`,`member_name`,`sex`,`birthday`,`join_date`,`valid_date`,`nail_money`,`beauty_money`,`remark`,
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="Long" resultMap="VoResultMap">
-		select * from member_vo where store_id=#{storeId}
+	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
+		select * from
+		member_vo where store_id=#{storeId}
 	</select>
-	<select id="getByPhone" parameterType="String" resultMap="VoResultMap">
-		select * from member_vo where phone=#{phone}
+	<select id="getByPhone" parameterType="String" resultMap="BaseResultMap">
+		select
+		* from member_vo where phone=#{phone}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
-		insert into member(store_id,level_id,phone,member_name,sex,birthday,join_date,valid_date,nail_money,beauty_money,remark)
+		insert into
+		member(store_id,level_id,phone,member_name,sex,birthday,join_date,valid_date,nail_money,beauty_money,remark)
 		values
 		(#{storeId},#{levelId},#{phone},#{memberName},#{sex},#{birthday},#{joinDate},#{validDate},#{nailMoney},#{beautyMoney},#{remark})
 	</insert>
@@ -65,7 +68,7 @@
 		id=#{id}
 	</update>
 	<delete id="delById" parameterType="Long">
-		delete from member where 
+		delete from member where
 		id=#{id}
 	</delete>
 </mapper>
