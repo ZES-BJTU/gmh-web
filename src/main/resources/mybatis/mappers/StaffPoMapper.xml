@@ -8,21 +8,11 @@
 		<result column="salt" jdbcType="VARCHAR" property="salt" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
 		<result column="staff_level" jdbcType="BIGINT" property="staffLevel" />
-		<result column="principal_name" jdbcType="VARCHAR" property="principalName" />
-		<result column="principal_mobile" jdbcType="VARCHAR" property="principalMobile" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
-	<!-- <resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.StaffVo"> 
-		<id column="id" jdbcType="BIGINT" property="id" /> <result column="email" 
-		jdbcType="VARCHAR" property="email" /> <result column="store_id" jdbcType="BIGINT" 
-		property="storeId" /> <result column="shop_name" jdbcType="VARCHAR" property="storeName" 
-		/> <result column="staff_level" jdbcType="BIGINT" property="staffLevel" /> 
-		<result column="principal_name" jdbcType="VARCHAR" property="principalName" 
-		/> <result column="principal_mobile" jdbcType="VARCHAR" property="principalMobile" 
-		/> </resultMap> -->
 	<sql id="Base_Column_List">
-		`id`,`email`,`password`,`salt`,`store_id`,`staff_level`,`principal_name`,`principal_mobile`,
+		`id`,`email`,`password`,`salt`,`store_id`,`staff_level`,
 		`created_time`,
 		`modified_time`
 	</sql>
@@ -69,9 +59,9 @@
 		DELETE FROM staff WHERE `id`
 		= #{id, jdbcType=BIGINT}
 	</delete>
-	<delete id="batchDeleteByIds" parameterType="list">
+	<delete id="batchDeleteByIds" parameterType="long[]">
 		DELETE FROM staff WHERE `id` IN
-		<foreach collection="list" item="id" separator="," open="("
+		<foreach collection="array" item="id" separator="," open="("
 			close=")">
 			#{id, jdbcType=BIGINT}
 		</foreach>

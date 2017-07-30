@@ -31,13 +31,5 @@ public class StaffPo extends Po {
      * 等级
      */
     private Integer           staffLevel;
-    /**
-     * 负责人姓名
-     */
-    private String            principalName;
-    /**
-     * 负责人手机号
-     */
-    private String            principalMobile;
 
 }

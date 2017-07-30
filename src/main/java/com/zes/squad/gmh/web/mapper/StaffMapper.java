@@ -50,5 +50,5 @@ public interface StaffMapper {
      * @param ids
      * @return
      */
-    int batchDeleteByIds(List<Long> ids);
+    int batchDeleteByIds(Long[] ids);
 }

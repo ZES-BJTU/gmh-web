@@ -13,9 +13,9 @@ public interface EmployeeMapper {
 
     Long insert(EmployeePo po);
 
-    int leave(Map map);
+    int leave(Map<String, Object> map);
 
     int update(EmployeePo po);
-    
+
     List<EmployeePo> search(Map<String, Object> map);
 }

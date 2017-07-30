@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -26,29 +27,33 @@ import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ShopPo;
 import com.zes.squad.gmh.web.entity.po.StaffPo;
 import com.zes.squad.gmh.web.entity.po.StaffTokenPo;
+import com.zes.squad.gmh.web.entity.union.StaffShopUnion;
 import com.zes.squad.gmh.web.entity.vo.StaffVo;
 import com.zes.squad.gmh.web.mail.MailHelper;
 import com.zes.squad.gmh.web.mail.MailParams;
 import com.zes.squad.gmh.web.mapper.ShopMapper;
 import com.zes.squad.gmh.web.mapper.StaffMapper;
+import com.zes.squad.gmh.web.mapper.StaffShopUnionMapper;
 import com.zes.squad.gmh.web.mapper.StaffTokenMapper;
 import com.zes.squad.gmh.web.service.StaffService;
 
 @Service("staffService")
 public class StaffServiceImpl implements StaffService {
 
-    private static final String DEFAULT_STAFF_PASSWORD     = "111111";
-    private static final String CACHE_KEY_TOKEN_PREFIX     = "_cache_key_token_prefix_%s";
-    private static final String CACHE_KEY_AUTH_CODE_PREFIX = "_cache_key_auth_code_prefix_%s";
+    private static final String  DEFAULT_STAFF_PASSWORD     = "111111";
+    private static final String  CACHE_KEY_TOKEN_PREFIX     = "_cache_key_token_prefix_%s";
+    private static final String  CACHE_KEY_AUTH_CODE_PREFIX = "_cache_key_auth_code_prefix_%s";
 
     @Autowired
-    private StaffMapper         staffMapper;
+    private StaffMapper          staffMapper;
     @Autowired
-    private StaffTokenMapper    staffTokenMapper;
+    private StaffTokenMapper     staffTokenMapper;
     @Autowired
-    private RedisComponent      redisComponent;
+    private RedisComponent       redisComponent;
     @Autowired
-    private ShopMapper          shopMapper;
+    private ShopMapper           shopMapper;
+    @Autowired
+    private StaffShopUnionMapper staffShopUnionMapper;
 
     @Override
     public StaffDto loginWithEmail(String account, String password) {
@@ -84,8 +89,7 @@ public class StaffServiceImpl implements StaffService {
         dto.setSalt(salt);
         dto.setPassword(password);
         StaffPo po = CommonConverter.map(dto, StaffPo.class);
-        int i = staffMapper.insert(po);
-        return i;
+        return staffMapper.insert(po);
     }
 
     @Override
@@ -173,6 +177,12 @@ public class StaffServiceImpl implements StaffService {
             throw new GmhException(ErrorCodeEnum.CACHE_EXCEPTION, "验证码错误, 请重新输入验证码");
         }
         staffMapper.updatePassword(staffPo.getId(), DEFAULT_STAFF_PASSWORD);
+        MailParams mailParams = new MailParams();
+        mailParams.setReceiversTO(new String[] { email });
+        mailParams.setSubject("光美焕系统密码重置");
+        mailParams.setContentType("text/plain; charset=utf-8");
+        mailParams.setContent("尊敬的用户:\r\n您好! 您的系统密码已经重置为: " + DEFAULT_STAFF_PASSWORD + ", 请登录系统后随时修改密码");
+        MailHelper.sendTextEmail(mailParams);
         redisComponent.delete(cacheKey);
     }
 
@@ -199,19 +209,31 @@ public class StaffServiceImpl implements StaffService {
         staffDto.setPassword(null);
         staffDto.setSalt(null);
         staffDto.setToken(token);
+        Long storeId = ThreadContext.getCurrentStaff().getStoreId();
+        if (storeId == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS.getCode(), "获取用户门店信息失败");
+        }
+        ShopPo shopPo = shopMapper.selectById(storeId);
+        if (shopPo == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(), "未找到用户对应门店");
+        }
+        staffDto.setStoreName(shopPo.getName());
+        staffDto.setPrincipalName(shopPo.getManager());
+        staffDto.setPrincipalMobile(shopPo.getPhone());
         return staffDto;
     }
 
     @Override
     public PagedList<StaffVo> search(Integer pageNum, Integer pageSize, String searchString) {
-        List<StaffPo> pos = staffMapper.search(searchString);
-        if (CollectionUtils.isEmpty(pos)) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<StaffShopUnion> unions = staffShopUnionMapper.listStaffShopUnions(searchString);
+        if (CollectionUtils.isEmpty(unions)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }
-        PageInfo<StaffPo> info = new PageInfo<>(pos);
-        PagedList<StaffVo> pagedList = CommonConverter.mapPageList(
-                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), pos), StaffVo.class);
-        return pagedList;
+        PageInfo<StaffShopUnion> info = new PageInfo<>(unions);
+        List<StaffVo> vos = buildStaffVosByUnions(unions);
+        PagedList<StaffVo> pagedVos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), vos);
+        return pagedVos;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -227,18 +249,23 @@ public class StaffServiceImpl implements StaffService {
         shopPo.setPhone(dto.getPrincipalMobile());
         shopMapper.update(shopPo);
         StaffPo po = CommonConverter.map(dto, StaffPo.class);
-        int i = 0;
-        i = staffMapper.update(po);
-        return i;
+        return staffMapper.update(po);
     }
 
     public int delByIds(Long[] id) {
-        int i = 0;
-        for (int j = 0; j < id.length; j++) {
-            i = i + staffMapper.delById(id[j]);
-        }
-        return i;
+        return staffMapper.batchDeleteByIds(id);
+    }
 
+    private List<StaffVo> buildStaffVosByUnions(List<StaffShopUnion> unions) {
+        List<StaffVo> vos = Lists.newArrayList();
+        for (StaffShopUnion union : unions) {
+            StaffVo vo = CommonConverter.map(union.getStaffPo(), StaffVo.class);
+            vo.setStoreName(union.getShopPo().getName());
+            vo.setPrincipalName(union.getShopPo().getManager());
+            vo.setPrincipalMobile(union.getShopPo().getPhone());
+            vos.add(vo);
+        }
+        return vos;
     }
 
 }

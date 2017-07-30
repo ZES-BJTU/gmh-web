@@ -1,6 +1,5 @@
 package com.zes.squad.gmh.web.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -12,13 +11,16 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.enums.SexEnum;
+import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
+import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
-import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
+import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
 import com.zes.squad.gmh.web.service.MemberService;
 
 @Service("memberService")
@@ -27,60 +29,70 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private MemberMapper      memberMapper;
     @Autowired
-    private MemberLevelMapper memberLevelMapper;
+    private MemberUnionMapper memberUnionMapper;
 
     public List<MemberVo> getAll() {
-        List<MemberVo> voList = new ArrayList<MemberVo>();
         StaffDto staffDto = ThreadContext.getCurrentStaff();
-        voList = memberMapper.getAll(staffDto.getStoreId());
-        return voList;
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(staffDto.getStoreId(), null);
+        List<MemberVo> vos = buildMemberVosByUnions(unions);
+        return vos;
     }
 
     @Override
     public int insert(MemberDto dto) {
-        int i = 0;
         StaffDto staffDto = ThreadContext.getCurrentStaff();
         dto.setStoreId(staffDto.getStoreId());
         MemberPo po = CommonConverter.map(dto, MemberPo.class);
-        i = memberMapper.insert(po);
-        return i;
+        po.setMemberLevelId(dto.getLevelId());
+        po.setName(dto.getMemberName());
+        return memberMapper.insert(po);
     }
 
     @Override
     public int update(MemberDto dto) {
-        int i = 0;
         MemberPo po = CommonConverter.map(dto, MemberPo.class);
-        i = memberMapper.update(po);
-        return i;
+        po.setMemberLevelId(dto.getLevelId());
+        po.setName(dto.getMemberName());
+        return memberMapper.update(po);
     }
 
     @Override
     public int delByIds(Long[] id) {
-        int i = 0;
-        for (int j = 0; j < id.length; j++) {
-            i = i + memberMapper.delById(id[j]);
-        }
-        return 0;
+        return memberMapper.batchDelete(id);
     }
 
     @Override
     public MemberVo getByPhone(String phone) {
-        MemberVo vo = new MemberVo();
-        vo = memberMapper.getByPhone(phone);
-        return vo;
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(null, phone);
+        List<MemberVo> vos = buildMemberVosByUnions(unions);
+        return vos.get(0);
     }
 
     @Override
     public PagedList<MemberVo> listByPage(Integer pageNum, Integer pageSize) {
         StaffDto staff = ThreadContext.getCurrentStaff();
         PageHelper.startPage(pageNum, pageSize);
-        List<MemberVo> memberVos = memberMapper.getAll(staff.getStoreId());
-        if (CollectionUtils.isEmpty(memberVos)) {
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(staff.getStoreId(), null);
+        if (CollectionUtils.isEmpty(unions)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }
-        PageInfo<MemberVo> info = new PageInfo<>(memberVos);
-        PagedList<MemberVo> pagedList = CommonConverter.mapPageList(
-                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), memberVos), MemberVo.class);
-        return pagedList;
+        PageInfo<MemberUnion> info = new PageInfo<>(unions);
+        PagedList<MemberVo> pagedVos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(),
+                buildMemberVosByUnions(unions));
+        return pagedVos;
     }
+
+    private List<MemberVo> buildMemberVosByUnions(List<MemberUnion> unions) {
+        List<MemberVo> vos = Lists.newArrayList();
+        for (MemberUnion union : unions) {
+            MemberVo vo = CommonConverter.map(union.getMemberPo(), MemberVo.class);
+            vo.setLevelId(union.getMemberPo().getMemberLevelId());
+            vo.setLevelName(union.getMemberLevelPo().getName());
+            vo.setMemberName(union.getMemberPo().getName());
+            vo.setSex(EnumUtils.getDescByKey(SexEnum.class, union.getMemberPo().getSex()));
+            vos.add(vo);
+        }
+        return vos;
+    }
+
 }

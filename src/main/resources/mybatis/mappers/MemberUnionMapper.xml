@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.MemberUnionMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.union.MemberUnion">
+		<association property="staffPo"
+			resultMap="com.zes.squad.gmh.web.mapper.MemberMapper.BaseResultMap" />
+		<association property="shopPo"
+			resultMap="com.zes.squad.gmh.web.mapper.MemberLevelMapper.BaseResultMap"
+			columnPrefix="ml_" />
+	</resultMap>
+	<select id="listMemberUnionsByCondition" resultMap="BaseResultMap">
+		SELECT
+		m.id,
+		m.store_id,
+		m.member_level_id,
+		m.phone,
+		m.name,
+		m.sex,
+		m.birthday,
+		m.join_date,
+		m.valid_date,
+		m.nail_money,
+		m.beauty_money,
+		m.remark,
+		m.created_time,
+		m.modified_time,
+		ml.id AS ml_id,
+		ml.store_id AS
+		ml_store_id,
+		ml.name AS ml_name,
+		ml.created_time AS ml_created_time,
+		ml.modified_time AS ml_modified_time
+		FROM member m
+		LEFT JOIN
+		member_level ml
+		ON m.member_level_id = ml.id
+		<where>
+			<if test="storeId != null">
+				m.store_id = #{storeId, jdbcType=BIGINT}
+			</if>
+			<if test="phone != null">
+				m.phone = #{phone, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

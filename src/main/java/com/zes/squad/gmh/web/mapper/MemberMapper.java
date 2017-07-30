@@ -15,4 +15,6 @@ public interface MemberMapper {
     int update(MemberPo po);
 
     int delById(Long id);
+    
+    int batchDelete(Long[] ids);
 }

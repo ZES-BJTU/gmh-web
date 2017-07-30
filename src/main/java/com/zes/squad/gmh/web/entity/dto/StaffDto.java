@@ -8,13 +8,14 @@ import lombok.Data;
 public class StaffDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     private Long              id;
     private String            email;
     private String            password;
     private String            salt;
     private Long              storeId;
-    private Long			  staffLevel;
+    private String            storeName;
+    private Long              staffLevel;
     private String            principalName;
     private String            principalMobile;
     private String            token;

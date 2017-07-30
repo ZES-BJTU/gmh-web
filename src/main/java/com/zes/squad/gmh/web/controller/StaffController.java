@@ -141,7 +141,7 @@ public class StaffController extends BaseController {
         if (i > 0) {
             return JsonResult.success(i);
         } else {
-            return JsonResult.fail(10006, "更新用户信息失败");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "更新用户信息失败");
         }
     }
 

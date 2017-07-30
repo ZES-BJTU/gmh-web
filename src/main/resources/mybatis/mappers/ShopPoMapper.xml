@@ -23,6 +23,12 @@
 		)
 		LIKE CONCAT('%',#{searchString},'%')
 	</select>
+	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM shop
+		where id = #{id, jdbcType=BIGINT}
+	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo">
 		INSERT INTO
 		shop(name,manager,phone,address)
