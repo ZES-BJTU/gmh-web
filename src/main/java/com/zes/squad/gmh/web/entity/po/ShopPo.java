@@ -11,7 +11,7 @@ public class ShopPo extends Po {
 
     private static final long serialVersionUID = 1L;
 
-    private String            shopName;
+    private String            name;
 
     private String            manager;
 

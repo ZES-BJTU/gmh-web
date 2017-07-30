@@ -13,10 +13,10 @@ import lombok.ToString;
 public class MemberPo extends Po {
     private static final long serialVersionUID = 1L;
     private Long              storeId;
-    private Long              levelId;
+    private Long              memberLevelId;
     private String            phone;
-    private String            memberName;
-    private Integer           sex;
+    private String            name;
+    private Byte              sex;
     private Date              birthday;
     private Date              joinDate;
     private Date              validDate;

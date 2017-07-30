@@ -5,8 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.zes.squad.gmh.web.entity.po.StaffPo;
-import com.zes.squad.gmh.web.entity.po.StockTypePo;
-import com.zes.squad.gmh.web.entity.vo.StaffVo;
 
 public interface StaffMapper {
 
@@ -40,9 +38,17 @@ public interface StaffMapper {
      */
     int updatePassword(@Param("id") Long id, @Param("password") String password);
 
-    List<StaffVo> search(String searchString);
-    
+    List<StaffPo> search(String searchString);
+
     int update(StaffPo po);
-    
+
     int delById(Long id);
+
+    /**
+     * 批量删除
+     * 
+     * @param ids
+     * @return
+     */
+    int batchDeleteByIds(List<Long> ids);
 }

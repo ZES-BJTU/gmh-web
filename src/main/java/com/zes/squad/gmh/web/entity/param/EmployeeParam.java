@@ -14,5 +14,5 @@ public class EmployeeParam {
     private Long    shopId;
     private Date    entryDate;
     private Date    quitDate;
-    private int     isWork;
+    private Boolean isWork;
 }

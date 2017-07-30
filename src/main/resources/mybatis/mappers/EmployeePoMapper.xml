@@ -3,51 +3,66 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.EmployeeMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.EmployeePo">
 		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="em_name" jdbcType="VARCHAR" property="emName" />
-		<result column="sex" jdbcType="NUMERIC" property="sex" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
 		<result column="phone" jdbcType="VARCHAR" property="phone" />
 		<result column="shop_id" jdbcType="BIGINT" property="shopId" />
-		<result column="entry_date" jdbcType="DATE" property="entryDate" />
-		<result column="quit_date" jdbcType="DATE" property="quitDate" />
-		<result column="is_work" jdbcType="NUMERIC" property="isWork" />
+		<result column="entry_date" jdbcType="TIMESTAMP" property="entryDate" />
+		<result column="quit_date" jdbcType="TIMESTAMP" property="quitDate" />
+		<result column="work" jdbcType="TINYINT" property="work" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`em_name`,`sex`,`phone`,`shop_id`,`entry_date`,`quit_date`,`is_work`,
+		`id`,`name`,`sex`,`phone`,`shop_id`,`entry_date`,`quit_date`,`work`,
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="listByPage" parameterType="Long" resultMap="BaseResultMap">
-		select * from employee where 
-		is_work=1
-		and
-		shop_id=#{shopId}
+	<select id="listByPage" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM employee WHERE
+		work=1
+		AND
+		shop_id=#{shopId, jdbcType=BIGINT}
 	</select>
-	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo" useGeneratedKeys="true" keyProperty="id">		
-		insert into
-		employee(em_name,sex,phone,shop_id,entry_date,quit_date,is_work)
-		values
-		(#{emName},#{sex},#{phone},#{shopId},#{entryDate},#{quitDate},'1')
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		employee(name,sex,phone,shop_id,entry_date,quit_date,work)
+		VALUES
+		(#{name, jdbcType=VARCHAR},#{sex, jdbcType=TINYINT},#{phone,
+		jdbcType=VARCHAR},#{shopId, jdbcType=BIGINT},#{entryDate,
+		jdbcType=TIMESTAMP},#{quitDate, jdbcType=TIMESTAMP},1)
 	</insert>
-	<update id="leave" parameterType="Map" >
-		update employee set
-		is_work=0,
-		quit_date=#{leave}
-		where 
-		id=#{id}
+	<update id="leave" parameterType="map">
+		UPDATE employee SET
+		work=0,
+		quit_date=#{leave, jdbcType=TIMESTAMP}
+		WHERE id=#{id, jdbcType=BIGINT}
 	</update>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo" >
-		update employee set
-		em_name=#{emName},
-		sex=#{sex},
-		phone=#{phone}
-		where 
-		id=#{id}
+	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo">
+		UPDATE employee
+		<set>
+			<if test="name != null">
+				name = #{name, jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex, jdbcType=TINYINT},
+			</if>
+			<if test="phone != null">
+				phone = #{phone, jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE id=#{id, jdbcType=BIGINT}
 	</update>
-	<select id="search" parameterType="Map" resultMap="BaseResultMap">
-		select * from employee where shop_id=#{storeId} and 
-		concat_ws("",em_name,phone)
-		like concat('%',#{searchString},'%')
+	<select id="search" parameterType="map" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM employee
+		WHERE shop_id=#{storeId, jdbcType=BIGINT} AND
+		CONCAT_WS("",name,phone)
+		LIKE
+		CONCAT('%',#{searchString},'%')
 	</select>
 </mapper>

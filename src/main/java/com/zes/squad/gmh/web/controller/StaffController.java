@@ -12,10 +12,8 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
-import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.param.StaffParam;
 import com.zes.squad.gmh.web.entity.vo.StaffVo;
-import com.zes.squad.gmh.web.entity.vo.StockTypeVo;
 import com.zes.squad.gmh.web.service.StaffService;
 
 @RequestMapping("/staff")
@@ -40,31 +38,6 @@ public class StaffController extends BaseController {
         return JsonResult.success(staffVo);
     }
 
-    @RequestMapping("/search")
-	@ResponseBody
-	public JsonResult<?> search(Integer pageNum, Integer pageSize,String searchString){
-		PagedList<StaffVo> voList = staffService.search(pageNum, pageSize,searchString);    	
-		return JsonResult.success(voList);
-	}
-    @RequestMapping("/update")
-	@ResponseBody
-	public JsonResult<?> update(StaffDto dto){
-		int i = staffService.update(dto);
-		if(i>0)
-			return JsonResult.success(i);
-		else
-			return JsonResult.fail(10006, "修改失败");
-	}
-    @RequestMapping("/delete")
-	@ResponseBody
-	public JsonResult<?> delete(Long[] id){
-		int i = 0;
-		i = staffService.delByIds(id);
-		if(i>0)
-			return JsonResult.success(i);
-		else 
-			return JsonResult.fail(10006, "发生错误，没有数据被修改");
-	}
     @RequestMapping(path = "/changePassword", method = RequestMethod.POST)
     @ResponseBody
     public JsonResult<Void> doChangePassword(String originalPassword, String newPassword) {
@@ -125,12 +98,66 @@ public class StaffController extends BaseController {
     @RequestMapping("/insert")
     @ResponseBody
     public JsonResult<Integer> insert(StaffParam param) {
+        if (param == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "不用信息不能为空");
+        }
         if (Strings.isNullOrEmpty(param.getEmail())) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户名不能为空");
+        }
+        if (param.getStoreId() == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户所属门店不能为空");
+        }
+        if (param.getStaffLevel() == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户级别不能为空");
         }
         StaffDto dto = CommonConverter.map(param, StaffDto.class);
         int i = staffService.insert(dto);
         return JsonResult.success(i);
+    }
+
+    @RequestMapping("/search")
+    @ResponseBody
+    public JsonResult<?> search(Integer pageNum, Integer pageSize, String searchString) {
+        if (pageNum == null || pageNum < 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+        }
+        if (pageSize == null || pageSize < 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+        }
+        PagedList<StaffVo> voList = staffService.search(pageNum, pageSize, searchString);
+        return JsonResult.success(voList);
+    }
+
+    @RequestMapping("/update")
+    @ResponseBody
+    public JsonResult<?> update(StaffDto dto) {
+        if (dto == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户信息不能为空");
+        }
+        if (dto.getId() == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户标识信息不能为空");
+        }
+        int i = staffService.update(dto);
+        if (i > 0) {
+            return JsonResult.success(i);
+        } else {
+            return JsonResult.fail(10006, "更新用户信息失败");
+        }
+    }
+
+    @RequestMapping("/delete")
+    @ResponseBody
+    public JsonResult<?> delete(Long[] id) {
+        if (id == null || id.length == 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的用户");
+        }
+        int i = 0;
+        i = staffService.delByIds(id);
+        if (i > 0) {
+            return JsonResult.success(i);
+        } else {
+            return JsonResult.fail(10006, "发生错误，没有数据被删除");
+        }
     }
 
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
-import com.zes.squad.gmh.web.entity.po.StockTypePo;
 
 public interface EmployeeMapper {
 
@@ -18,5 +17,5 @@ public interface EmployeeMapper {
 
     int update(EmployeePo po);
     
-    List<EmployeePo> search(Map map);
+    List<EmployeePo> search(Map<String, Object> map);
 }

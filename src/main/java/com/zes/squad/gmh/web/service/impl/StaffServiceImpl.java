@@ -4,12 +4,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.constant.RedisConsts;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
@@ -17,13 +21,15 @@ import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EncryptUtils;
 import com.zes.squad.gmh.web.cache.RedisComponent;
+import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.po.ShopPo;
 import com.zes.squad.gmh.web.entity.po.StaffPo;
 import com.zes.squad.gmh.web.entity.po.StaffTokenPo;
-import com.zes.squad.gmh.web.entity.po.StockTypePo;
 import com.zes.squad.gmh.web.entity.vo.StaffVo;
 import com.zes.squad.gmh.web.mail.MailHelper;
 import com.zes.squad.gmh.web.mail.MailParams;
+import com.zes.squad.gmh.web.mapper.ShopMapper;
 import com.zes.squad.gmh.web.mapper.StaffMapper;
 import com.zes.squad.gmh.web.mapper.StaffTokenMapper;
 import com.zes.squad.gmh.web.service.StaffService;
@@ -31,6 +37,7 @@ import com.zes.squad.gmh.web.service.StaffService;
 @Service("staffService")
 public class StaffServiceImpl implements StaffService {
 
+    private static final String DEFAULT_STAFF_PASSWORD     = "111111";
     private static final String CACHE_KEY_TOKEN_PREFIX     = "_cache_key_token_prefix_%s";
     private static final String CACHE_KEY_AUTH_CODE_PREFIX = "_cache_key_auth_code_prefix_%s";
 
@@ -40,6 +47,8 @@ public class StaffServiceImpl implements StaffService {
     private StaffTokenMapper    staffTokenMapper;
     @Autowired
     private RedisComponent      redisComponent;
+    @Autowired
+    private ShopMapper          shopMapper;
 
     @Override
     public StaffDto loginWithEmail(String account, String password) {
@@ -71,7 +80,7 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public int insert(StaffDto dto) {
         String salt = UUID.randomUUID().toString().replaceAll("\\-", "");
-        String password = EncryptUtils.MD5(dto.getEmail() + salt + "111111");
+        String password = EncryptUtils.MD5(dto.getEmail() + salt + DEFAULT_STAFF_PASSWORD);
         dto.setSalt(salt);
         dto.setPassword(password);
         StaffPo po = CommonConverter.map(dto, StaffPo.class);
@@ -163,6 +172,7 @@ public class StaffServiceImpl implements StaffService {
         if (!redisAuthCode.equals(authCode)) {
             throw new GmhException(ErrorCodeEnum.CACHE_EXCEPTION, "验证码错误, 请重新输入验证码");
         }
+        staffMapper.updatePassword(staffPo.getId(), DEFAULT_STAFF_PASSWORD);
         redisComponent.delete(cacheKey);
     }
 
@@ -192,31 +202,43 @@ public class StaffServiceImpl implements StaffService {
         return staffDto;
     }
 
-	@Override
-	public PagedList<StaffVo> search(Integer pageNum, Integer pageSize, String searchString) {
-		List<StaffVo> voList = staffMapper.search(searchString);
-		 PageInfo<StaffVo> info = new PageInfo<>(voList);
-	        PagedList<StaffVo> pagedList = CommonConverter.mapPageList(
-	                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), voList),
-	                StaffVo.class);
-		return pagedList;
-	}
+    @Override
+    public PagedList<StaffVo> search(Integer pageNum, Integer pageSize, String searchString) {
+        List<StaffPo> pos = staffMapper.search(searchString);
+        if (CollectionUtils.isEmpty(pos)) {
+            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+        }
+        PageInfo<StaffPo> info = new PageInfo<>(pos);
+        PagedList<StaffVo> pagedList = CommonConverter.mapPageList(
+                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), pos), StaffVo.class);
+        return pagedList;
+    }
 
-	@Override
-	public int update(StaffDto dto) {
-		StaffPo po = CommonConverter.map(dto, StaffPo.class);
-		int i = 0;
-		i = staffMapper.update(po);
-		return i;
-	}
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public int update(StaffDto dto) {
+        Long storeId = ThreadContext.getCurrentStaff().getStoreId();
+        if (storeId == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(), "获取用户门店信息失败");
+        }
+        ShopPo shopPo = new ShopPo();
+        shopPo.setId(storeId);
+        shopPo.setManager(dto.getPrincipalName());
+        shopPo.setPhone(dto.getPrincipalMobile());
+        shopMapper.update(shopPo);
+        StaffPo po = CommonConverter.map(dto, StaffPo.class);
+        int i = 0;
+        i = staffMapper.update(po);
+        return i;
+    }
 
-	public int delByIds(Long[] id){
-		int i = 0;
-		for(int j=0;j<id.length;j++){
-			i = i + staffMapper.delById(id[j]);
-		}
-		return i;
-		
-	}
+    public int delByIds(Long[] id) {
+        int i = 0;
+        for (int j = 0; j < id.length; j++) {
+            i = i + staffMapper.delById(id[j]);
+        }
+        return i;
+
+    }
 
 }

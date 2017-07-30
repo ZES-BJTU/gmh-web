@@ -8,9 +8,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class StockPo extends Po {
+
     private static final long serialVersionUID = 1L;
-    private Long              typeId;
-    private String            stockName;
+
+    private Long              stockTypeId;
+    private String            name;
     private String            unit;
     private Integer           amount;
 }

@@ -3,21 +3,12 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.StockMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.StockPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="type_id" jdbcType="BIGINT" property="typeId" />
-		<result column="stock_name" jdbcType="VARCHAR" property="stockName" />
+		<result column="stock_type_id" jdbcType="BIGINT" property="stockTypeId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
 		<result column="unit" jdbcType="VARCHAR" property="unit" />
-		<result column="amount" jdbcType="NUMERIC" property="amount" />
+		<result column="amount" jdbcType="INTEGER" property="amount" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
-	</resultMap>
-	<resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.StockVo">
-		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="type_id" jdbcType="BIGINT" property="typeId" />
-		<result column="type_name" jdbcType="VARCHAR" property="typeName" />
-		<result column="stock_name" jdbcType="VARCHAR" property="stockName" />
-		<result column="unit" jdbcType="VARCHAR" property="unit" />
-		<result column="amount" jdbcType="NUMERIC" property="amount" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		`id`,`type_id`,`stock_name`,`unit`,`amount`,
@@ -25,46 +16,69 @@
 		`modified_time`
 	</sql>
 	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from stock where type_id in
+		select * from
+		stock where type_id in
 		(select id from stock_type where
-			store_id=#{storeId}
+		store_id=#{storeId}
 		)
 	</select>
 	<select id="getByType" parameterType="Long" resultMap="BaseResultMap">
-		select * from stock where type_id=#{typeId}
+		select *
+		from stock where type_id=#{typeId}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StockPo">
-		insert into stock(type_id,stock_name,unit,amount)
-		values
-		(#{typeId},#{stockName},#{unit},#{amount})
+		INSERT INTO
+		stock(stock_type_id,name,unit,amount)
+		VALUES
+		(#{stockTypeId,
+		jdbcType=BIGINT},#{name, jdbcType=VARCHAR},#{unit,
+		jdbcType=VARCHAR},#{amount, jdbcType=INTEGER})
 	</insert>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StockPo">
-		update stock
-		set
-		type_id=#{typeId},
-		stock_name=#{stockName},
-		unit=#{unit},
-		amount=#{amount}
-		where
-		id=#{id}
+		UPDATE stock
+		<set>
+			<if test="stockTypeId != null">
+				stock_type_id = #{stockTypeId, jdbcType=BIGINT},
+			</if>
+			<if test="name != null">
+				name = #{name, jdbcType=VARCHAR},
+			</if>
+			<if test="unit != null">
+				unit = #{unit, jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				amount = #{amount, jdbcType=INTEGER}
+			</if>
+		</set>
+		WHERE id=#{id, jdbcType=BIGINT}
 	</update>
 	<delete id="delById" parameterType="Long">
-		delete from stock where 
+		delete from stock where
 		id=#{id}
 	</delete>
+	<delete id="batchDelete" parameterType="long[]">
+		DELETE FROM stock WHERE id IN
+		<foreach collection="array" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
+	</delete>
 	<select id="search" parameterType="Map" resultMap="VoResultMap">
-		select * from stock_vo where type_id=#{typeId} and 
+		select * from
+		stock_vo where type_id=#{typeId} and
 		concat_ws("",stock_name,unit,amount)
-		like concat('%',#{searchString},'%')
+		like
+		concat('%',#{searchString},'%')
 	</select>
 	<select id="searchWithoutType" parameterType="Map" resultMap="VoResultMap">
-		select * from stock_vo where type_id in 
-		<foreach item="item" index="index" collection="typeIds"
-			open="(" separator="," close=")" >
-		#{item}
+		select * from stock_vo where type_id in
+		<foreach item="item" index="index" collection="typeIds" open="("
+			separator="," close=")">
+			#{item}
 		</foreach>
 		and
 		concat_ws("",stock_name,unit,amount)
-		like concat('%',#{searchString},'%')
+		like
+		concat('%',#{searchString},'%')
 	</select>
 </mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.EmployeeJobUnionMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.union.EmployeeJobUnion">
+		<association property="employeePo"
+			resultMap="com.zes.squad.gmh.web.mapper.EmployeeMapper.BaseResultMap" />
+		<collection property="employeeJobPos" columnPrefix="_ej"
+			resultMap="com.zes.squad.gmh.web.mapper.EmployeeJobMapper.BaseResultMap" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		e.id,
+		e.name,
+		e.sex,
+		e.phone,
+		e.shop_id,
+		e.entry_date,
+		e.quit_date,
+		e.work,
+		e.created_time,
+		e.modified_time,
+		ej.id AS ej_id,
+		ej.employee_id AS ej_employee_id,
+		ej.job_type AS ej_job_type,
+		ej.job_name AS ej_job_name,
+		ej.created_time AS ej_created_time,
+		ej.modified_time AS modified_time
+	</sql>
+	<select id="listEmployeeJobUnionsByCondition" resultMap="BaseResultMap">
+		<bind name="serach" value="'%' + #{searchString} + '%'" />
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		employee e
+		LEFT JOIN
+		employ_job ej
+		ON
+		e.id = ej.employee_id
+		WHERE
+		e.shop_id = #{storeId, jdbcType=BIGINT}
+		<if test="searchString != null and searchString != ''">
+			AND CONCAT_WS("",e.name,e.phone) LIKE CONCAT(#{search})
+		</if>
+	</select>
+
+</mapper>

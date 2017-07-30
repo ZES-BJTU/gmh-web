@@ -1,6 +1,5 @@
 package com.zes.squad.gmh.web.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,42 +23,41 @@ import com.zes.squad.gmh.web.service.MemberLevelService;
 public class MemberLevelServiceImpl implements MemberLevelService {
 
     @Autowired
-    private MemberLevelMapper mlMapper;
+    private MemberLevelMapper memberLevelMapper;
 
     public List<MemberLevelVo> getAll() {
-        List<MemberLevelPo> poList = new ArrayList<MemberLevelPo>();
         StaffDto staffDto = ThreadContext.getCurrentStaff();
-        poList = mlMapper.getAll(staffDto.getStoreId());
-        if (CollectionUtils.isEmpty(poList)) {
+        List<MemberLevelPo> pos = memberLevelMapper.getAll(staffDto.getStoreId());
+        if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
-        List<MemberLevelVo> voList = new ArrayList<MemberLevelVo>();
-        for (int i = 0; i < poList.size(); i++) {
-            voList.add(CommonConverter.map(poList.get(i), MemberLevelVo.class));
+        List<MemberLevelVo> vos = Lists.newArrayList();
+        for (MemberLevelPo po : pos) {
+            MemberLevelVo vo = CommonConverter.map(po, MemberLevelVo.class);
+            vo.setLevelName(po.getName());
         }
-        return voList;
+        return vos;
     }
 
     public int insert(MemberLevelDto dto) {
         MemberLevelPo po = CommonConverter.map(dto, MemberLevelPo.class);
-        int i = 0;
-        i = mlMapper.insert(po);
-        return i;
+        po.setName(dto.getLevelName());
+        return memberLevelMapper.insert(po);
     }
 
     public int update(MemberLevelDto dto) {
         MemberLevelPo po = CommonConverter.map(dto, MemberLevelPo.class);
         int i = 0;
-        i = mlMapper.update(po);
+        i = memberLevelMapper.update(po);
         return i;
     }
 
-    public int delByIds(Long[] id) {
-        int i = 0;
-        for (int j = 0; j < id.length; j++) {
-            i = i + mlMapper.delById(id[j]);
+    public int delByIds(Long[] ids) {
+        List<Long> idList = Lists.newArrayList();
+        for (Long id : ids) {
+            idList.add(id);
         }
-        return i;
+        return memberLevelMapper.batchDelete(idList);
 
     }
 
@@ -67,7 +65,7 @@ public class MemberLevelServiceImpl implements MemberLevelService {
     public PagedList<MemberLevelDto> listByPage(Integer pageNum, Integer pageSize) {
         StaffDto staff = ThreadContext.getCurrentStaff();
         PageHelper.startPage(pageNum, pageSize);
-        List<MemberLevelPo> memberLevelPos = mlMapper.getAll(staff.getStoreId());
+        List<MemberLevelPo> memberLevelPos = memberLevelMapper.getAll(staff.getStoreId());
         if (CollectionUtils.isEmpty(memberLevelPos)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }

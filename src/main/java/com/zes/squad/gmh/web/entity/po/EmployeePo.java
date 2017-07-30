@@ -12,11 +12,11 @@ import lombok.ToString;
 public class EmployeePo extends Po {
 
     private static final long serialVersionUID = 1L;
-    private String            emName;
-    private int               sex;
+    private String            name;
+    private Byte              sex;
     private String            phone;
     private Long              shopId;
     private Date              entryDate;
     private Date              quitDate;
-    private int               isWork;
+    private Boolean           work;
 }

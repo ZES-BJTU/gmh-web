@@ -1,6 +1,5 @@
 package com.zes.squad.gmh.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +22,13 @@ import com.zes.squad.gmh.web.service.MemberLevelService;
 @Controller
 public class MemberLevelController {
     @Autowired
-    private MemberLevelService mlService;
+    private MemberLevelService memberLevelService;
 
     @RequestMapping("/getAll")
     @ResponseBody
     public JsonResult<?> getAll() {
-        List<MemberLevelVo> voList = new ArrayList<MemberLevelVo>();
-        voList = mlService.getAll();
-        return JsonResult.success(voList);
+        List<MemberLevelVo> vos = memberLevelService.getAll();
+        return JsonResult.success(vos);
     }
 
     @RequestMapping("/listByPage")
@@ -42,7 +40,7 @@ public class MemberLevelController {
         if (pageSize == null || pageSize < 0) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
         }
-        PagedList<MemberLevelDto> pagedListDto = mlService.listByPage(pageNum, pageSize);
+        PagedList<MemberLevelDto> pagedListDto = memberLevelService.listByPage(pageNum, pageSize);
         PagedList<MemberLevelVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, MemberLevelVo.class);
 
         return JsonResult.success(pagedListVo);
@@ -56,7 +54,7 @@ public class MemberLevelController {
         }
         StaffDto staffDto = ThreadContext.getCurrentStaff();
         dto.setStoreId(staffDto.getStoreId());
-        int i = mlService.insert(dto);
+        int i = memberLevelService.insert(dto);
         if (i > 0) {
             return JsonResult.success(i);
         } else {
@@ -76,7 +74,7 @@ public class MemberLevelController {
         if (dto.getStoreId() == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "会员等级所属门店信息不能为空");
         }
-        int i = mlService.update(dto);
+        int i = memberLevelService.update(dto);
         if (i > 0) {
             return JsonResult.success(i);
         } else {
@@ -91,7 +89,7 @@ public class MemberLevelController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的会员等级信息");
         }
         int i = 0;
-        i = mlService.delByIds(id);
+        i = memberLevelService.delByIds(id);
         if (i > 0) {
             return JsonResult.success(i);
         } else {

@@ -4,37 +4,54 @@
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.StockTypePo">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="type_name" jdbcType="VARCHAR" property="typeName" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`store_id`,`type_name`,
+		`id`,`store_id`,`name`,
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from stock_type where store_id=#{storeId}
+	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM stock_type WHERE store_id=#{storeId, jdbcType=BIGINT}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StockTypePo">
-		insert into stock_type(store_id,type_name)
-		values
-		(#{storeId},#{typeName})
+		INSERT INTO
+		stock_type(store_id,name)
+		VALUES
+		(#{storeId, jdbcType=BIGINT},#{name,
+		jdbcType=VARCHAR})
 	</insert>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StockTypePo">
-		update stock_type 
-		set
-		type_name=#{typeName}
-		where
-		id=#{id}
+		UPDATE stock_type
+		<set>
+			<if test="name != null">
+				`name` = #{name, jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE id = #{id, jdbcType=BIGINT}
 	</update>
-	<delete id="delById" parameterType="Long">
-		delete from stock_type where 
-		id=#{id}
+	<delete id="delById" parameterType="long">
+		DELETE FROM stock_type WHERE
+		id = #{id, jdbcType=BIGINT}
 	</delete>
-	<select id="search" parameterType="Map" resultMap="BaseResultMap">
-		select * from stock_type where store_id=#{storeId} and 
-		concat_ws("",type_name)
-		like concat('%',#{searchString},'%')
+	<delete id="batchDelete" parameterType="long[]">
+		DELETE FROM stock_type WHERE id IN
+		<foreach collection="array" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
+	</delete>
+	<select id="search" parameterType="map" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		stock_type WHERE store_id=#{storeId, jdbcType=BIGINT} AND
+		CONCAT_WS("",name)
+		LIKE
+		CONCAT('%',#{searchString},'%')
 	</select>
 </mapper>

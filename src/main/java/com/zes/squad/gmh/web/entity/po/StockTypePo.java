@@ -10,5 +10,5 @@ import lombok.ToString;
 public class StockTypePo extends Po {
     private static final long serialVersionUID = 1L;
     private Long              storeId;
-    private String            typeName;
+    private String            name;
 }

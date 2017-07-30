@@ -1,6 +1,5 @@
 package com.zes.squad.gmh.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,7 @@ public class MemberController {
     @RequestMapping("/getAll")
     @ResponseBody
     public JsonResult<?> getAll() {
-        List<MemberVo> voList = new ArrayList<MemberVo>();
-        voList = memberService.getAll();
+        List<MemberVo> voList = memberService.getAll();
         return JsonResult.success(voList);
     }
 

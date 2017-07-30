@@ -31,6 +31,7 @@
 			<mvc:exclude-mapping path="/staff/getAuthCode" />
 			<mvc:exclude-mapping path="/staff/validateAuthCode" />
 			<mvc:exclude-mapping path="/gmh/index.html" />
+			<mvc:exclude-mapping path="/alive" />
 			<bean class="com.zes.squad.gmh.web.interceptor.AuthInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>

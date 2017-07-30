@@ -12,5 +12,5 @@ public interface MemberLevelService {
 	PagedList<MemberLevelDto> listByPage(Integer pageNum, Integer pageSize);
 	int insert(MemberLevelDto dto);
 	int update(MemberLevelDto dto);
-	int delByIds(Long[] Id);
+	int delByIds(Long[] Ids);
 }

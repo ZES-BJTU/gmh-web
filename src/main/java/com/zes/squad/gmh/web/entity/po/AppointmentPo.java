@@ -19,6 +19,6 @@ public class AppointmentPo extends Po {
     private Date              beginTime;
     private Date              endTime;
     private Integer           status;
-    private int               isLine;
+    private Boolean           line;
     private String            remark;
 }

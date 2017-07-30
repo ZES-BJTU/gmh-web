@@ -4,71 +4,97 @@
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.MemberPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="level_id" jdbcType="BIGINT" property="levelId" />
+		<result column="member_level_id" jdbcType="BIGINT" property="memberLevelId" />
 		<result column="phone" jdbcType="VARCHAR" property="phone" />
-		<result column="member_name" jdbcType="VARCHAR" property="memberName" />
-		<result column="sex" jdbcType="NUMERIC" property="sex" />
-		<result column="birthday" jdbcType="DATE" property="birthday" />
-		<result column="join_date" jdbcType="DATE" property="joinDate" />
-		<result column="valid_date" jdbcType="DATE" property="validDate" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
+		<result column="join_date" jdbcType="TIMESTAMP" property="joinDate" />
+		<result column="valid_date" jdbcType="TIMESTAMP" property="validDate" />
 		<result column="nail_money" jdbcType="DECIMAL" property="nailMoney" />
 		<result column="beauty_money" jdbcType="DECIMAL" property="beautyMoney" />
 		<result column="remark" jdbcType="VARCHAR" property="remark" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
-	<!-- <resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.MemberVo">
-		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="level_id" jdbcType="BIGINT" property="levelId" />
-		<result column="level_name" jdbcType="VARCHAR" property="levelName" />
-		<result column="phone" jdbcType="VARCHAR" property="phone" />
-		<result column="member_name" jdbcType="VARCHAR" property="memberName" />
-		<result column="sex" jdbcType="NUMERIC" property="sex" />
-		<result column="birthday" jdbcType="DATE" property="birthday" />
-		<result column="join_date" jdbcType="DATE" property="joinDate" />
-		<result column="valid_date" jdbcType="DATE" property="validDate" />
-		<result column="nail_money" jdbcType="FLOAT" property="nailMoney" />
-		<result column="beauty_money" jdbcType="FLOAT" property="beautyMoney" />
-		<result column="remark" jdbcType="VARCHAR" property="remark" />
-	</resultMap> -->
+	<!-- <resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.MemberVo"> 
+		<id column="id" jdbcType="BIGINT" property="id" /> <result column="store_id" 
+		jdbcType="BIGINT" property="storeId" /> <result column="level_id" jdbcType="BIGINT" 
+		property="levelId" /> <result column="level_name" jdbcType="VARCHAR" property="levelName" 
+		/> <result column="phone" jdbcType="VARCHAR" property="phone" /> <result 
+		column="member_name" jdbcType="VARCHAR" property="memberName" /> <result 
+		column="sex" jdbcType="NUMERIC" property="sex" /> <result column="birthday" 
+		jdbcType="DATE" property="birthday" /> <result column="join_date" jdbcType="DATE" 
+		property="joinDate" /> <result column="valid_date" jdbcType="DATE" property="validDate" 
+		/> <result column="nail_money" jdbcType="FLOAT" property="nailMoney" /> <result 
+		column="beauty_money" jdbcType="FLOAT" property="beautyMoney" /> <result 
+		column="remark" jdbcType="VARCHAR" property="remark" /> </resultMap> -->
 	<sql id="Base_Column_List">
-		`id`,`store_id`,`level_id`,`phone`,`member_name`,`sex`,`birthday`,`join_date`,`valid_date`,`nail_money`,`beauty_money`,`remark`,
+		`id`,`store_id`,`member_level_id`,`phone`,`name`,`sex`,`birthday`,`join_date`,`valid_date`,`nail_money`,`beauty_money`,`remark`,
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from
-		member_vo where store_id=#{storeId}
+	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		member
+		WHERE store_id=#{storeId, jdbcType=BIGINT}
 	</select>
-	<select id="getByPhone" parameterType="String" resultMap="BaseResultMap">
-		select
-		* from member_vo where phone=#{phone}
+	<select id="getByPhone" parameterType="string" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM member WHERE phone=#{phone, jdbcType=VARCHAR}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
-		insert into
-		member(store_id,level_id,phone,member_name,sex,birthday,join_date,valid_date,nail_money,beauty_money,remark)
-		values
-		(#{storeId},#{levelId},#{phone},#{memberName},#{sex},#{birthday},#{joinDate},#{validDate},#{nailMoney},#{beautyMoney},#{remark})
+		INSERT INTO
+		member(store_id,member_level_id,phone,name,sex,birthday,join_date,valid_date,nail_money,beauty_money,remark)
+		VALUES
+		(#{storeId, jdbcType=BIGINT},#{memberLevelId,
+		jdbcType=BIGINT},#{phone, jdbcType=VARCHAR},#{name,
+		jdbcType=VARCHAR},#{sex, jdbcType=TINYINT},#{birthday,
+		jdbcType=TIMESTAMP},#{joinDate, jdbcType=TIMESTAMP},#{validDate,
+		jdbcType=TIMESTAMP},#{nailMoney, jdbcType=DECIMAL},#{beautyMoney,
+		jdbcType=DECIMAL},#{remark, jdbcType=VARCHAR})
 	</insert>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
-		update member
-		set
-		level_id=#{levelId},
-		phone=#{phone},
-		member_name=#{memberName},
-		sex=#{sex},
-		birthday=#{birthday},
-		join_date=#{joinDate},
-		valid_date=#{validDate},
-		nail_money=#{nailMoney},
-		beauty_money=#{beautyMoney},
-		remark=#{remark}
-		where
-		id=#{id}
+		UPDATE member
+		<set>
+			<if test="memberLevelId != null">
+				level_id=#{levelId, jdbcType=BIGINT},
+			</if>
+			<if test="phone != null">
+				phone=#{phone, jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				name=#{name, jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex=#{sex, jdbcType=TINYINT},
+			</if>
+			<if test="birthday != null">
+				birthday=#{birthday, jdbcType=TIMESTAMP},
+			</if>
+			<if test="joinDate != null">
+				join_date=#{joinDate, jdbcType=TIMESTAMP},
+			</if>
+			<if test="validDate != null">
+				valid_date=#{validDate, jdbcType=TIMESTAMP},
+			</if>
+			<if test="nailMoney != null">
+				nail_money=#{nailMoney, jdbcType=DECIMAL},
+			</if>
+			<if test="beautyMoney != null">
+				beauty_money=#{beautyMoney, jdbcType=DECIMAL},
+			</if>
+			<if test="remark != null">
+				remark=#{remark, jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE id=#{id, jdbcType=BIGINT}
 	</update>
-	<delete id="delById" parameterType="Long">
-		delete from member where
-		id=#{id}
+	<delete id="delById" parameterType="long">
+		DELETE FROM member WHERE
+		id=#{id, jdbcType=BIGINT}
 	</delete>
 </mapper>

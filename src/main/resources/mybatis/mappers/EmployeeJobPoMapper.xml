@@ -3,25 +3,42 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.EmployeeJobMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.EmployeeJobPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="em_id" jdbcType="BIGINT" property="emId" />
-		<result column="job_id" jdbcType="BIGINT" property="jobId" />
+		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
+		<result column="job_type" jdbcType="INTEGER" property="jobType" />
+		<result column="job_name" jdbcType="VARCHAR" property="jobName" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`em_id`,`job_id`,
+		`id`,`employee_id`,`job_type`,`job_name`,
 		`created_time`,
 		`modified_time`
 	</sql>
 	<select id="getAll" resultMap="BaseResultMap">
-		select * from em_job
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM employee_job
 	</select>
-	<insert id="insert" parameterType="Long" >
-		insert into em_job(em_id,job_id) values(#{0},#{1})
+	<insert id="batchInsert" parameterType="list">
+		INSERT INTO
+		employee_job(`employee_id`,`job_type`,`job_name`)
+		VALUES
+		<foreach collection="list" item="po" separator=",">
+			(#{po.employeeId, jdbcType=BIGINT},
+			#{po.jobType, jdbcType=INTEGER},
+			#{po.jobName, jdbcType=VARCHAR})
+		</foreach>
 	</insert>
-	<delete id="delByEmId" parameterType="Long">
-		delete from em_job 
-		where
-		em_id=#{emId}
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.EmployeeJobPo">
+		INSERT INTO
+		employee_job(employee_id,job_type,job_name)
+		VALUES(#{employeeId,
+		jdbcType=BIGINT},#{jobType, jdbcType=INTEGER},#{jobName,
+		jdbcType=VARCHAR})
+	</insert>
+	<delete id="delteByEmployeeId" parameterType="long">
+		DELETE FROM
+		employee_job
+		WHERE employee_id=#{employeeId}
 	</delete>
 </mapper>

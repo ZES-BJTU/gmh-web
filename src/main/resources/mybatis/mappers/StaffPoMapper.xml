@@ -13,15 +13,14 @@
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
-	<resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.StaffVo">
-		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="email" jdbcType="VARCHAR" property="email" />
-		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="shop_name" jdbcType="VARCHAR" property="storeName" />
-		<result column="staff_level" jdbcType="BIGINT" property="staffLevel" />
-		<result column="principal_name" jdbcType="VARCHAR" property="principalName" />
-		<result column="principal_mobile" jdbcType="VARCHAR" property="principalMobile" />
-	</resultMap>
+	<!-- <resultMap id="VoResultMap" type="com.zes.squad.gmh.web.entity.vo.StaffVo"> 
+		<id column="id" jdbcType="BIGINT" property="id" /> <result column="email" 
+		jdbcType="VARCHAR" property="email" /> <result column="store_id" jdbcType="BIGINT" 
+		property="storeId" /> <result column="shop_name" jdbcType="VARCHAR" property="storeName" 
+		/> <result column="staff_level" jdbcType="BIGINT" property="staffLevel" /> 
+		<result column="principal_name" jdbcType="VARCHAR" property="principalName" 
+		/> <result column="principal_mobile" jdbcType="VARCHAR" property="principalMobile" 
+		/> </resultMap> -->
 	<sql id="Base_Column_List">
 		`id`,`email`,`password`,`salt`,`store_id`,`staff_level`,`principal_name`,`principal_mobile`,
 		`created_time`,
@@ -32,10 +31,13 @@
 		<include refid="Base_Column_List" />
 		FROM staff WHERE id = #{id, jdbcType=BIGINT}
 	</select>
-	<select id="search" parameterType="string" resultMap="VoResultMap">
-		select * from staff_vo where
-		concat_ws("",email,shop_name,principal_name,principal_mobile)
-		like concat('%',#{searchString},'%')
+	<select id="search" parameterType="string" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM staff WHERE
+		CONCAT_WS("",email,shop_name,principal_name,principal_mobile)
+		LIKE
+		CONCAT('%',#{searchString},'%')
 	</select>
 	<select id="selectByEmail" parameterType="string" resultMap="BaseResultMap">
 		SELECT
@@ -52,15 +54,26 @@
 		jdbcType=VARCHAR} WHERE `id` = #{id, jdbcType=BIGINT}
 	</update>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
-		update staff 
-		set
-		principal_name=#{principalName},
-		principal_mobile=#{principalMobile}
-		where
-		id=#{id}
+		UPDATE staff
+		<set>
+			<if test="principalName != null">
+				principal_name=#{principalName, jdbcType=VARCHAR},
+			</if>
+			<if test="principalMobile != null">
+				principal_mobile=#{principalMobile, jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE id=#{id, jdbcType=BIGINT}
 	</update>
-	<delete id="delById" parameterType="Long">
-		delete from staff where 
-		id=#{id}
+	<delete id="delById" parameterType="long">
+		DELETE FROM staff WHERE `id`
+		= #{id, jdbcType=BIGINT}
+	</delete>
+	<delete id="batchDeleteByIds" parameterType="list">
+		DELETE FROM staff WHERE `id` IN
+		<foreach collection="list" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
 	</delete>
 </mapper>

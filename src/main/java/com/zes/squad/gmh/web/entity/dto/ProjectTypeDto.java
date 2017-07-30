@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class ProjectTypeDto {
-	private Long id;
-	private Long storeId;
-	private Integer topType;
-	private String typeName;
+    private Long    id;
+    private Long    storeId;
+    private Integer topType;
+    private String  typeName;
 }

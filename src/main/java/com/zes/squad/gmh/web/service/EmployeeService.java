@@ -2,7 +2,6 @@ package com.zes.squad.gmh.web.service;
 
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
-import com.zes.squad.gmh.web.entity.dto.ShopDto;
 
 public interface EmployeeService {
 
@@ -19,7 +18,7 @@ public interface EmployeeService {
 
     int leave(Long[] id);
 
-    int update(EmployeeDto dto, Long[] jobId);
-    
-    PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize,String searchString);
+    int update(EmployeeDto dto);
+
+    PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString);
 }

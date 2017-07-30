@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class StockTypeDto {
 
-	private Long id;
-	private Long storeId;
-	private String typeName;
+    private Long   id;
+    private Long   storeId;
+    private String typeName;
 }

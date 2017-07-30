@@ -30,7 +30,7 @@ public class StaffPo extends Po {
     /**
      * 等级
      */
-    private Long staffLevel;
+    private Integer           staffLevel;
     /**
      * 负责人姓名
      */

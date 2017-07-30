@@ -4,32 +4,43 @@
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="level_name" jdbcType="VARCHAR" property="levelName" />
+		<result column="name" jdbcType="VARCHAR" property="bane" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`store_id`,`level_name`,
+		`id`,`store_id`,`name`,
 		`created_time`,
 		`modified_time`
 	</sql>
 	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from member_level where store_id=#{storeId}
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM member_level WHERE store_id=#{storeId, jdbcType=BIGINT}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
-		insert into member_level(store_id,level_name)
-		values
-		(#{storeId},#{levelName})
+		INSERT INTO
+		member_level(store_id,name)
+		VALUES
+		(#{storeId, jdbcType=BIGINT},#{name,
+		jdbcType=VARCHAR})
 	</insert>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
-		update member_level 
-		set
-		level_name=#{levelName}
-		where
-		id=#{id}
+		UPDATE member_level SET
+		name=#{name, jdbcType=VARCHAR}
+		WHERE id=#{id, jdbcType=BIGINT}
 	</update>
-	<delete id="delById" parameterType="Long">
-		delete from member_level where 
-		id=#{id}
+	<delete id="delById" parameterType="long">
+		DELETE FROM member_level
+		WHERE id=#{id, jdbcType=BIGINT}
+	</delete>
+	<delete id="batchDelete" parameterType="list">
+		DELETE FROM
+		member_level
+		WHERE id IN
+		<foreach collection="list" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
 	</delete>
 </mapper>

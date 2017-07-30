@@ -8,7 +8,10 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class EmployeeJobPo extends Po {
+
     private static final long serialVersionUID = 1L;
-    private Long              emId;
-    private Long              jobId;
+
+    private Long              employeeId;
+    private Integer           jobType;
+    private String            jobName;
 }

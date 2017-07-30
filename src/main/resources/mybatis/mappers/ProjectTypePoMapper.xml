@@ -14,33 +14,63 @@
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
-		select * from project_type where store_id=#{storeId}
+	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		project_type WHERE store_id=#{storeId, jdbcType=BIGINT}
 	</select>
-	<select id="getByTopType" parameterType="Map" resultMap="BaseResultMap">
-		select * from project_type where top_type=#{topType} and store_id=#{storeId}
+	<select id="getByTopType" parameterType="map" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		project_type WHERE top_type=#{topType, jdbcType=INTEGER} AND
+		store_id=#{storeId, jdbcType=BIGINT}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ProjectTypePo">
-		insert into project_type(store_id,top_type,type_name)
-		values
-		(#{storeId},#{topType},#{typeName})
+		INSERT INTO
+		project_type(store_id,top_type,type_name)
+		VALUES
+		(#{storeId,
+		jdbcType=BIGINT},#{topType, jdbcType=INTEGER},#{typeName,
+		jdbcType=VARCHAR})
 	</insert>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.ProjectTypePo">
-		update project_type 
-		set
-		top_type=#{topType},
-		type_name=#{typeName}
-		where
-		id=#{id}
+		UPDATE project_type
+		<set>
+			<if test="topType != null">
+				top_type = #{topType, jdbcType=INTEGER},
+			</if>
+			<if test="typeName != null">
+				top_name = #{typeName, jdbcType=INTEGER},
+			</if>
+		</set>
+		WHERE id=#{id, jdbcType=BIGINT}
 	</update>
-	<delete id="delById" parameterType="Long">
-		delete from project_type where 
-		id=#{id}
+	<delete id="delById" parameterType="long">
+		DELETE FROM project_type
+		WHERE id=#{id, jdbcType=BIGINT}
 	</delete>
-	<select id="search" parameterType="Map" resultMap="BaseResultMap">
-		select * from project_type where store_id=#{storeId} and 
-		concat_ws("",type_name)
-		like concat('%',#{searchString},'%')
+	<delete id="batchDelete" parameterType="long[]">
+		DELETE FROM project_type
+		WHERE id IN
+		<foreach collection="array" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
+	</delete>
+	<select id="search" parameterType="map" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		project_type WHERE store_id=#{storeId, jdbcType=BIGINT}
+		AND
+		CONCAT_WS("",type_name)
+		LIKE
+		CONCAT('%',#{searchString},'%')
+		<if test="topType != null">
+			AND top_type = #{topType, jdbcType=INTEGER}
+		</if>
 	</select>
-	
+
 </mapper>

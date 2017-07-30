@@ -7,20 +7,21 @@ import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.service.EmployeeJobService;
 
 @Service("employeeJobService")
-public class EmployeeJobServiceImpl implements EmployeeJobService{
+public class EmployeeJobServiceImpl implements EmployeeJobService {
 
-	@Autowired
-	private EmployeeJobMapper emJobMapper;
-	
-	public int insert(Long emId,Long[] jobId){
-		int job = 0;
-		for(int i=0;i<jobId.length;i++){
-			job = job + emJobMapper.insert(emId, jobId[i]);
-		}
-		return job;
-	}
-	public int delByEmId(Long emId){
-		int i = emJobMapper.delByEmId(emId);
-		return i;
-	}
+    @Autowired
+    private EmployeeJobMapper employeeJobMapper;
+
+    public int insert(Long emId, Long[] jobId) {
+        int job = 0;
+        for (int i = 0; i < jobId.length; i++) {
+            job = job + employeeJobMapper.insert(emId, jobId[i]);
+        }
+        return job;
+    }
+
+    public int delByEmId(Long emId) {
+        int i = employeeJobMapper.delteByEmployeeId(emId);
+        return i;
+    }
 }

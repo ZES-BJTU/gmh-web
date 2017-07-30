@@ -41,10 +41,10 @@ public class ShopController {
         if (pageSize == null || pageSize < 0) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
         }
-        PagedList<ShopDto> pagedListDto = shopService.listByPage(pageNum, pageSize);
-        PagedList<ShopVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ShopVo.class);
+        PagedList<ShopDto> pagedDtos = shopService.listByPage(pageNum, pageSize);
+        PagedList<ShopVo> pagedVos = CommonConverter.mapPageList(pagedDtos, ShopVo.class);
 
-        return JsonResult.success(pagedListVo);
+        return JsonResult.success(pagedVos);
     }
 
     @RequestMapping("/search")
@@ -56,10 +56,10 @@ public class ShopController {
         if (pageSize == null || pageSize < 0) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
         }
-        PagedList<ShopDto> pagedListDto = shopService.searchListByPage(pageNum, pageSize, searchString);
-        PagedList<ShopVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ShopVo.class);
+        PagedList<ShopDto> pagedDtos = shopService.searchListByPage(pageNum, pageSize, searchString);
+        PagedList<ShopVo> pagedVos = CommonConverter.mapPageList(pagedDtos, ShopVo.class);
 
-        return JsonResult.success(pagedListVo);
+        return JsonResult.success(pagedVos);
     }
 
     @RequestMapping("/insert")
