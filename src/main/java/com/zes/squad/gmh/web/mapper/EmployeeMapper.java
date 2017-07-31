@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.mapper;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,16 @@ public interface EmployeeMapper {
     Long insert(EmployeePo po);
 
     int leave(Map<String, Object> map);
+
+    /**
+     * 批量更新离职
+     * 
+     * @param leaveDate
+     * @param work
+     * @param ids
+     * @return
+     */
+    int batchUpdateWork(@Param("leaveDate") Date leaveDate, @Param("work") Boolean work, @Param("ids") Long[] ids);
 
     int update(EmployeePo po);
 

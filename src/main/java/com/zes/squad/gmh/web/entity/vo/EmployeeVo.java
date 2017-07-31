@@ -9,11 +9,11 @@ import lombok.Data;
 public class EmployeeVo {
     private Long        id;
     private String      emName;
-    private Integer     sex;
+    private String      sex;
     private String      phone;
     private Long        shopId;
     private Date        entryDate;
     private Date        quitDate;
-    private Integer     isWork;
+    private String      isWork;
     private List<JobVo> jobVos;
 }

@@ -2,7 +2,6 @@ package com.zes.squad.gmh.web.service.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
@@ -68,7 +66,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Date entry = new Date();
         po.setEntryDate(entry);
         po.setName(dto.getEmName());
-        po.setWork(dto.getIsWork());
+        po.setWork(true);
         employeeMapper.insert(po);
         List<EmployeeJobPo> pos = CommonConverter.mapList(dto.getJobDtos(), EmployeeJobPo.class);
         for (EmployeeJobPo jobPo : pos) {
@@ -81,16 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     public int leave(Long[] id) {
-        int i = 0;
-        Date leave = new Date();
-        Map<String, Object> map = Maps.newHashMap();
-
-        for (int j = 0; j < id.length; j++) {
-            map.put("id", id[j]);
-            map.put("leave", leave);
-            i = i + employeeMapper.leave(map);
-        }
-        return i;
+        return employeeMapper.batchUpdateWork(new Date(), false, id);
     }
 
     public int update(EmployeeDto dto) {

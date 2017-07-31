@@ -12,6 +12,9 @@ import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.enums.SexEnum;
+import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
@@ -71,6 +74,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public PagedList<MemberVo> listByPage(Integer pageNum, Integer pageSize) {
         StaffDto staff = ThreadContext.getCurrentStaff();
+        if (staff == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, ErrorMessage.staffIsNull);
+        }
         PageHelper.startPage(pageNum, pageSize);
         List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(staff.getStoreId(), null);
         if (CollectionUtils.isEmpty(unions)) {

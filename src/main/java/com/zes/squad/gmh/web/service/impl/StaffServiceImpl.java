@@ -209,10 +209,7 @@ public class StaffServiceImpl implements StaffService {
         staffDto.setPassword(null);
         staffDto.setSalt(null);
         staffDto.setToken(token);
-        Long storeId = ThreadContext.getCurrentStaff().getStoreId();
-        if (storeId == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS.getCode(), "获取用户门店信息失败");
-        }
+        Long storeId = staffPo.getStoreId();
         ShopPo shopPo = shopMapper.selectById(storeId);
         if (shopPo == null) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(), "未找到用户对应门店");

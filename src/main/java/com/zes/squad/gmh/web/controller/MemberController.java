@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
@@ -31,10 +32,12 @@ public class MemberController {
     @ResponseBody
     public JsonResult<PagedList<MemberVo>> doListByPage(Integer pageNum, Integer pageSize) {
         if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageNumIsError);
         }
         if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageSizeIsError);
         }
         PagedList<MemberVo> pagedListVo = memberService.listByPage(pageNum, pageSize);
 

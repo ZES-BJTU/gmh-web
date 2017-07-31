@@ -14,6 +14,7 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.enums.JobEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
@@ -22,6 +23,7 @@ import com.zes.squad.gmh.web.entity.dto.JobDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.param.EmployeeParam;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
+import com.zes.squad.gmh.web.entity.vo.JobVo;
 import com.zes.squad.gmh.web.service.EmployeeService;
 
 @RequestMapping("/employee")
@@ -35,15 +37,31 @@ public class EmployeeController {
     @ResponseBody
     public JsonResult<PagedList<EmployeeVo>> doListByPage(Integer pageNum, Integer pageSize) {
         if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageNumIsError);
         }
         if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageSizeIsError);
         }
         PagedList<EmployeeDto> pagedDtos = employeeService.listByPage(pageNum, pageSize);
-        PagedList<EmployeeVo> pagedVos = CommonConverter.mapPageList(pagedDtos, EmployeeVo.class);
+        PagedList<EmployeeVo> pagedVos = buildPagedEmployeeVosByDtos(pagedDtos);
 
         return JsonResult.success(pagedVos);
+    }
+
+    private PagedList<EmployeeVo> buildPagedEmployeeVosByDtos(PagedList<EmployeeDto> pagedDtos) {
+        List<EmployeeVo> vos = Lists.newArrayList();
+        for (EmployeeDto dto : pagedDtos.getData()) {
+            EmployeeVo vo = CommonConverter.map(dto, EmployeeVo.class);
+            vo.setIsWork(dto.getIsWork().booleanValue() ? "是" : "否");
+            Integer sex = Integer.valueOf(String.valueOf(dto.getSex()));
+            vo.setSex(EnumUtils.getDescByKey(SexEnum.class, sex));
+            List<JobVo> jobVos = CommonConverter.mapList(dto.getJobDtos(), JobVo.class);
+            vo.setJobVos(jobVos);
+            vos.add(vo);
+        }
+        return PagedList.newMe(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
     }
 
     @RequestMapping("/search")
@@ -56,7 +74,7 @@ public class EmployeeController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
         }
         PagedList<EmployeeDto> pagedDtos = employeeService.searchListByPage(pageNum, pageSize, searchString);
-        PagedList<EmployeeVo> pagedVos = CommonConverter.mapPageList(pagedDtos, EmployeeVo.class);
+        PagedList<EmployeeVo> pagedVos = buildPagedEmployeeVosByDtos(pagedDtos);
 
         return JsonResult.success(pagedVos);
     }
@@ -93,8 +111,7 @@ public class EmployeeController {
     @RequestMapping("/leave")
     @ResponseBody
     public JsonResult<?> leave(Long[] id) {
-        int i = 0;
-        i = employeeService.leave(id);
+        int i = employeeService.leave(id);
         return JsonResult.success(i);
     }
 
@@ -131,6 +148,20 @@ public class EmployeeController {
         } else {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "更新员工信息失败");
         }
+    }
+
+    @RequestMapping("/listJobs")
+    @ResponseBody
+    public JsonResult<List<JobVo>> doListJobVos() {
+        List<JobVo> vos = Lists.newArrayList();
+        for (JobEnum job : JobEnum.values()) {
+            JobVo vo = new JobVo();
+            vo.setJobType(job.getKey());
+            vo.setJobName(job.getDesc());
+            vos.add(vo);
+        }
+        return JsonResult.success(vos);
+
     }
 
     private String checkEmployeeParam(EmployeeParam param) {

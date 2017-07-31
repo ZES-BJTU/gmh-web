@@ -5,8 +5,9 @@
 		type="com.zes.squad.gmh.web.entity.union.EmployeeJobUnion">
 		<association property="employeePo"
 			resultMap="com.zes.squad.gmh.web.mapper.EmployeeMapper.BaseResultMap" />
-		<collection property="employeeJobPos" columnPrefix="_ej"
-			resultMap="com.zes.squad.gmh.web.mapper.EmployeeJobMapper.BaseResultMap" />
+		<collection property="employeeJobPos"
+			resultMap="com.zes.squad.gmh.web.mapper.EmployeeJobMapper.BaseResultMap"
+			columnPrefix="ej_" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		e.id,
@@ -24,7 +25,7 @@
 		ej.job_type AS ej_job_type,
 		ej.job_name AS ej_job_name,
 		ej.created_time AS ej_created_time,
-		ej.modified_time AS modified_time
+		ej.modified_time AS ej_modified_time
 	</sql>
 	<select id="listEmployeeJobUnionsByCondition" resultMap="BaseResultMap">
 		<bind name="serach" value="'%' + #{searchString} + '%'" />
@@ -33,7 +34,7 @@
 		FROM
 		employee e
 		LEFT JOIN
-		employ_job ej
+		employee_job ej
 		ON
 		e.id = ej.employee_id
 		WHERE

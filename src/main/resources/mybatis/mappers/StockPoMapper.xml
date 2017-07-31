@@ -63,15 +63,15 @@
 			#{id, jdbcType=BIGINT}
 		</foreach>
 	</delete>
-	<select id="search" parameterType="Map" resultMap="VoResultMap">
+	<select id="search" parameterType="Map" resultMap="BaseResultMap">
 		select * from
-		stock_vo where type_id=#{typeId} and
+		stock where type_id=#{typeId} and
 		concat_ws("",stock_name,unit,amount)
 		like
 		concat('%',#{searchString},'%')
 	</select>
-	<select id="searchWithoutType" parameterType="Map" resultMap="VoResultMap">
-		select * from stock_vo where type_id in
+	<select id="searchWithoutType" parameterType="Map" resultMap="BaseResultMap">
+		select * from stock where type_id in
 		<foreach item="item" index="index" collection="typeIds" open="("
 			separator="," close=")">
 			#{item}

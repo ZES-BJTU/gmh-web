@@ -39,13 +39,22 @@
 		VALUES
 		(#{name, jdbcType=VARCHAR},#{sex, jdbcType=TINYINT},#{phone,
 		jdbcType=VARCHAR},#{shopId, jdbcType=BIGINT},#{entryDate,
-		jdbcType=TIMESTAMP},#{quitDate, jdbcType=TIMESTAMP},1)
+		jdbcType=TIMESTAMP},#{quitDate, jdbcType=TIMESTAMP},#{work,
+		jdbcType=TINYINT})
 	</insert>
 	<update id="leave" parameterType="map">
-		UPDATE employee SET
-		work=0,
+		UPDATE employee SET work=0,
 		quit_date=#{leave, jdbcType=TIMESTAMP}
 		WHERE id=#{id, jdbcType=BIGINT}
+	</update>
+	<update id="batchUpdateWork">
+		UPDATE employee SET work=#{work, jdbcType=TINYINT},
+		quit_date=#{leaveDate, jdbcType=TIMESTAMP}
+		WHERE id INT
+		<foreach collection="ids" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
 	</update>
 	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo">
 		UPDATE employee
