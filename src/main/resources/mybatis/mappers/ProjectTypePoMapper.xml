@@ -64,10 +64,10 @@
 		<include refid="Base_Column_List" />
 		FROM
 		project_type WHERE store_id=#{storeId, jdbcType=BIGINT}
-		AND
-		CONCAT_WS("",type_name)
-		LIKE
-		CONCAT('%',#{searchString},'%')
+		<if test="searchString != null and searchString != ''">
+			<bind name="search" value="'%' + #{searchString} + '%'" />
+			AND CONCAT_WS("",type_name) LIKE CONCAT(#{search})
+		</if>
 		<if test="topType != null">
 			AND top_type = #{topType, jdbcType=INTEGER}
 		</if>

@@ -52,7 +52,7 @@ public class ProjectTypeServiceImpl implements ProjectTypeService {
     }
 
     @Override
-    public List<ProjectTypeVo> getByTopType(int topType) {
+    public List<ProjectTypeVo> listByTopType(int topType) {
         StaffDto staffDto = ThreadContext.getCurrentStaff();
         Map<String, Object> map = Maps.newHashMap();
         map.put("topType", topType);

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
@@ -17,6 +18,7 @@ import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.vo.ProjectTopTypeVo;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.service.ProjectTypeService;
 
@@ -29,14 +31,28 @@ public class ProjectTypeController {
 
     @RequestMapping("/getAll")
     @ResponseBody
-    public JsonResult<?> getAll() {
-        List<ProjectTypeVo> voList = projectTypeService.getAll();
-        return JsonResult.success(voList);
+    public JsonResult<List<ProjectTypeVo>> getAll() {
+        List<ProjectTypeVo> vos = projectTypeService.getAll();
+        return JsonResult.success(vos);
+    }
+
+    @RequestMapping("/listTops")
+    @ResponseBody
+    public JsonResult<List<ProjectTopTypeVo>> doListTops() {
+        List<ProjectTopTypeVo> vos = Lists.newArrayList();
+        for (ProjectTypeEnum type : ProjectTypeEnum.values()) {
+            ProjectTopTypeVo vo = new ProjectTopTypeVo();
+            vo.setTopTypeId(type.getKey());
+            vo.setTopTypeName(type.getDesc());
+            vos.add(vo);
+        }
+        return JsonResult.success(vos);
     }
 
     @RequestMapping("/search")
     @ResponseBody
-    public JsonResult<?> search(Integer pageNum, Integer pageSize, Long topType, String searchString) {
+    public JsonResult<PagedList<ProjectTypeVo>> search(Integer pageNum, Integer pageSize, Long topType,
+                                                       String searchString) {
         if (pageNum == null || pageNum < 0) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
         }
@@ -50,13 +66,13 @@ public class ProjectTypeController {
         return JsonResult.success(pagedListVo);
     }
 
-    @RequestMapping("/getByTopType")
+    @RequestMapping("/listByTopType")
     @ResponseBody
-    public JsonResult<?> getByTopType(Integer topType) {
+    public JsonResult<List<ProjectTypeVo>> doListByTopType(Integer topType) {
         if (topType == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择美容项顶层分类");
         }
-        List<ProjectTypeVo> vos = projectTypeService.getByTopType(topType);
+        List<ProjectTypeVo> vos = projectTypeService.listByTopType(topType);
         return JsonResult.success(vos);
     }
 

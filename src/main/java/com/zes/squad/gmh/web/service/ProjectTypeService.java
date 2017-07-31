@@ -10,7 +10,7 @@ public interface ProjectTypeService {
 
     List<ProjectTypeVo> getAll();
 
-    List<ProjectTypeVo> getByTopType(int topType);
+    List<ProjectTypeVo> listByTopType(int topType);
 
     int insert(ProjectTypeDto dto);
 
