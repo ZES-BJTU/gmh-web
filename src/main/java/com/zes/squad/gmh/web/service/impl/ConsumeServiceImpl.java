@@ -10,19 +10,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
+import com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
+import com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
 import com.zes.squad.gmh.web.mapper.ProjectUnionMapper;
@@ -32,13 +39,15 @@ import com.zes.squad.gmh.web.service.ConsumeService;
 public class ConsumeServiceImpl implements ConsumeService {
 
     @Autowired
-    private ConsumeRecordMapper consumeRecordmapper;
+    private ConsumeRecordMapper      consumeRecordmapper;
     @Autowired
-    private MemberUnionMapper   memberUnionMapper;
+    private MemberUnionMapper        memberUnionMapper;
     @Autowired
-    private ProjectUnionMapper  projectUnionMapper;
+    private ProjectUnionMapper       projectUnionMapper;
     @Autowired
-    private MemberMapper        memberMapper;
+    private MemberMapper             memberMapper;
+    @Autowired
+    private ConsumeRecordUnionMapper consumeRecordUnionMapper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
@@ -85,6 +94,35 @@ public class ConsumeServiceImpl implements ConsumeService {
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
         po.setConsumeTime(new Date());
         consumeRecordmapper.insert(po);
+    }
+
+    @Override
+    public PagedList<ConsumeRecordDto> listPagedConsumeRecords(ConsumeRecordQueryCondition condition) {
+        PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
+        List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(condition);
+        if (CollectionUtils.isEmpty(unions)) {
+            return PagedList.newMe(condition.getPageNum(), condition.getPageSize(), 0L, Lists.newArrayList());
+        }
+        PageInfo<ConsumeRecordUnion> info = new PageInfo<>(unions);
+        List<ConsumeRecordDto> dtos = buildConsumeRecordDtosByUnions(unions);
+        return PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
+    }
+
+    public List<ConsumeRecordDto> buildConsumeRecordDtosByUnions(List<ConsumeRecordUnion> unions) {
+        List<ConsumeRecordDto> dtos = Lists.newArrayList();
+        for (ConsumeRecordUnion union : unions) {
+            ConsumeRecordDto dto = CommonConverter.map(union.getConsumeRecordPo(), ConsumeRecordDto.class);
+            dto.setStoreName(union.getShopPo().getName());
+            dto.setProjectName(union.getProjectPo().getName());
+            dto.setEmployeeName(union.getEmployeePo().getName());
+            if (union.getConsumeRecordPo().getEmployeeId() != null) {
+                dto.setMember(true);
+            } else {
+                dto.setMember(false);
+            }
+            dtos.add(dto);
+        }
+        return dtos;
     }
 
 }

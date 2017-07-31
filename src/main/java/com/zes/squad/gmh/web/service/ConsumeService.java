@@ -1,5 +1,7 @@
 package com.zes.squad.gmh.web.service;
 
+import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 
 public interface ConsumeService {
@@ -10,5 +12,13 @@ public interface ConsumeService {
      * @param dto
      */
     void addConsumeRecord(ConsumeRecordDto dto);
+
+    /**
+     * 分页查询
+     * 
+     * @param condition
+     * @return
+     */
+    PagedList<ConsumeRecordDto> listPagedConsumeRecords(ConsumeRecordQueryCondition condition);
 
 }

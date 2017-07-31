@@ -23,14 +23,14 @@ public class AppointmentController {
 
     @RequestMapping("/getAll")
     @ResponseBody
-    public JsonResult<?> getAll() {
+    public JsonResult<List<AppointmentVo>> getAll() {
         List<AppointmentVo> vos = appointmentService.getAll();
         return JsonResult.success(vos);
     }
 
     @RequestMapping("/getByPhone")
     @ResponseBody
-    public JsonResult<?> getByPhone(String phone) {
+    public JsonResult<AppointmentVo> getByPhone(String phone) {
         if (Strings.isNullOrEmpty(phone)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请输入会员电话号码");
         }
@@ -44,7 +44,7 @@ public class AppointmentController {
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<?> insert(AppointmentDto dto) {
+    public JsonResult<Integer> insert(AppointmentDto dto) {
         if (appointmentService.isConflict(dto.getStoreId(), dto.getEmployeeId(), dto.getBeginTime(),
                 dto.getEndTime())) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED.getCode(), "该员工时间冲突");
@@ -67,13 +67,13 @@ public class AppointmentController {
 
     @RequestMapping("/cancel")
     @ResponseBody
-    public JsonResult<?> cancel(Long id) {
+    public JsonResult<Integer> cancel(Long id) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择预约");
         }
         int i = appointmentService.cancel(id);
         if (i == 1) {
-            return JsonResult.success();
+            return JsonResult.success(i);
         } else {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "没有记录被修改");
         }
@@ -81,15 +81,22 @@ public class AppointmentController {
 
     @RequestMapping("/finish")
     @ResponseBody
-    public JsonResult<?> finish(Long id, BigDecimal charge, Integer chargeWay) {
+    public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择预约");
         }
         int i = appointmentService.finish(id, charge, chargeWay);
         if (i == 1) {
-            return JsonResult.success();
+            return JsonResult.success(i);
         } else {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "没有记录被修改");
         }
     }
+
+    @RequestMapping("/remind")
+    @ResponseBody
+    public JsonResult<String> doRemindAppointmentTime() {
+        return JsonResult.success();
+    }
+
 }

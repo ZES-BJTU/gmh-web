@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion">
+		<association property="consumeRecordPo"
+			resultMap="com.zes.squad.gmh.web.mapper.ConsumeRecordMapper.BaseResultMap" />
+		<association property="shopPo"
+			resultMap="com.zes.squad.gmh.web.mapper.ShopMapper.BaseResultMap"
+			columnPrefix="s_" />
+		<association property="projectPo"
+			resultMap="com.zes.squad.gmh.web.mapper.ProjectMapper.BaseResultMap"
+			columnPrefix="p_" />
+		<association property="employeePo"
+			resultMap="com.zes.squad.gmh.web.mapper.EmployeeMapper.BaseResultMap"
+			columnPrefix="e_" />
+	</resultMap>
+	<select id="listConsumeRecordsByCondition"
+		parameterType="com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition"
+		resultMap="BaseResultMap">
+		SELECT
+		cr.id,
+		cr.store_id,
+		cr.project_id,
+		cr.employee_id,
+		cr.member_id,
+		cr.mobile,
+		cr.consumer_name,
+		cr.charge,
+		cr.charge_way,
+		cr.consume_time,
+		s.id AS s_id,
+		s.name AS s_name,
+		p.id AS p_id,
+		p.name AS
+		p_name,
+		e.id AS
+		e_id,
+		e.name AS e_name
+		FROM consume_record cr
+		LEFT JOIN shop s
+		ON
+		cr.store_id = s.id
+		LEFT JOIN project p
+		ON cr.projectId = p.id
+		LEFT JOIN
+		employee e
+		ON cr.employee_id = e.id
+		<where>
+			<if test="storeId != null">
+				AND cr.store_id = #{storeId, jdbcType=BIGINT}
+			</if>
+			<if
+				test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+				AND DATE_FORMAT(cr.consume_time, '%Y-%m-%d') BETWEEN
+				#{startTime, jdbcType=VARCHAR} AND #{endTime, jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY cr.consume_time DESC
+	</select>
+</mapper>

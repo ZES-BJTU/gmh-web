@@ -15,6 +15,7 @@ public class ConsumeRecordDto {
     private String     projectName;
     private Long       employeeId;
     private String     employeeName;
+    private Boolean    member;
     private Long       memberId;
     private String     mobile;
     private String     consumerName; //可以是会员也可以是非会员
