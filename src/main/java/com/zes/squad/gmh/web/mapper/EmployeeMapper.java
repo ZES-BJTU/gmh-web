@@ -18,4 +18,6 @@ public interface EmployeeMapper {
     int update(EmployeePo po);
 
     List<EmployeePo> search(Map<String, Object> map);
+
+    EmployeePo selectById(@Param("storeId") Long storeId, @Param("id") Long id);
 }

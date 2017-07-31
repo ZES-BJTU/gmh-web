@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.ProjectUnionMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.union.ProjectUnion">
+		<association property="projectPo"
+			resultMap="com.zes.squad.gmh.web.mapper.ProjectMapper.BaseResultMap" />
+		<association property="projectTypePo"
+			resultMap="com.zes.squad.gmh.web.mapper.ProjectTypeMapper.BaseResultMap"
+			columnPrefix="pt_" />
+	</resultMap>
+	<select id="listProjectUnions" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		p.id,
+		p.project_type_id,
+		p.name,
+		p.unit,
+		p.retail_price,
+		p.charge,
+		p.created_time,
+		p.modified_time,
+		pt.id AS pt_id,
+		pt.store_id AS pt_store_id,
+		pt.top_type AS pt_top_type,
+		pt.type_name AS pt_type_name,
+		pt.created_time AS pt_created_time,
+		pt.modified_time AS pt_modified_time
+		FROM project p
+		LEFT JOIN project_type pt
+		ON p.project_type_id = pt.id
+		<where>
+			<if test="projectId != null">
+				p.id = #{projectId, jdbcType=BIGINT}
+			</if>
+		</where>
+	</select>
+</mapper>

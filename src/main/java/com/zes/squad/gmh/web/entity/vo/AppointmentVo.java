@@ -2,19 +2,22 @@ package com.zes.squad.gmh.web.entity.vo;
 
 import java.util.Date;
 
+import lombok.Data;
+
+@Data
 public class AppointmentVo {
-    Long    id;
-    Long    storeId;
-    Long    memberId;
-    String  phone;
-    String  memberName;
-    Long    projectId;
-    String  projectName;
-    Long    employeeId;
-    String  employeeName;
-    Date    beginTime;
-    Date    endTime;
-    Integer status;
-    int     isLine;
-    String  remark;
+    private Long    id;
+    private Long    storeId;
+    private Long    memberId;
+    private String  memberName;
+    private String  phone;
+    private Long    projectId;
+    private String  projectName;
+    private Long    employeeId;
+    private String  employeeName;
+    private Date    beginTime;
+    private Date    endTime;
+    private Integer status;
+    private String  isLine;
+    private String  remark;
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.zes.squad.gmh.web.entity.po.ProjectPo;
 
 public interface ProjectMapper {
+
     List<ProjectPo> getAll(Long storeId);
 
     List<ProjectPo> getByType(Long typeId);

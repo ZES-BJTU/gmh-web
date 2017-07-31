@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.AppointmentUnionMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.union.AppointmentUnion">
+		<association property="appointmentPo"
+			resultMap="com.zes.squad.gmh.web.mapper.AppointmentMapper.BaseResultMap" />
+		<association property="employeePo"
+			resultMap="com.zes.squad.gmh.web.mapper.EmployeeMapper.BaseResultMap"
+			columnPrefix="e_" />
+		<association property="memberPo"
+			resultMap="com.zes.squad.gmh.web.mapper.MemberMapper.BaseResultMap"
+			columnPrefix="m_" />
+		<association property="projectPo"
+			resultMap="com.zes.squad.gmh.web.mapper.ProjectMapper.BaseResultMap"
+			columnPrefix="p_" />
+	</resultMap>
+	<select id="listAppointmentUnionsByCondition" resultMap="BaseResultMap">
+		SELECT
+		a.id,
+		a.store_id,
+		a.member_id,
+		a.phone,
+		a.project_id,
+		a.employee_id,
+		a.begin_time,
+		a.end_time,
+		a.status,
+		a.line,
+		a.remark,
+		a.created_time,
+		a.modified_time,
+		e.id AS e_id,
+		e.name AS e_name,
+		m.id AS m_id,
+		m.name AS
+		m_name,
+		p.id AS p_id,
+		p.name AS p_name
+		FROM appointment a
+		LEFT JOIN
+		employee e
+		ON a.employee_id = e.id
+		LEFT JOIN member m
+		ON a.member_id =
+		m.id
+		LEFT JOIN project p
+		ON a.project_id = p.id
+		<where>
+			<if test="storeId != null">
+				a.store_id = #{storeId, jdbcType=BIGINT}
+			</if>
+			<if test="phone != null">
+				a.phone = #{phone, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

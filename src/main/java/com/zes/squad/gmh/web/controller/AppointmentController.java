@@ -1,6 +1,6 @@
 package com.zes.squad.gmh.web.controller;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,11 @@ public class AppointmentController {
     @RequestMapping("/getAll")
     @ResponseBody
     public JsonResult<?> getAll() {
-        List<AppointmentVo> voList = new ArrayList<AppointmentVo>();
-        voList = appointmentService.getAll();
-        return JsonResult.success(voList);
+        List<AppointmentVo> vos = appointmentService.getAll();
+        return JsonResult.success(vos);
     }
 
-    @RequestMapping("getByPhone")
+    @RequestMapping("/getByPhone")
     @ResponseBody
     public JsonResult<?> getByPhone(String phone) {
         if (Strings.isNullOrEmpty(phone)) {
@@ -37,17 +36,17 @@ public class AppointmentController {
         }
         AppointmentVo vo = appointmentService.getByPhone(phone);
         if (vo == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY.getCode(), "未查询到该用户");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(), "未查询到该用户");
         }
         return JsonResult.success(vo);
 
     }
 
-    @RequestMapping("insert")
+    @RequestMapping("/insert")
     @ResponseBody
     public JsonResult<?> insert(AppointmentDto dto) {
-
-        if (appointmentService.isConflict()) {
+        if (appointmentService.isConflict(dto.getStoreId(), dto.getEmployeeId(), dto.getBeginTime(),
+                dto.getEndTime())) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED.getCode(), "该员工时间冲突");
         }
         int i = appointmentService.insert(dto);
@@ -55,39 +54,42 @@ public class AppointmentController {
 
     }
 
-    @RequestMapping("update")
+    @RequestMapping("/update")
     @ResponseBody
     public JsonResult<?> update(AppointmentDto dto) {
-        if (appointmentService.isConflict()) {
+        if (appointmentService.isConflict(dto.getStoreId(), dto.getEmployeeId(), dto.getBeginTime(),
+                dto.getEndTime())) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED.getCode(), "该员工时间冲突");
         }
         int i = appointmentService.update(dto);
         return JsonResult.success(i);
     }
 
-    @RequestMapping("cancel")
+    @RequestMapping("/cancel")
     @ResponseBody
     public JsonResult<?> cancel(Long id) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择预约");
         }
         int i = appointmentService.cancel(id);
-        if (i == 1)
+        if (i == 1) {
             return JsonResult.success();
-        else
+        } else {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "没有记录被修改");
+        }
     }
 
-    @RequestMapping("finish")
+    @RequestMapping("/finish")
     @ResponseBody
-    public JsonResult<?> finish(Long id) {
+    public JsonResult<?> finish(Long id, BigDecimal charge, Integer chargeWay) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择预约");
         }
-        int i = appointmentService.finish(id);
-        if (i == 1)
+        int i = appointmentService.finish(id, charge, chargeWay);
+        if (i == 1) {
             return JsonResult.success();
-        else
+        } else {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "没有记录被修改");
+        }
     }
 }

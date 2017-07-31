@@ -18,6 +18,12 @@
 		`created_time`,
 		`modified_time`
 	</sql>
+	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM employee WHERE shop_id = #{storeid, jdbcType=BIGINT} AND id =
+		#{id, jdbcType=BIGINT}
+	</select>
 	<select id="listByPage" parameterType="long" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />

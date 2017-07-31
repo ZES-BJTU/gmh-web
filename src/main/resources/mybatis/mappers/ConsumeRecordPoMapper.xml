@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.ConsumeRecordMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.po.ConsumeRecordPo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="store_id" jdbcType="BIGINT" property="storeId" />
+		<result column="member_id" jdbcType="BIGINT" property="memberId" />
+		<result column="project_id" jdbcType="BIGINT" property="projectId" />
+		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="consumer_name" jdbcType="VARCHAR" property="consumerName" />
+		<result column="charge" jdbcType="DECIMAL" property="charge" />
+		<result column="charge_way" jdbcType="INTEGER" property="chargeWay" />
+		<result column="consume_time" jdbcType="TIMESTAMP" property="consumeTime" />
+		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		`id`,`store_id`,`member_id`,
+		`project_id`,`employee_id`,`mobile`,
+		`consumer_name`,`charge`,
+		`charge_way`,`consume_time`,
+		`created_time`,`modified_time`
+	</sql>
+	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ConsumeRecordPo">
+		<selectKey keyProperty="id" resultType="long" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		consume_record(`store_id`,`member_id`,
+		`project_id`,`employee_id`,`mobile`,
+		`consumer_name`,`charge`,
+		`charge_way`,`consume_time`)
+		VALUES(#{storeId,jdbcType=BIGINT},
+		memberId,jdbcType=BIGINT},
+		projectId,jdbcType=BIGINT},
+		employeeId,jdbcType=BIGINT},
+		mobile,jdbcType=VARCHAR},
+		consumerName,jdbcType=BIGINT},
+		charge,jdbcType=DECIMAL},
+		chargeWay,jdbcType=INTEGER},
+		consumeTime,jdbcType=TIMESTAMP},
+		);
+	</insert>
+</mapper>
