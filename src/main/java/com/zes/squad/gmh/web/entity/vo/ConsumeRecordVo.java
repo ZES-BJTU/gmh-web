@@ -17,6 +17,7 @@ public class ConsumeRecordVo {
     private String     employeeName;
     private String     memberDesc;
     private Long       memberId;
+    private String     mobile;
     private String     consumerName; //可以是会员也可以是非会员
     private BigDecimal charge;
     private String     chargeWay;

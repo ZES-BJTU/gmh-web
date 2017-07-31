@@ -20,6 +20,7 @@ import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
+import com.zes.squad.gmh.web.entity.param.ConsumeRecordExportParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
@@ -68,6 +69,23 @@ public class ConsumeController extends BaseController {
         return JsonResult.success(pagedVos);
     }
 
+    @RequestMapping("/export")
+    public JsonResult<Void> doExportToExcel(ConsumeRecordExportParams params) {
+        String error = checkConsumeRecordExportParams(params);
+        if (!Strings.isNullOrEmpty(error)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
+        }
+        ConsumeRecordQueryCondition condition = CommonConverter.map(params, ConsumeRecordQueryCondition.class);
+        StaffDto staff = getStaff();
+        if (staff == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(),
+                    ErrorMessage.staffIsNull);
+        }
+        condition.setStoreId(staff.getStoreId());
+        consumeService.exportToExcel(condition);
+        return JsonResult.success();
+    }
+
     private String checkConsumeRecordQueryParams(ConsumeRecordQueryParams params) {
         if (params == null) {
             return ErrorMessage.paramIsNull;
@@ -96,4 +114,7 @@ public class ConsumeController extends BaseController {
         return PagedList.newMe(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
     }
 
+    private String checkConsumeRecordExportParams(ConsumeRecordExportParams params) {
+        return null;
+    }
 }

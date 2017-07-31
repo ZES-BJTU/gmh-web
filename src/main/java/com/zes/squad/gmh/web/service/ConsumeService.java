@@ -21,4 +21,11 @@ public interface ConsumeService {
      */
     PagedList<ConsumeRecordDto> listPagedConsumeRecords(ConsumeRecordQueryCondition condition);
 
+    /**
+     * 查询并导出
+     * 
+     * @param condition
+     */
+    void exportToExcel(ConsumeRecordQueryCondition condition);
+
 }

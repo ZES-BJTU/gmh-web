@@ -1,6 +1,10 @@
 package com.zes.squad.gmh.web.service.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +22,9 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
+import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
@@ -33,10 +39,16 @@ import com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
 import com.zes.squad.gmh.web.mapper.ProjectUnionMapper;
+import com.zes.squad.gmh.web.property.ExportProperties;
 import com.zes.squad.gmh.web.service.ConsumeService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service("consumeRecordService")
 public class ConsumeServiceImpl implements ConsumeService {
+
+    private static final String      DEFAULT_NEXT_LINE = "\r\n";
 
     @Autowired
     private ConsumeRecordMapper      consumeRecordmapper;
@@ -108,7 +120,18 @@ public class ConsumeServiceImpl implements ConsumeService {
         return PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
     }
 
-    public List<ConsumeRecordDto> buildConsumeRecordDtosByUnions(List<ConsumeRecordUnion> unions) {
+    @Override
+    public void exportToExcel(ConsumeRecordQueryCondition condition) {
+        List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(condition);
+        if (CollectionUtils.isEmpty(unions)) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
+                    ErrorMessage.consumeRecordIsEmpty);
+        }
+        //写文件
+        exportRecordToFile(unions);
+    }
+
+    private List<ConsumeRecordDto> buildConsumeRecordDtosByUnions(List<ConsumeRecordUnion> unions) {
         List<ConsumeRecordDto> dtos = Lists.newArrayList();
         for (ConsumeRecordUnion union : unions) {
             ConsumeRecordDto dto = CommonConverter.map(union.getConsumeRecordPo(), ConsumeRecordDto.class);
@@ -123,6 +146,72 @@ public class ConsumeServiceImpl implements ConsumeService {
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    private void exportRecordToFile(List<ConsumeRecordUnion> unions) {
+        try {
+            StaffDto staff = ThreadContext.getCurrentStaff();
+            String charset = ExportProperties.get("charset");
+            String path = ExportProperties.get("path");
+            String fileName = staff.getStoreId() + "_" + formatDate(new Date()) + ".csv";
+            OutputStream output = new FileOutputStream(new File(path + fileName), true);
+            output.write(("序号,门店名称,美容项目名称,美容师,是否会员,顾客姓名,顾客手机号,消费金额,支付方式,消费时间" + DEFAULT_NEXT_LINE).getBytes(charset));
+            int i = 1;
+            for (ConsumeRecordUnion union : unions) {
+                //序号
+                output.write(i);
+                output.write(",".getBytes(charset));
+                //门店名称
+                output.write(union.getShopPo().getName().getBytes(charset));
+                output.write(",".getBytes(charset));
+                //美容项目
+                output.write(union.getProjectPo().getName().getBytes(charset));
+                output.write(",".getBytes(charset));
+                //美容师
+                output.write(union.getEmployeePo().getName().getBytes(charset));
+                output.write(",".getBytes(charset));
+                //是否会员
+                if (union.getConsumeRecordPo().getEmployeeId() != null) {
+                    output.write("是".getBytes(charset));
+                    output.write(",".getBytes(charset));
+                } else {
+                    output.write("否".getBytes(charset));
+                    output.write(",".getBytes(charset));
+                }
+                //顾客姓名
+                output.write(union.getConsumeRecordPo().getConsumerName().getBytes(charset));
+                output.write(",".getBytes(charset));
+                //顾客手机号
+                output.write(union.getConsumeRecordPo().getMobile().getBytes(charset));
+                output.write(",".getBytes(charset));
+                //消费金额
+                output.write(String.valueOf(union.getConsumeRecordPo().getCharge()).getBytes(charset));
+                output.write(",".getBytes(charset));
+                //支付方式
+                output.write(EnumUtils.getDescByKey(ChargeWayEnum.class, union.getConsumeRecordPo().getChargeWay())
+                        .getBytes(charset));
+                output.write(",".getBytes(charset));
+                //消费时间
+                output.write(formatDateTime(union.getConsumeRecordPo().getConsumeTime()).getBytes(charset));
+                output.write(",".getBytes(charset));
+                output.write(DEFAULT_NEXT_LINE.getBytes(charset));
+                i++;
+            }
+            output.flush();
+            output.close();
+        } catch (Exception e) {
+            log.error("消费记录导出到文件异常", e);
+        }
+    }
+
+    private static String formatDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date);
+    }
+
+    private static String formatDateTime(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
     }
 
 }
