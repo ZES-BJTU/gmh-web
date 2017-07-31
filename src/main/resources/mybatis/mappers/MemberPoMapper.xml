@@ -33,7 +33,7 @@
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM member
-		WHERE id = #{id, jdbctype=BIGINT}
+		WHERE id = #{id, jdbcType=BIGINT}
 	</select>
 	<select id="getByPhone" parameterType="string" resultMap="BaseResultMap">
 		SELECT
