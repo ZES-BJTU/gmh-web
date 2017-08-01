@@ -22,12 +22,13 @@
 		FROM staff WHERE id = #{id, jdbcType=BIGINT}
 	</select>
 	<select id="search" parameterType="string" resultMap="BaseResultMap">
+		<bind name="search" value="'%' + searchString + '%'" />
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM staff WHERE
-		CONCAT_WS("",email,shop_name,principal_name,principal_mobile)
+		CONCAT_WS("",email,shop_name)
 		LIKE
-		CONCAT('%',#{searchString},'%')
+		CONCAT(#{searchString})
 	</select>
 	<select id="selectByEmail" parameterType="string" resultMap="BaseResultMap">
 		SELECT
@@ -36,27 +37,34 @@
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
 		insert into
-		staff(email,password,salt,store_id,staff_level,principal_name,principal_mobile)
-		values(#{email},#{password},#{salt},#{storeId},#{staffLevel},#{principalName},#{principalMobile})
+		staff(email,`password`,salt,store_id,staff_level)
+		values(#{email,
+		jdbcType=VARCHAR},#{password, jdbcType=VARCHAR},#{salt,
+		jdbcType=VARCHAR},#{storeId, jdbcType=BIGINT},#{staffLevel,
+		jdbcType=INTEGER})
 	</insert>
 	<update id="updatePassword">
 		UPDATE staff SET `password` = #{password,
 		jdbcType=VARCHAR} WHERE `id` = #{id, jdbcType=BIGINT}
 	</update>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
+	<delete id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
 		UPDATE staff
 		<set>
-			<if test="principalName != null">
-				principal_name=#{principalName, jdbcType=VARCHAR},
+			<if test="email != null and email != ''">
+				email = #{email, jdbcType=VARCHAR},
 			</if>
-			<if test="principalMobile != null">
-				principal_mobile=#{principalMobile, jdbcType=VARCHAR}
+			<if test="storeId != null">
+				store_id = #{storeId, jdbcType=BIGINT}
+			</if>
+			<if test="staffLevel != null">
+				staff_level = #{staffLevel, jdbcType=INTEGER}
 			</if>
 		</set>
-		WHERE id=#{id, jdbcType=BIGINT}
-	</update>
-	<delete id="delById" parameterType="long">
-		DELETE FROM staff WHERE `id`
+		WHERE id = #{id, jdbcType=BIGINT}
+	</delete>
+	<delete id="deleteById" parameterType="long">
+		DELETE FROM staff WHERE
+		`id`
 		= #{id, jdbcType=BIGINT}
 	</delete>
 	<delete id="batchDeleteByIds" parameterType="long[]">

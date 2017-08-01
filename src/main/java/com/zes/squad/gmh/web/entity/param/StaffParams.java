@@ -3,7 +3,7 @@ package com.zes.squad.gmh.web.entity.param;
 import lombok.Data;
 
 @Data
-public class StaffParam {
+public class StaffParams {
 
     private Long    id;
 
@@ -12,5 +12,9 @@ public class StaffParam {
     private Long    storeId;
 
     private Integer staffLevel;
+
+    private String  principalName;
+
+    private String  principalMobile;
 
 }

@@ -38,11 +38,17 @@ public interface StaffMapper {
      */
     int updatePassword(@Param("id") Long id, @Param("password") String password);
 
+    /**
+     * 更新非空
+     * 
+     * @param po
+     * @return
+     */
+    int updateSelective(StaffPo po);
+
     List<StaffPo> search(String searchString);
 
-    int update(StaffPo po);
-
-    int delById(Long id);
+    int deleteById(Long id);
 
     /**
      * 批量删除

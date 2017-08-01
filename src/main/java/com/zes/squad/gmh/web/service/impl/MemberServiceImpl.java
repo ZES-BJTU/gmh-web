@@ -12,13 +12,9 @@ import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.enums.SexEnum;
-import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
-import com.zes.squad.gmh.common.exception.ErrorMessage;
-import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
@@ -35,16 +31,14 @@ public class MemberServiceImpl implements MemberService {
     private MemberUnionMapper memberUnionMapper;
 
     public List<MemberVo> getAll() {
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(staffDto.getStoreId(), null);
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(ThreadContext.getStaffStoreId(), null);
         List<MemberVo> vos = buildMemberVosByUnions(unions);
         return vos;
     }
 
     @Override
     public int insert(MemberDto dto) {
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        dto.setStoreId(staffDto.getStoreId());
+        dto.setStoreId(ThreadContext.getStaffStoreId());
         MemberPo po = CommonConverter.map(dto, MemberPo.class);
         po.setMemberLevelId(dto.getLevelId());
         po.setName(dto.getMemberName());
@@ -73,12 +67,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public PagedList<MemberVo> listByPage(Integer pageNum, Integer pageSize) {
-        StaffDto staff = ThreadContext.getCurrentStaff();
-        if (staff == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, ErrorMessage.staffIsNull);
-        }
         PageHelper.startPage(pageNum, pageSize);
-        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(staff.getStoreId(), null);
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(ThreadContext.getStaffStoreId(), null);
         if (CollectionUtils.isEmpty(unions)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }

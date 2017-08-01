@@ -14,14 +14,10 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
-import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
-import com.zes.squad.gmh.common.exception.ErrorMessage;
-import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.JobDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.union.EmployeeJobUnion;
@@ -46,15 +42,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public PagedList<EmployeeDto> listByPage(Integer pageNum, Integer pageSize) {
-        StaffDto staff = ThreadContext.getCurrentStaff();
-        if (staff == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, ErrorMessage.staffIsNull);
-        }
         PageHelper.startPage(pageNum, pageSize);
         EmployeeJobQueryCondition condition = new EmployeeJobQueryCondition();
         condition.setPageNum(pageNum);
         condition.setPageSize(pageSize);
-        condition.setStoreId(staff.getStoreId());
+        condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setWork(DEFAULT_IS_WORK);
         List<Long> ids = employeeMapper.selectIdsByCondition(condition);
         if (CollectionUtils.isEmpty(ids)) {
@@ -112,11 +104,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
         PageHelper.startPage(pageNum, pageSize);
-        StaffDto staff = ThreadContext.getCurrentStaff();
         EmployeeJobQueryCondition condition = new EmployeeJobQueryCondition();
         condition.setPageNum(pageNum);
         condition.setPageSize(pageSize);
-        condition.setStoreId(staff.getStoreId());
+        condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setWork(DEFAULT_IS_WORK);
         condition.setSearchString(searchString);
         List<Long> ids = employeeMapper.selectIdsByCondition(condition);
@@ -144,5 +135,5 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return dtos;
     }
-    
+
 }

@@ -5,7 +5,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class EmployeeParam {
+public class EmployeeParams {
 
     private Long    id;
     private String  emName;

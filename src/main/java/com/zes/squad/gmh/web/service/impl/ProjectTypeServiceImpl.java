@@ -15,7 +15,6 @@ import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.mapper.ProjectTypeMapper;
@@ -28,8 +27,7 @@ public class ProjectTypeServiceImpl implements ProjectTypeService {
     private ProjectTypeMapper projectTypeMapper;
 
     public List<ProjectTypeVo> getAll() {
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        List<ProjectTypePo> pos = projectTypeMapper.getAll(staffDto.getStoreId());
+        List<ProjectTypePo> pos = projectTypeMapper.getAll(ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
@@ -53,10 +51,9 @@ public class ProjectTypeServiceImpl implements ProjectTypeService {
 
     @Override
     public List<ProjectTypeVo> listByTopType(int topType) {
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
         Map<String, Object> map = Maps.newHashMap();
         map.put("topType", topType);
-        map.put("storeId", staffDto.getStoreId());
+        map.put("storeId", ThreadContext.getStaffStoreId());
         List<ProjectTypePo> pos = projectTypeMapper.getByTopType(map);
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
@@ -69,10 +66,9 @@ public class ProjectTypeServiceImpl implements ProjectTypeService {
     public PagedList<ProjectTypeDto> searchListByPage(Integer pageNum, Integer pageSize, Long topType,
                                                       String searchString) {
         PageHelper.startPage(pageNum, pageSize);
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
         List<ProjectTypePo> projectTypePos = Lists.newArrayList();
         Map<String, Object> map = Maps.newHashMap();
-        map.put("storeId", staffDto.getStoreId());
+        map.put("storeId", ThreadContext.getStaffStoreId());
         map.put("searchString", searchString);
         if (topType == null || topType == 0L) {
             projectTypePos = projectTypeMapper.search(map);

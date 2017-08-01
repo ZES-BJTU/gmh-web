@@ -1,5 +1,8 @@
 package com.zes.squad.gmh.web.controller;
 
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,7 @@ import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.JobDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
-import com.zes.squad.gmh.web.entity.param.EmployeeParam;
+import com.zes.squad.gmh.web.entity.param.EmployeeParams;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.entity.vo.JobVo;
 import com.zes.squad.gmh.web.helper.CheckHelper;
@@ -38,11 +40,11 @@ public class EmployeeController {
     @RequestMapping("/listByPage")
     @ResponseBody
     public JsonResult<PagedList<EmployeeVo>> doListByPage(Integer pageNum, Integer pageSize) {
-        if (pageNum == null || pageNum < 0) {
+        if (!isValidPageNum(pageNum)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageNumIsError);
         }
-        if (pageSize == null || pageSize < 0) {
+        if (isValidPageSize(pageSize)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageSizeIsError);
         }
@@ -83,8 +85,8 @@ public class EmployeeController {
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<EmployeeVo> insert(EmployeeParam param, Integer[] jobId) {
-        String error = checkEmployeeParam(param);
+    public JsonResult<EmployeeVo> insert(EmployeeParams params, Integer[] jobId) {
+        String error = checkEmployeeParam(params);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
@@ -92,8 +94,7 @@ public class EmployeeController {
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
-        StaffDto staff = ThreadContext.getCurrentStaff();
-        EmployeeDto dto = CommonConverter.map(param, EmployeeDto.class);
+        EmployeeDto dto = CommonConverter.map(params, EmployeeDto.class);
         List<JobDto> dtos = Lists.newArrayList();
         for (Integer jobType : jobId) {
             if (jobType != null) {
@@ -104,7 +105,7 @@ public class EmployeeController {
             }
         }
         dto.setJobDtos(dtos);
-        dto.setShopId(staff.getStoreId());
+        dto.setShopId(ThreadContext.getStaffStoreId());
         EmployeeDto employeeDto = employeeService.insert(dto);
         EmployeeVo vo = buildEmployeeVoByDto(employeeDto);
         return JsonResult.success(vo);
@@ -132,8 +133,8 @@ public class EmployeeController {
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<Integer> update(EmployeeParam param, Integer[] jobId) {
-        String error = checkEmployeeParam(param);
+    public JsonResult<Integer> update(EmployeeParams params, Integer[] jobId) {
+        String error = checkEmployeeParam(params);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
@@ -141,14 +142,13 @@ public class EmployeeController {
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
-        if (param.getId() == null) {
+        if (params.getId() == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工标识不能为空");
         }
-        if (param.getEntryDate() == null) {
+        if (params.getEntryDate() == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工入职日期不能为空");
         }
-        StaffDto staff = ThreadContext.getCurrentStaff();
-        EmployeeDto dto = CommonConverter.map(param, EmployeeDto.class);
+        EmployeeDto dto = CommonConverter.map(params, EmployeeDto.class);
         List<JobDto> dtos = Lists.newArrayList();
         for (Integer jobType : jobId) {
             if (jobType != null) {
@@ -159,11 +159,12 @@ public class EmployeeController {
             }
         }
         dto.setJobDtos(dtos);
-        dto.setShopId(staff.getStoreId());
+        dto.setShopId(ThreadContext.getStaffStoreId());
         int i = employeeService.update(dto);
         return JsonResult.success(i);
     }
 
+    @Deprecated
     @RequestMapping("/listJobs")
     @ResponseBody
     public JsonResult<List<JobVo>> doListJobVos() {
@@ -178,7 +179,7 @@ public class EmployeeController {
 
     }
 
-    private String checkEmployeeParam(EmployeeParam param) {
+    private String checkEmployeeParam(EmployeeParams param) {
         if (param == null) {
             return "员工信息不能为空";
         }

@@ -17,7 +17,6 @@ import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.vo.ProjectTopTypeVo;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.service.ProjectTypeService;
@@ -83,8 +82,7 @@ public class ProjectTypeController {
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        dto.setStoreId(staffDto.getStoreId());
+        dto.setStoreId(ThreadContext.getStaffStoreId());
         int i = projectTypeService.insert(dto);
         if (i > 0) {
             return JsonResult.success(i);

@@ -67,5 +67,5 @@ public interface StaffService {
     
     int update(StaffDto dto);
     
-    int delByIds(Long[] Id);
+    int deleteByIds(Long[] ids);
 }

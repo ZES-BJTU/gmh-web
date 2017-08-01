@@ -13,7 +13,6 @@ import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.MemberLevelDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.vo.MemberLevelVo;
 import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
@@ -26,8 +25,7 @@ public class MemberLevelServiceImpl implements MemberLevelService {
     private MemberLevelMapper memberLevelMapper;
 
     public List<MemberLevelVo> getAll() {
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        List<MemberLevelPo> pos = memberLevelMapper.getAll(staffDto.getStoreId());
+        List<MemberLevelPo> pos = memberLevelMapper.getAll(ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
@@ -63,9 +61,8 @@ public class MemberLevelServiceImpl implements MemberLevelService {
 
     @Override
     public PagedList<MemberLevelDto> listByPage(Integer pageNum, Integer pageSize) {
-        StaffDto staff = ThreadContext.getCurrentStaff();
         PageHelper.startPage(pageNum, pageSize);
-        List<MemberLevelPo> memberLevelPos = memberLevelMapper.getAll(staff.getStoreId());
+        List<MemberLevelPo> memberLevelPos = memberLevelMapper.getAll(ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(memberLevelPos)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }

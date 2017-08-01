@@ -1,5 +1,7 @@
 package com.zes.squad.gmh.web.controller;
 
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.ShopDto;
-import com.zes.squad.gmh.web.entity.param.ShopParam;
+import com.zes.squad.gmh.web.entity.param.ShopParams;
 import com.zes.squad.gmh.web.entity.vo.ShopVo;
 import com.zes.squad.gmh.web.helper.CheckHelper;
 import com.zes.squad.gmh.web.service.ShopService;
@@ -36,11 +38,11 @@ public class ShopController {
     @RequestMapping("/listByPage")
     @ResponseBody
     public JsonResult<PagedList<ShopVo>> doListByPage(Integer pageNum, Integer pageSize) {
-        if (pageNum == null || pageNum < 0) {
+        if (!isValidPageNum(pageNum)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageNumIsError);
         }
-        if (pageSize == null || pageSize < 0) {
+        if (!isValidPageSize(pageSize)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageSizeIsError);
         }
@@ -53,11 +55,11 @@ public class ShopController {
     @RequestMapping("/search")
     @ResponseBody
     public JsonResult<PagedList<ShopVo>> search(Integer pageNum, Integer pageSize, String searchString) {
-        if (pageNum == null || pageNum < 0) {
+        if (!isValidPageNum(pageNum)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageNumIsError);
         }
-        if (pageSize == null || pageSize < 0) {
+        if (!isValidPageSize(pageSize)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageSizeIsError);
         }
@@ -69,24 +71,24 @@ public class ShopController {
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<Integer> insert(ShopParam param) {
-        String error = checkCreateShopParam(param);
+    public JsonResult<Integer> insert(ShopParams params) {
+        String error = checkCreateShopParam(params);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
-        ShopDto dto = CommonConverter.map(param, ShopDto.class);
+        ShopDto dto = CommonConverter.map(params, ShopDto.class);
         int i = shopService.insert(dto);
         return JsonResult.success(i);
     }
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<Integer> update(ShopParam param) {
-        String error = checkModifyShopParam(param);
+    public JsonResult<Integer> update(ShopParams params) {
+        String error = checkModifyShopParam(params);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
-        ShopDto dto = CommonConverter.map(param, ShopDto.class);
+        ShopDto dto = CommonConverter.map(params, ShopDto.class);
         int i = shopService.update(dto);
         return JsonResult.success(i);
     }
@@ -101,38 +103,38 @@ public class ShopController {
         return JsonResult.success(i);
     }
 
-    private String checkModifyShopParam(ShopParam param) {
-        String error = checkShopParam(param);
+    private String checkModifyShopParam(ShopParams params) {
+        String error = checkShopParam(params);
         if (!Strings.isNullOrEmpty(error)) {
             return error;
         }
-        if (param.getId() == null) {
+        if (params.getId() == null) {
             return "店铺标识不能为空";
         }
         return null;
     }
 
-    private String checkCreateShopParam(ShopParam param) {
-        return checkShopParam(param);
+    private String checkCreateShopParam(ShopParams params) {
+        return checkShopParam(params);
     }
 
-    private String checkShopParam(ShopParam param) {
-        if (param == null) {
+    private String checkShopParam(ShopParams params) {
+        if (params == null) {
             return "店铺信息不能为空";
         }
-        if (Strings.isNullOrEmpty(param.getShopName())) {
+        if (Strings.isNullOrEmpty(params.getShopName())) {
             return "店铺名不能为空";
         }
-        if (Strings.isNullOrEmpty(param.getManager())) {
+        if (Strings.isNullOrEmpty(params.getManager())) {
             return "店铺负责人姓名不能为空";
         }
-        if (Strings.isNullOrEmpty(param.getPhone())) {
+        if (Strings.isNullOrEmpty(params.getPhone())) {
             return "店铺负责人电话不能为空";
         }
-        if (!CheckHelper.isValidMobile(param.getPhone())) {
+        if (!CheckHelper.isValidMobile(params.getPhone())) {
             return "店铺负责人电话格式错误";
         }
-        if (Strings.isNullOrEmpty(param.getAddress())) {
+        if (Strings.isNullOrEmpty(params.getAddress())) {
             return "店铺地址不能为空";
         }
         return null;

@@ -1,5 +1,10 @@
 package com.zes.squad.gmh.web.controller;
 
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,12 +12,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.enums.StaffLevelEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
-import com.zes.squad.gmh.web.entity.param.StaffParam;
+import com.zes.squad.gmh.web.entity.param.StaffParams;
+import com.zes.squad.gmh.web.entity.vo.StaffLevelVo;
 import com.zes.squad.gmh.web.entity.vo.StaffVo;
 import com.zes.squad.gmh.web.service.StaffService;
 
@@ -27,10 +37,12 @@ public class StaffController extends BaseController {
     @ResponseBody
     public JsonResult<StaffVo> doLoginWithEmail(String account, String password) {
         if (Strings.isNullOrEmpty(account)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户名不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.accountIsNull);
         }
         if (Strings.isNullOrEmpty(password)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "密码不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.passwordIsNull);
         }
 
         StaffDto staffDto = staffService.loginWithEmail(account, password);
@@ -42,13 +54,16 @@ public class StaffController extends BaseController {
     @ResponseBody
     public JsonResult<Void> doChangePassword(String originalPassword, String newPassword) {
         if (Strings.isNullOrEmpty(originalPassword)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "原密码不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.originalPasswordIsNull);
         }
         if (Strings.isNullOrEmpty(newPassword)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "新密码不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.newPasswordIsNull);
         }
         if (originalPassword.equals(newPassword)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "新密码不能和原密码相同");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.originalPasswordEqualsNewPassword);
         }
         StaffDto staff = getStaff();
         staffService.changePassword(staff.getId(), originalPassword, newPassword);
@@ -76,7 +91,8 @@ public class StaffController extends BaseController {
     @ResponseBody
     public JsonResult<Void> doSendAuthCode(String email) {
         if (Strings.isNullOrEmpty(email)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "邮箱不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.emailIsNull);
         }
         staffService.sendAuthCode(email);
         return JsonResult.success();
@@ -86,10 +102,12 @@ public class StaffController extends BaseController {
     @ResponseBody
     public JsonResult<Void> doValidateAuthCode(String email, String authCode) {
         if (Strings.isNullOrEmpty(email)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "邮箱不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.emailIsNull);
         }
         if (Strings.isNullOrEmpty(authCode)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "验证码不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.authCodeIsNull);
         }
         staffService.validateAuthCode(email, authCode);
         return JsonResult.success();
@@ -97,67 +115,88 @@ public class StaffController extends BaseController {
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<Integer> insert(StaffParam param) {
-        if (param == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "不用信息不能为空");
+    public JsonResult<Integer> insert(StaffParams params) {
+        String error = checkStaffParam(params);
+        if (!Strings.isNullOrEmpty(error)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
-        if (Strings.isNullOrEmpty(param.getEmail())) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户名不能为空");
-        }
-        if (param.getStoreId() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户所属门店不能为空");
-        }
-        if (param.getStaffLevel() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户级别不能为空");
-        }
-        StaffDto dto = CommonConverter.map(param, StaffDto.class);
+        StaffDto dto = CommonConverter.map(params, StaffDto.class);
         int i = staffService.insert(dto);
         return JsonResult.success(i);
     }
 
     @RequestMapping("/search")
     @ResponseBody
-    public JsonResult<?> search(Integer pageNum, Integer pageSize, String searchString) {
-        if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+    public JsonResult<PagedList<StaffVo>> search(Integer pageNum, Integer pageSize, String searchString) {
+        if (!isValidPageNum(pageNum)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageNumIsError);
         }
-        if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+        if (!isValidPageSize(pageSize)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageSizeIsError);
         }
-        PagedList<StaffVo> voList = staffService.search(pageNum, pageSize, searchString);
-        return JsonResult.success(voList);
+        PagedList<StaffVo> pagedVos = staffService.search(pageNum, pageSize, searchString);
+        return JsonResult.success(pagedVos);
     }
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<?> update(StaffDto dto) {
-        if (dto == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户信息不能为空");
+    public JsonResult<?> update(StaffParams params) {
+        String error = checkStaffParam(params);
+        if (!Strings.isNullOrEmpty(error)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
-        if (dto.getId() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "用户标识信息不能为空");
+        if (params.getId() == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.staffIdIsNull);
         }
+        StaffDto dto = CommonConverter.map(params, StaffDto.class);
         int i = staffService.update(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "更新用户信息失败");
-        }
+        return JsonResult.success(i);
     }
 
     @RequestMapping("/delete")
     @ResponseBody
-    public JsonResult<?> delete(Long[] id) {
+    public JsonResult<Integer> delete(Long[] id) {
         if (id == null || id.length == 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的用户");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.staffNotSelectedForDelete);
         }
-        int i = 0;
-        i = staffService.delByIds(id);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(10006, "发生错误，没有数据被删除");
+        int i = staffService.deleteByIds(id);
+        return JsonResult.success(i);
+    }
+
+    @RequestMapping("/listLevels")
+    public JsonResult<List<StaffLevelVo>> doListStaffLevels() {
+        List<StaffLevelVo> vos = Lists.newArrayList();
+        for (StaffLevelEnum levelEnum : StaffLevelEnum.values()) {
+            StaffLevelVo vo = new StaffLevelVo();
+            vo.setLevelCode(levelEnum.getKey());
+            vo.setLevelName(levelEnum.getDesc());
+            vos.add(vo);
         }
+        return JsonResult.success(vos);
+    }
+
+    private String checkStaffParam(StaffParams params) {
+        if (params == null) {
+            return ErrorMessage.paramIsNull;
+        }
+        if (Strings.isNullOrEmpty(params.getEmail())) {
+            return ErrorMessage.emailIsNull;
+        }
+        if (params.getStoreId() == null) {
+            return ErrorMessage.storeIsNull;
+        }
+        if (params.getStaffLevel() == null) {
+            return ErrorMessage.staffLevelIsNull;
+        }
+        String desc = EnumUtils.getDescByKey(StaffLevelEnum.class, params.getStaffLevel());
+        if (Strings.isNullOrEmpty(desc)) {
+            return "";
+        }
+        return null;
     }
 
 }

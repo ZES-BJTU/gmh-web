@@ -15,7 +15,6 @@ import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ProjectPo;
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 import com.zes.squad.gmh.web.entity.vo.ProjectVo;
@@ -33,8 +32,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectVo> getAll() {
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        List<ProjectPo> pos = projectMapper.getAll(staffDto.getStoreId());
+        List<ProjectPo> pos = projectMapper.getAll(ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
@@ -49,9 +47,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public PagedList<ProjectDto> listByPage(Integer pageNum, Integer pageSize) {
-        StaffDto staff = ThreadContext.getCurrentStaff();
         PageHelper.startPage(pageNum, pageSize);
-        List<ProjectPo> projectPos = projectMapper.getAll(staff.getStoreId());
+        List<ProjectPo> projectPos = projectMapper.getAll(ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(projectPos)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }

@@ -19,7 +19,6 @@ import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.AppointmentPo;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
@@ -54,9 +53,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentVo> getAll() {
-        StaffDto staff = ThreadContext.getCurrentStaff();
-        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(staff.getStoreId(),
-                null);
+        List<AppointmentUnion> unions = appointmentUnionMapper
+                .listAppointmentUnionsByCondition(ThreadContext.getStaffStoreId(), null);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
         return vos;
     }

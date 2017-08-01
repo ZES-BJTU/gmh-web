@@ -28,7 +28,6 @@ import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion;
@@ -64,11 +63,8 @@ public class ConsumeServiceImpl implements ConsumeService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void addConsumeRecord(ConsumeRecordDto dto) {
-        StaffDto staff = ThreadContext.getCurrentStaff();
-        if (staff == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "获取用户信息失败");
-        }
-        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(staff.getStoreId(), dto.getMobile());
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(ThreadContext.getStaffStoreId(),
+                dto.getMobile());
         if (!CollectionUtils.isEmpty(unions)) {
             dto.setMemberId(unions.get(0).getMemberPo().getId());
             //处理会员消费
@@ -150,10 +146,9 @@ public class ConsumeServiceImpl implements ConsumeService {
 
     private void exportRecordToFile(List<ConsumeRecordUnion> unions) {
         try {
-            StaffDto staff = ThreadContext.getCurrentStaff();
             String charset = ExportProperties.get("charset");
             String path = ExportProperties.get("path");
-            String fileName = staff.getStoreId() + "_" + formatDate(new Date()) + ".csv";
+            String fileName = ThreadContext.getStaffStoreId() + "_" + formatDate(new Date()) + ".csv";
             OutputStream output = new FileOutputStream(new File(path + fileName), true);
             output.write(("序号,门店名称,美容项目名称,美容师,是否会员,顾客姓名,顾客手机号,消费金额,支付方式,消费时间" + DEFAULT_NEXT_LINE).getBytes(charset));
             int i = 1;

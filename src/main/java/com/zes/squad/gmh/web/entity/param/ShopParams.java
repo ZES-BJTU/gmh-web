@@ -3,7 +3,7 @@ package com.zes.squad.gmh.web.entity.param;
 import lombok.Data;
 
 @Data
-public class ShopParam {
+public class ShopParams {
 
     private Long   id;
 

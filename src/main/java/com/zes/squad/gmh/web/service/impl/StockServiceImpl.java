@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.dto.StockDto;
 import com.zes.squad.gmh.web.entity.po.StockPo;
 import com.zes.squad.gmh.web.entity.union.StockUnion;
@@ -31,8 +30,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<StockVo> getAll() {
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        List<StockUnion> unions = stockUnionMapper.listStockUnions(staffDto.getStoreId(), null, null);
+        List<StockUnion> unions = stockUnionMapper.listStockUnions(ThreadContext.getStaffStoreId(), null, null);
         if (CollectionUtils.isEmpty(unions)) {
             return Lists.newArrayList();
         }
@@ -77,8 +75,8 @@ public class StockServiceImpl implements StockService {
             typeId = null;
         }
         PageHelper.startPage(pageNum, pageSize);
-        StaffDto staff = ThreadContext.getCurrentStaff();
-        List<StockUnion> unions = stockUnionMapper.listStockUnions(staff.getStoreId(), typeId, searchString);
+        List<StockUnion> unions = stockUnionMapper.listStockUnions(ThreadContext.getStaffStoreId(), typeId,
+                searchString);
         PageInfo<StockUnion> info = new PageInfo<>(unions);
         List<StockVo> vos = buildStockVosByUnion(unions);
         PagedList<StockVo> pagedList = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), vos);

@@ -14,7 +14,6 @@ import com.google.common.collect.Maps;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.po.StockTypePo;
 import com.zes.squad.gmh.web.entity.vo.StockTypeVo;
@@ -27,8 +26,7 @@ public class StockTypeServiceImpl implements StockTypeService {
     private StockTypeMapper stockTypeMapper;
 
     public List<StockTypeVo> getAll() {
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        List<StockTypePo> pos = stockTypeMapper.getAll(staffDto.getStoreId());
+        List<StockTypePo> pos = stockTypeMapper.getAll(ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
@@ -61,9 +59,8 @@ public class StockTypeServiceImpl implements StockTypeService {
     @Override
     public PagedList<StockTypeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
         PageHelper.startPage(pageNum, pageSize);
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
         Map<String, Object> map = Maps.newHashMap();
-        map.put("storeId", staffDto.getStoreId());
+        map.put("storeId", ThreadContext.getStaffStoreId());
         map.put("searchString", searchString);
         List<StockTypePo> pos = stockTypeMapper.search(map);
         if (CollectionUtils.isEmpty(pos)) {

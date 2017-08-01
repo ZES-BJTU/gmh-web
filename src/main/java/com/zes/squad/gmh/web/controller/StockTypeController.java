@@ -12,7 +12,6 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
-import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.vo.StockTypeVo;
 import com.zes.squad.gmh.web.service.StockTypeService;
@@ -52,8 +51,7 @@ public class StockTypeController {
         if (dto == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "库存分类不能为空");
         }
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
-        dto.setStoreId(staffDto.getStoreId());
+        dto.setStoreId(ThreadContext.getStaffStoreId());
         int i = stockTypeService.insert(dto);
         if (i > 0) {
             return JsonResult.success(i);

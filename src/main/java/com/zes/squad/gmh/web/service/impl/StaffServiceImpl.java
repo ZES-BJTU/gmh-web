@@ -19,6 +19,7 @@ import com.zes.squad.gmh.common.constant.RedisConsts;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EncryptUtils;
 import com.zes.squad.gmh.web.cache.RedisComponent;
@@ -59,11 +60,13 @@ public class StaffServiceImpl implements StaffService {
     public StaffDto loginWithEmail(String account, String password) {
         StaffPo staffPo = staffMapper.selectByEmail(account);
         if (staffPo == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(), "未找到用户");
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(),
+                    ErrorMessage.staffNotFound);
         }
         String encryptPassword = EncryptUtils.MD5(account + staffPo.getSalt() + password);
         if (!staffPo.getPassword().equals(encryptPassword)) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "密码输入错误");
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.passwordIsError);
         }
         boolean isCacheValid = redisComponent.isValid();
         if (isCacheValid) {
@@ -79,6 +82,10 @@ public class StaffServiceImpl implements StaffService {
         staffDto.setPassword(null);
         staffDto.setSalt(null);
         staffDto.setToken(token);
+        ShopPo shopPo = queryShopPoByStoreId(staffPo.getStoreId());
+        staffDto.setStoreName(shopPo.getName());
+        staffDto.setPrincipalName(shopPo.getManager());
+        staffDto.setPrincipalMobile(shopPo.getPhone());
         return staffDto;
     }
 
@@ -114,11 +121,12 @@ public class StaffServiceImpl implements StaffService {
     public void changePassword(Long id, String originalPassword, String newPassword) {
         StaffPo staffPo = staffMapper.selectById(id);
         if (staffPo == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "未找到用户");
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, ErrorMessage.staffNotFound);
         }
         String oldEncryptPassword = EncryptUtils.MD5(staffPo.getEmail() + staffPo.getSalt() + originalPassword);
         if (!staffPo.getPassword().equals(oldEncryptPassword)) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "原密码输入错误");
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS,
+                    ErrorMessage.originalPasswordIsError);
         }
         String newEncryptPassword = EncryptUtils.MD5(staffPo.getEmail() + staffPo.getSalt() + newPassword);
         staffMapper.updatePassword(id, newEncryptPassword);
@@ -209,11 +217,7 @@ public class StaffServiceImpl implements StaffService {
         staffDto.setPassword(null);
         staffDto.setSalt(null);
         staffDto.setToken(token);
-        Long storeId = staffPo.getStoreId();
-        ShopPo shopPo = shopMapper.selectById(storeId);
-        if (shopPo == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(), "未找到用户对应门店");
-        }
+        ShopPo shopPo = queryShopPoByStoreId(staffPo.getStoreId());
         staffDto.setStoreName(shopPo.getName());
         staffDto.setPrincipalName(shopPo.getManager());
         staffDto.setPrincipalMobile(shopPo.getPhone());
@@ -236,21 +240,17 @@ public class StaffServiceImpl implements StaffService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public int update(StaffDto dto) {
-        Long storeId = ThreadContext.getCurrentStaff().getStoreId();
-        if (storeId == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(), "获取用户门店信息失败");
-        }
         ShopPo shopPo = new ShopPo();
-        shopPo.setId(storeId);
+        shopPo.setId(ThreadContext.getStaffStoreId());
         shopPo.setManager(dto.getPrincipalName());
         shopPo.setPhone(dto.getPrincipalMobile());
         shopMapper.updateSelective(shopPo);
         StaffPo po = CommonConverter.map(dto, StaffPo.class);
-        return staffMapper.update(po);
+        return staffMapper.updateSelective(po);
     }
 
-    public int delByIds(Long[] id) {
-        return staffMapper.batchDeleteByIds(id);
+    public int deleteByIds(Long[] ids) {
+        return staffMapper.batchDeleteByIds(ids);
     }
 
     private List<StaffVo> buildStaffVosByUnions(List<StaffShopUnion> unions) {
@@ -263,6 +263,14 @@ public class StaffServiceImpl implements StaffService {
             vos.add(vo);
         }
         return vos;
+    }
+
+    private ShopPo queryShopPoByStoreId(Long storeId) {
+        ShopPo po = shopMapper.selectById(storeId);
+        if (po == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, ErrorMessage.storeNotFound);
+        }
+        return po;
     }
 
 }
