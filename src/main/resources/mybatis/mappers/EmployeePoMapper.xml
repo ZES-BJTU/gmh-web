@@ -13,6 +13,9 @@
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
+	<resultMap type="long" id="IdResultMap">
+		<id column="id" jdbcType="BIGINT" property="id" />
+	</resultMap>
 	<sql id="Base_Column_List">
 		`id`,`name`,`sex`,`phone`,`shop_id`,`entry_date`,`quit_date`,`work`,
 		`created_time`,
@@ -23,6 +26,23 @@
 		<include refid="Base_Column_List" />
 		FROM employee WHERE shop_id = #{storeid, jdbcType=BIGINT} AND id =
 		#{id, jdbcType=BIGINT}
+	</select>
+	<select id="selectIdsByCondition"
+		parameterType="com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition"
+		resultMap="IdResultMap">
+		SELECT id FROM employee
+		<where>
+			<if test="storeId != null">
+				shop_id = #{storeId, jdbcType=BIGINT}
+			</if>
+			<if test="work != null">
+				AND `work` = #{work, jdbcType=TINYINT}
+			</if>
+			<if test="searchString != null and searchString != ''">
+				<bind name="search" value="'%' + searchString + '%'" />
+				AND CONCAT_WS("",`name`,phone) LIKE CONCAT(#{search})
+			</if>
+		</where>
 	</select>
 	<select id="listByPage" parameterType="long" resultMap="BaseResultMap">
 		SELECT
@@ -35,7 +55,7 @@
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo"
 		useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO
-		employee(name,sex,phone,shop_id,entry_date,quit_date,work)
+		employee(`name`,`sex`,`phone`,`shop_id`,`entry_date`,`quit_date`,`work`)
 		VALUES
 		(#{name, jdbcType=VARCHAR},#{sex, jdbcType=TINYINT},#{phone,
 		jdbcType=VARCHAR},#{shopId, jdbcType=BIGINT},#{entryDate,
@@ -50,13 +70,13 @@
 	<update id="batchUpdateWork">
 		UPDATE employee SET work=#{work, jdbcType=TINYINT},
 		quit_date=#{leaveDate, jdbcType=TIMESTAMP}
-		WHERE id INT
+		WHERE id IN
 		<foreach collection="ids" item="id" separator="," open="("
 			close=")">
 			#{id, jdbcType=BIGINT}
 		</foreach>
 	</update>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo">
+	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.EmployeePo">
 		UPDATE employee
 		<set>
 			<if test="name != null">

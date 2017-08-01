@@ -3,45 +3,62 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.EmployeeJobUnionMapper">
 	<resultMap id="BaseResultMap"
 		type="com.zes.squad.gmh.web.entity.union.EmployeeJobUnion">
+		<id column="id" jdbcType="BIGINT" property="id" />
 		<association property="employeePo"
 			resultMap="com.zes.squad.gmh.web.mapper.EmployeeMapper.BaseResultMap" />
+		<association property="shopPo"
+			resultMap="com.zes.squad.gmh.web.mapper.ShopMapper.BaseResultMap"
+			columnPrefix="s_" />
 		<collection property="employeeJobPos"
 			resultMap="com.zes.squad.gmh.web.mapper.EmployeeJobMapper.BaseResultMap"
 			columnPrefix="ej_" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		e.id,
-		e.name,
-		e.sex,
-		e.phone,
+		e.`id`,
+		e.`name`,
+		e.`sex`,
+		e.`phone`,
 		e.shop_id,
 		e.entry_date,
 		e.quit_date,
-		e.work,
+		e.`work`,
 		e.created_time,
 		e.modified_time,
-		ej.id AS ej_id,
+		s.`id` AS s_id,
+		s.`name`
+		AS s_name,
+		ej.`id` AS ej_id,
 		ej.employee_id AS ej_employee_id,
-		ej.job_type AS ej_job_type,
+		ej.job_type
+		AS ej_job_type,
 		ej.job_name AS ej_job_name,
-		ej.created_time AS ej_created_time,
+		ej.created_time
+		AS
+		ej_created_time,
 		ej.modified_time AS ej_modified_time
 	</sql>
-	<select id="listEmployeeJobUnionsByCondition" resultMap="BaseResultMap">
-		<bind name="serach" value="'%' + #{searchString} + '%'" />
+	<select id="listEmployeeJobUnionsByCondition" parameterType="list"
+		resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM
 		employee e
 		LEFT JOIN
-		employee_job ej
-		ON
-		e.id = ej.employee_id
-		WHERE
-		e.shop_id = #{storeId, jdbcType=BIGINT}
-		<if test="searchString != null and searchString != ''">
-			AND CONCAT_WS("",e.name,e.phone) LIKE CONCAT(#{search})
-		</if>
+		shop s
+		ON e.shop_id = s.`id`
+		LEFT JOIN
+		employee_job
+		ej
+		ON e.`id` = ej.employee_id
+		<where>
+			<if test="ids != null and ids.size() != 0">
+				e.id IN
+				<foreach collection="ids" item="id" separator="," open="("
+					close=")">
+					#{id, jdbcType=BIGINT}
+				</foreach>
+			</if>
+		</where>
 	</select>
 
 </mapper>

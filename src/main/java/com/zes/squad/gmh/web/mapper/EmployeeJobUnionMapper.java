@@ -11,11 +11,9 @@ public interface EmployeeJobUnionMapper {
     /**
      * 全表分页查询
      * 
-     * @param storeId
-     * @param serachString
+     * @param ids
      * @return
      */
-    List<EmployeeJobUnion> listEmployeeJobUnionsByCondition(@Param("storeId") Long storeId,
-                                                            @Param("searchString") String searchString);
+    List<EmployeeJobUnion> listEmployeeJobUnionsByCondition(@Param("ids") List<Long> ids);
 
 }

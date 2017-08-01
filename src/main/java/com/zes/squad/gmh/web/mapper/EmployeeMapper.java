@@ -6,14 +6,28 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 
 public interface EmployeeMapper {
 
-    List<EmployeePo> listByPage(@Param("shopId") Long shopId);
+    /**
+     * 查询id集合
+     * 
+     * @param condition
+     * @return
+     */
+    List<Long> selectIdsByCondition(EmployeeJobQueryCondition condition);
 
-    Long insert(EmployeePo po);
+    /**
+     * 插入
+     * 
+     * @param po
+     * @return
+     */
+    int insert(EmployeePo po);
 
+    @Deprecated
     int leave(Map<String, Object> map);
 
     /**
@@ -26,7 +40,13 @@ public interface EmployeeMapper {
      */
     int batchUpdateWork(@Param("leaveDate") Date leaveDate, @Param("work") Boolean work, @Param("ids") Long[] ids);
 
-    int update(EmployeePo po);
+    /**
+     * 更新非空字段
+     * 
+     * @param po
+     * @return
+     */
+    int updateSelective(EmployeePo po);
 
     List<EmployeePo> search(Map<String, Object> map);
 

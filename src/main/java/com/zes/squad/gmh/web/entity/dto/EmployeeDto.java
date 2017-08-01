@@ -12,6 +12,7 @@ public class EmployeeDto {
     private Byte         sex;
     private String       phone;
     private Long         shopId;
+    private String       shopName;
     private Date         entryDate;
     private Date         quitDate;
     private Boolean      isWork;

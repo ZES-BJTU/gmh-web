@@ -23,7 +23,7 @@ public class ProjectController {
 
     @RequestMapping("/getAll")
     @ResponseBody
-    public JsonResult<?> getAll() {
+    public JsonResult<List<ProjectVo>> getAll() {
         List<ProjectVo> vos = projectService.getAll();
         return JsonResult.success(vos);
     }
@@ -45,7 +45,7 @@ public class ProjectController {
 
     @RequestMapping("/getByType")
     @ResponseBody
-    public JsonResult<?> getBytype(Long typeId) {
+    public JsonResult<List<ProjectVo>> getBytype(Long typeId) {
         if (typeId == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "美容项分类标识不能为空");
         }

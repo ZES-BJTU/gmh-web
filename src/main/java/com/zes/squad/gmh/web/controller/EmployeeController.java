@@ -24,6 +24,7 @@ import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.param.EmployeeParam;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.entity.vo.JobVo;
+import com.zes.squad.gmh.web.helper.CheckHelper;
 import com.zes.squad.gmh.web.service.EmployeeService;
 
 @RequestMapping("/employee")
@@ -33,6 +34,7 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
+    @Deprecated
     @RequestMapping("/listByPage")
     @ResponseBody
     public JsonResult<PagedList<EmployeeVo>> doListByPage(Integer pageNum, Integer pageSize) {
@@ -45,6 +47,21 @@ public class EmployeeController {
                     ErrorMessage.pageSizeIsError);
         }
         PagedList<EmployeeDto> pagedDtos = employeeService.listByPage(pageNum, pageSize);
+        PagedList<EmployeeVo> pagedVos = buildPagedEmployeeVosByDtos(pagedDtos);
+
+        return JsonResult.success(pagedVos);
+    }
+
+    @RequestMapping("/search")
+    @ResponseBody
+    public JsonResult<PagedList<EmployeeVo>> search(Integer pageNum, Integer pageSize, String searchString) {
+        if (pageNum == null || pageNum < 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+        }
+        if (pageSize == null || pageSize < 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+        }
+        PagedList<EmployeeDto> pagedDtos = employeeService.searchListByPage(pageNum, pageSize, searchString);
         PagedList<EmployeeVo> pagedVos = buildPagedEmployeeVosByDtos(pagedDtos);
 
         return JsonResult.success(pagedVos);
@@ -64,24 +81,9 @@ public class EmployeeController {
         return PagedList.newMe(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
     }
 
-    @RequestMapping("/search")
-    @ResponseBody
-    public JsonResult<PagedList<EmployeeVo>> search(Integer pageNum, Integer pageSize, String searchString) {
-        if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
-        }
-        if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
-        }
-        PagedList<EmployeeDto> pagedDtos = employeeService.searchListByPage(pageNum, pageSize, searchString);
-        PagedList<EmployeeVo> pagedVos = buildPagedEmployeeVosByDtos(pagedDtos);
-
-        return JsonResult.success(pagedVos);
-    }
-
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<?> insert(EmployeeParam param, Integer[] jobId) {
+    public JsonResult<EmployeeVo> insert(EmployeeParam param, Integer[] jobId) {
         String error = checkEmployeeParam(param);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
@@ -90,7 +92,7 @@ public class EmployeeController {
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
+        StaffDto staff = ThreadContext.getCurrentStaff();
         EmployeeDto dto = CommonConverter.map(param, EmployeeDto.class);
         List<JobDto> dtos = Lists.newArrayList();
         for (Integer jobType : jobId) {
@@ -102,22 +104,35 @@ public class EmployeeController {
             }
         }
         dto.setJobDtos(dtos);
-        dto.setShopId(staffDto.getStoreId());
-        EmployeeDto newDto = employeeService.insert(dto);
-        EmployeeVo vo = CommonConverter.map(newDto, EmployeeVo.class);
+        dto.setShopId(staff.getStoreId());
+        EmployeeDto employeeDto = employeeService.insert(dto);
+        EmployeeVo vo = buildEmployeeVoByDto(employeeDto);
         return JsonResult.success(vo);
+    }
+
+    private EmployeeVo buildEmployeeVoByDto(EmployeeDto dto) {
+        EmployeeVo vo = CommonConverter.map(dto, EmployeeVo.class);
+        vo.setIsWork(dto.getIsWork().booleanValue() ? "是" : "否");
+        Integer sex = Integer.valueOf(String.valueOf(dto.getSex()));
+        vo.setSex(EnumUtils.getDescByKey(SexEnum.class, sex));
+        List<JobVo> jobVos = CommonConverter.mapList(dto.getJobDtos(), JobVo.class);
+        vo.setJobVos(jobVos);
+        return vo;
     }
 
     @RequestMapping("/leave")
     @ResponseBody
-    public JsonResult<?> leave(Long[] id) {
+    public JsonResult<Integer> leave(Long[] id) {
+        if (id == null || id.length == 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择离职员工");
+        }
         int i = employeeService.leave(id);
         return JsonResult.success(i);
     }
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<?> update(EmployeeParam param, Integer[] jobId) {
+    public JsonResult<Integer> update(EmployeeParam param, Integer[] jobId) {
         String error = checkEmployeeParam(param);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
@@ -129,7 +144,10 @@ public class EmployeeController {
         if (param.getId() == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工标识不能为空");
         }
-        StaffDto staffDto = ThreadContext.getCurrentStaff();
+        if (param.getEntryDate() == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工入职日期不能为空");
+        }
+        StaffDto staff = ThreadContext.getCurrentStaff();
         EmployeeDto dto = CommonConverter.map(param, EmployeeDto.class);
         List<JobDto> dtos = Lists.newArrayList();
         for (Integer jobType : jobId) {
@@ -141,13 +159,9 @@ public class EmployeeController {
             }
         }
         dto.setJobDtos(dtos);
-        dto.setShopId(staffDto.getStoreId());
+        dto.setShopId(staff.getStoreId());
         int i = employeeService.update(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "更新员工信息失败");
-        }
+        return JsonResult.success(i);
     }
 
     @RequestMapping("/listJobs")
@@ -168,12 +182,24 @@ public class EmployeeController {
         if (param == null) {
             return "员工信息不能为空";
         }
+        if (Strings.isNullOrEmpty(param.getEmName())) {
+            return "员工姓名不能为空";
+        }
+        if (param.getSex() == null) {
+            return "员工性别不能为空";
+        }
         String desc = null;
         if (param.getSex() != null) {
-            desc = EnumUtils.getDescByKey(SexEnum.class, param.getSex());
+            desc = EnumUtils.getDescByKey(SexEnum.class, Integer.valueOf(String.valueOf(param.getSex())));
             if (Strings.isNullOrEmpty(desc)) {
                 return "员工性别错误";
             }
+        }
+        if (Strings.isNullOrEmpty(param.getPhone())) {
+            return "员工手机号不能为空";
+        }
+        if (!CheckHelper.isValidMobile(param.getPhone())) {
+            return "手机号格式错误";
         }
         return null;
     }

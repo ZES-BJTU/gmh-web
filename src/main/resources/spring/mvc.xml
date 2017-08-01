@@ -18,7 +18,16 @@
 			expression="org.springframework.stereotype.Component" />
 	</context:component-scan>
 
-	<mvc:annotation-driven />
+	<mvc:annotation-driven conversion-service="customConversionService" />
+
+	<bean id="customConversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="com.zes.squad.gmh.web.converter.DateTimeConverter" />
+			</set>
+		</property>
+	</bean>
 
 	<!-- 访问静态资源, 不使用defaultservlet处理静态资源, 对多个目录下的静态资源配置配置多个resources -->
 	<mvc:resources mapping="/gmh/**" location="/gmh/" />

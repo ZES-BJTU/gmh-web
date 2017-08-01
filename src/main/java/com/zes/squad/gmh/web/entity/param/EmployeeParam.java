@@ -11,8 +11,5 @@ public class EmployeeParam {
     private String  emName;
     private Byte    sex;
     private String  phone;
-    private Long    shopId;
     private Date    entryDate;
-    private Date    quitDate;
-    private Boolean isWork;
 }

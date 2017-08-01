@@ -12,6 +12,7 @@ public class EmployeeVo {
     private String      sex;
     private String      phone;
     private Long        shopId;
+    private String      shopName;
     private Date        entryDate;
     private Date        quitDate;
     private String      isWork;
