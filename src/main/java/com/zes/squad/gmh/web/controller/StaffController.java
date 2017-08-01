@@ -142,7 +142,7 @@ public class StaffController extends BaseController {
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<?> update(StaffParams params) {
+    public JsonResult<Integer> update(StaffParams params) {
         String error = checkStaffParam(params);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
@@ -150,6 +150,14 @@ public class StaffController extends BaseController {
         if (params.getId() == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.staffIdIsNull);
+        }
+        if (Strings.isNullOrEmpty(params.getPrincipalName())) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.storePrincipalNameIsNull);
+        }
+        if (Strings.isNullOrEmpty(params.getPrincipalMobile())) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.storePrincipalMobileIsNull);
         }
         StaffDto dto = CommonConverter.map(params, StaffDto.class);
         int i = staffService.update(dto);
@@ -194,7 +202,7 @@ public class StaffController extends BaseController {
         }
         String desc = EnumUtils.getDescByKey(StaffLevelEnum.class, params.getStaffLevel());
         if (Strings.isNullOrEmpty(desc)) {
-            return "";
+            return ErrorMessage.staffLevelIsError;
         }
         return null;
     }

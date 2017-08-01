@@ -3,6 +3,7 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.StaffShopUnionMapper">
 	<resultMap id="BaseResultMap"
 		type="com.zes.squad.gmh.web.entity.union.StaffShopUnion">
+		<id column="id" jdbcType="BIGINT" property="id"/>
 		<association property="staffPo"
 			resultMap="com.zes.squad.gmh.web.mapper.StaffMapper.BaseResultMap" />
 		<association property="shopPo"
@@ -11,16 +12,16 @@
 	</resultMap>
 	<select id="listStaffShopUnions" resultMap="BaseResultMap">
 		SELECT
-		s.id,
+		s.`id`,
 		s.email,
-		s.password,
+		s.`password`,
 		s.salt,
 		s.store_id,
 		s.staff_level,
 		s.created_time,
 		s.modified_time,
-		sh.id AS sh_id,
-		sh.name AS sh_name,
+		sh.`id` AS sh_id,
+		sh.`name` AS sh_name,
 		sh.manager AS
 		sh_manager,
 		sh.phone AS sh_phone,
@@ -30,10 +31,10 @@
 		sh_modified_time
 		FROM staff s
 		LEFT JOIN shop sh
-		ON s.store_id = sh.id
+		ON s.store_id = sh.`id`
 		<where>
 			<if test="searchString != null and searchString != ''">
-				<bind name="search" value="'%' + #{searchString} + '%'" />
+				<bind name="search" value="'%' + searchString + '%'" />
 				CONCAT_WS("",s.email,sh.name,sh.manager,sh.phone)
 				LIKE
 				CONCAT(#{search})

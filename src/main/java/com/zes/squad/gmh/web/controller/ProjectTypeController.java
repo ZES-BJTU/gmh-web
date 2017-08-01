@@ -84,11 +84,7 @@ public class ProjectTypeController {
         }
         dto.setStoreId(ThreadContext.getStaffStoreId());
         int i = projectTypeService.insert(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "添加美容项分类失败");
-        }
+        return JsonResult.success(i);
     }
 
     private String checkProjectType(ProjectTypeDto dto) {

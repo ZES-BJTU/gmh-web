@@ -2,6 +2,8 @@ package com.zes.squad.gmh.web.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.zes.squad.gmh.web.entity.union.StaffShopUnion;
 
 public interface StaffShopUnionMapper {
@@ -12,6 +14,6 @@ public interface StaffShopUnionMapper {
      * @param searchString
      * @return
      */
-    List<StaffShopUnion> listStaffShopUnions(String searchString);
+    List<StaffShopUnion> listStaffShopUnions(@Param("searchString") String searchString);
 
 }

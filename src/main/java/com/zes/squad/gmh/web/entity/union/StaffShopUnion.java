@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class StaffShopUnion {
 
+    private Long    id;
     private StaffPo staffPo;
     private ShopPo  shopPo;
 

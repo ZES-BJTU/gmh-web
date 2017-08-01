@@ -54,7 +54,7 @@
 				email = #{email, jdbcType=VARCHAR},
 			</if>
 			<if test="storeId != null">
-				store_id = #{storeId, jdbcType=BIGINT}
+				store_id = #{storeId, jdbcType=BIGINT},
 			</if>
 			<if test="staffLevel != null">
 				staff_level = #{staffLevel, jdbcType=INTEGER}

@@ -23,7 +23,6 @@ import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EncryptUtils;
 import com.zes.squad.gmh.web.cache.RedisComponent;
-import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ShopPo;
 import com.zes.squad.gmh.web.entity.po.StaffPo;
@@ -91,6 +90,16 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public int insert(StaffDto dto) {
+        StaffPo staff = staffMapper.selectByEmail(dto.getEmail());
+        if (staff != null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED,
+                    ErrorMessage.staffAlreadyExist);
+        }
+        ShopPo shopPo = shopMapper.selectById(dto.getStoreId());
+        if (shopPo == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(),
+                    ErrorMessage.storeNotFound);
+        }
         String salt = UUID.randomUUID().toString().replaceAll("\\-", "");
         String password = EncryptUtils.MD5(dto.getEmail() + salt + DEFAULT_STAFF_PASSWORD);
         dto.setSalt(salt);
@@ -240,13 +249,17 @@ public class StaffServiceImpl implements StaffService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public int update(StaffDto dto) {
+        ShopPo po = shopMapper.selectById(dto.getStoreId());
+        if (po == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, ErrorMessage.storeNotFound);
+        }
         ShopPo shopPo = new ShopPo();
-        shopPo.setId(ThreadContext.getStaffStoreId());
+        shopPo.setId(dto.getStoreId());
         shopPo.setManager(dto.getPrincipalName());
         shopPo.setPhone(dto.getPrincipalMobile());
         shopMapper.updateSelective(shopPo);
-        StaffPo po = CommonConverter.map(dto, StaffPo.class);
-        return staffMapper.updateSelective(po);
+        StaffPo staffPo = CommonConverter.map(dto, StaffPo.class);
+        return staffMapper.updateSelective(staffPo);
     }
 
     public int deleteByIds(Long[] ids) {
