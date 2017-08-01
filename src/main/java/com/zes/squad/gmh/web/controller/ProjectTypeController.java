@@ -1,5 +1,8 @@
 package com.zes.squad.gmh.web.controller;
 
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
@@ -30,8 +34,8 @@ public class ProjectTypeController {
 
     @RequestMapping("/getAll")
     @ResponseBody
-    public JsonResult<List<ProjectTypeVo>> getAll() {
-        List<ProjectTypeVo> vos = projectTypeService.getAll();
+    public JsonResult<List<ProjectTypeVo>> doListProjectTypes() {
+        List<ProjectTypeVo> vos = projectTypeService.listProjectTypes();
         return JsonResult.success(vos);
     }
 
@@ -50,15 +54,17 @@ public class ProjectTypeController {
 
     @RequestMapping("/search")
     @ResponseBody
-    public JsonResult<PagedList<ProjectTypeVo>> search(Integer pageNum, Integer pageSize, Long topType,
+    public JsonResult<PagedList<ProjectTypeVo>> search(Integer pageNum, Integer pageSize, Integer topType,
                                                        String searchString) {
-        if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+        if (!isValidPageNum(pageNum)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageNumIsError);
         }
-        if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+        if (!isValidPageSize(pageSize)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageSizeIsError);
         }
-        PagedList<ProjectTypeDto> pagedListDto = projectTypeService.searchListByPage(pageNum, pageSize, topType,
+        PagedList<ProjectTypeDto> pagedListDto = projectTypeService.searchPagedProjectTypes(pageNum, pageSize, topType,
                 searchString);
         PagedList<ProjectTypeVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ProjectTypeVo.class);
 
@@ -69,7 +75,8 @@ public class ProjectTypeController {
     @ResponseBody
     public JsonResult<List<ProjectTypeVo>> doListByTopType(Integer topType) {
         if (topType == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择美容项顶层分类");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.projectTopTypeIsNull);
         }
         List<ProjectTypeVo> vos = projectTypeService.listByTopType(topType);
         return JsonResult.success(vos);
@@ -77,7 +84,7 @@ public class ProjectTypeController {
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<?> insert(ProjectTypeDto dto) {
+    public JsonResult<Integer> insert(ProjectTypeDto dto) {
         String error = checkProjectType(dto);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
@@ -89,45 +96,40 @@ public class ProjectTypeController {
 
     private String checkProjectType(ProjectTypeDto dto) {
         if (dto == null) {
-            return "请填入美容项分类信息";
+            return ErrorMessage.paramIsNull;
+        }
+        if (dto.getTopType() == null) {
+            return ErrorMessage.projectTopTypeIsNull;
         }
         String desc = EnumUtils.getDescByKey(ProjectTypeEnum.class, dto.getTopType());
         if (Strings.isNullOrEmpty(desc)) {
-            return "美容项分类不在可选范围内";
+            return ErrorMessage.projectTopTypeIsError;
         }
         return null;
     }
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<?> update(ProjectTypeDto dto) {
+    public JsonResult<Integer> update(ProjectTypeDto dto) {
         String error = checkProjectType(dto);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
         if (dto.getId() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "美容项分类标识不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.projectTypeIdIsNull);
         }
         int i = projectTypeService.update(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "修改美容项分类失败");
-        }
+        return JsonResult.success(i);
     }
 
     @RequestMapping("/delete")
     @ResponseBody
-    public JsonResult<?> delete(Long[] id) {
+    public JsonResult<Integer> delete(Long[] id) {
         if (id == null || id.length == 0) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的美容项分类");
         }
-        int i = 0;
-        i = projectTypeService.delByIds(id);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "删除美容项分类失败");
-        }
+        int i = projectTypeService.deleteByIds(id);
+        return JsonResult.success(i);
     }
 }

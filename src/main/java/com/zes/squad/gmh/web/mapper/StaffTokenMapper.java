@@ -43,4 +43,12 @@ public interface StaffTokenMapper {
      */
     int deleteByToken(String token);
 
+    /**
+     * 根据staff id集合批量删除
+     * 
+     * @param ids
+     * @return
+     */
+    int batchDeleteByStaffIds(@Param("ids") Long[] ids);
+
 }

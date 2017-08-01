@@ -1,22 +1,24 @@
 package com.zes.squad.gmh.web.mapper;
 
 import java.util.List;
-import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 
 public interface ProjectTypeMapper {
-    
+
     ProjectTypePo selectById(Long id);
 
-    List<ProjectTypePo> getAll(Long storeId);
+    List<ProjectTypePo> selectByStoreId(Long storeId);
 
-    List<ProjectTypePo> getByTopType(Map<String, Object> map);
+    List<ProjectTypePo> selectByTopType(@Param("storeId") Long storeId, @Param("topType") Integer topType);
 
     int insert(ProjectTypePo po);
 
-    int update(ProjectTypePo po);
+    int updateSelective(ProjectTypePo po);
 
+    @Deprecated
     int delById(Long id);
 
     /**
@@ -27,6 +29,7 @@ public interface ProjectTypeMapper {
      */
     int batchDelete(Long[] ids);
 
-    List<ProjectTypePo> search(Map<String, Object> map);
+    List<ProjectTypePo> search(@Param("storeId") Long storeId, @Param("searchString") String searchString,
+                               @Param("topType") Integer topType);
 
 }

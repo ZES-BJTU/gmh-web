@@ -262,7 +262,10 @@ public class StaffServiceImpl implements StaffService {
         return staffMapper.updateSelective(staffPo);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
     public int deleteByIds(Long[] ids) {
+        staffTokenMapper.batchDeleteByStaffIds(ids);
         return staffMapper.batchDeleteByIds(ids);
     }
 

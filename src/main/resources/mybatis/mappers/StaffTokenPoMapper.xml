@@ -42,6 +42,14 @@
 		TIMESTAMP}
 	</insert>
 	<delete id="deleteByToken" parameterType="string">
-		DELETE FROM staff_token WHERE token = #{token, jdbcType=VARCHAR}
+		DELETE FROM staff_token
+		WHERE token = #{token, jdbcType=VARCHAR}
+	</delete>
+	<delete id="batchDeleteByStaffIds" parameterType="long[]">
+		DELETE FROM staff_token WHERE staff_id IN
+		<foreach collection="ids" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
 	</delete>
 </mapper>

@@ -14,13 +14,13 @@
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
+	<select id="selectByStoreId" parameterType="long" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM
 		project_type WHERE store_id=#{storeId, jdbcType=BIGINT}
 	</select>
-	<select id="getByTopType" parameterType="map" resultMap="BaseResultMap">
+	<select id="selectByTopType" parameterType="map" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM
@@ -35,14 +35,14 @@
 		jdbcType=BIGINT},#{topType, jdbcType=INTEGER},#{typeName,
 		jdbcType=VARCHAR})
 	</insert>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.ProjectTypePo">
+	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.ProjectTypePo">
 		UPDATE project_type
 		<set>
 			<if test="topType != null">
 				top_type = #{topType, jdbcType=INTEGER},
 			</if>
 			<if test="typeName != null">
-				top_name = #{typeName, jdbcType=INTEGER},
+				type_name = #{typeName, jdbcType=INTEGER},
 			</if>
 		</set>
 		WHERE id=#{id, jdbcType=BIGINT}
@@ -65,7 +65,7 @@
 		FROM
 		project_type WHERE store_id=#{storeId, jdbcType=BIGINT}
 		<if test="searchString != null and searchString != ''">
-			<bind name="search" value="'%' + #{searchString} + '%'" />
+			<bind name="search" value="'%' + searchString + '%'" />
 			AND CONCAT_WS("",type_name) LIKE CONCAT(#{search})
 		</if>
 		<if test="topType != null">

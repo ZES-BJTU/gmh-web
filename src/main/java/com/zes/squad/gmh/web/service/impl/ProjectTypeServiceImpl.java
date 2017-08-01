@@ -1,7 +1,6 @@
 package com.zes.squad.gmh.web.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
@@ -26,8 +24,8 @@ public class ProjectTypeServiceImpl implements ProjectTypeService {
     @Autowired
     private ProjectTypeMapper projectTypeMapper;
 
-    public List<ProjectTypeVo> getAll() {
-        List<ProjectTypePo> pos = projectTypeMapper.getAll(ThreadContext.getStaffStoreId());
+    public List<ProjectTypeVo> listProjectTypes() {
+        List<ProjectTypePo> pos = projectTypeMapper.selectByStoreId(ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
@@ -42,19 +40,16 @@ public class ProjectTypeServiceImpl implements ProjectTypeService {
 
     public int update(ProjectTypeDto dto) {
         ProjectTypePo po = CommonConverter.map(dto, ProjectTypePo.class);
-        return projectTypeMapper.update(po);
+        return projectTypeMapper.updateSelective(po);
     }
 
-    public int delByIds(Long[] id) {
+    public int deleteByIds(Long[] id) {
         return projectTypeMapper.batchDelete(id);
     }
 
     @Override
-    public List<ProjectTypeVo> listByTopType(int topType) {
-        Map<String, Object> map = Maps.newHashMap();
-        map.put("topType", topType);
-        map.put("storeId", ThreadContext.getStaffStoreId());
-        List<ProjectTypePo> pos = projectTypeMapper.getByTopType(map);
+    public List<ProjectTypeVo> listByTopType(Integer topType) {
+        List<ProjectTypePo> pos = projectTypeMapper.selectByTopType(ThreadContext.getStaffStoreId(), topType);
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
@@ -63,26 +58,21 @@ public class ProjectTypeServiceImpl implements ProjectTypeService {
     }
 
     @Override
-    public PagedList<ProjectTypeDto> searchListByPage(Integer pageNum, Integer pageSize, Long topType,
-                                                      String searchString) {
+    public PagedList<ProjectTypeDto> searchPagedProjectTypes(Integer pageNum, Integer pageSize, Integer topType,
+                                                             String searchString) {
         PageHelper.startPage(pageNum, pageSize);
-        List<ProjectTypePo> projectTypePos = Lists.newArrayList();
-        Map<String, Object> map = Maps.newHashMap();
-        map.put("storeId", ThreadContext.getStaffStoreId());
-        map.put("searchString", searchString);
+        List<ProjectTypePo> pos = null;
         if (topType == null || topType == 0L) {
-            projectTypePos = projectTypeMapper.search(map);
+            pos = projectTypeMapper.search(ThreadContext.getStaffStoreId(), searchString, null);
         } else {
-            map.put("topType", topType);
-            projectTypePos = projectTypeMapper.search(map);
+            pos = projectTypeMapper.search(ThreadContext.getStaffStoreId(), searchString, topType);
         }
-        if (CollectionUtils.isEmpty(projectTypePos)) {
+        if (CollectionUtils.isEmpty(pos)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }
-        PageInfo<ProjectTypePo> info = new PageInfo<>(projectTypePos);
-        PagedList<ProjectTypeDto> pagedList = CommonConverter.mapPageList(
-                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), projectTypePos),
-                ProjectTypeDto.class);
-        return pagedList;
+        PageInfo<ProjectTypePo> info = new PageInfo<>(pos);
+        PagedList<ProjectTypeDto> pagedDtos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(),
+                CommonConverter.mapList(pos, ProjectTypeDto.class));
+        return pagedDtos;
     }
 }
