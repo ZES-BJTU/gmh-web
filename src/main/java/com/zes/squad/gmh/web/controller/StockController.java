@@ -1,5 +1,8 @@
 package com.zes.squad.gmh.web.controller;
 
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.StockDto;
 import com.zes.squad.gmh.web.entity.vo.StockVo;
@@ -23,83 +27,84 @@ public class StockController {
 
     @RequestMapping("/search")
     @ResponseBody
-    public JsonResult<?> search(Integer pageNum, Integer pageSize, Long typeId, String searchString) {
-        if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+    public JsonResult<PagedList<StockVo>> search(Integer pageNum, Integer pageSize, Long typeId, String searchString) {
+        if (!isValidPageNum(pageNum)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageNumIsError);
         }
-        if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+        if (!isValidPageSize(pageSize)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageSizeIsError);
         }
-        PagedList<StockVo> pagedListVo = stockService.searchListByPage(pageNum, pageSize, typeId, searchString);
+        PagedList<StockVo> pagedVos = stockService.searchListByPage(pageNum, pageSize, typeId, searchString);
 
-        return JsonResult.success(pagedListVo);
+        return JsonResult.success(pagedVos);
     }
 
     @RequestMapping("/getByType")
     @ResponseBody
-    public JsonResult<?> getByType(Long typeId) {
+    public JsonResult<List<StockVo>> getByType(Long typeId) {
         if (typeId == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择库存分类");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.stockTypeIdIsNull);
         }
-        List<StockVo> vos = stockService.getByType(typeId);
+        List<StockVo> vos = stockService.listStockVosByType(typeId);
         return JsonResult.success(vos);
     }
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<?> insert(StockDto dto) {
+    public JsonResult<Integer> insert(StockDto dto) {
         String error = checkStock(dto);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
         int i = stockService.insert(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "新增库存失败");
-        }
+        return JsonResult.success(i);
     }
 
     private String checkStock(StockDto dto) {
         if (dto == null) {
-            return "库存信息不能为空";
+            return ErrorMessage.paramIsNull;
+        }
+        if (dto.getTypeId() == null) {
+            return ErrorMessage.stockTypeIdIsNull;
+        }
+        if (Strings.isNullOrEmpty(dto.getStockName())) {
+            return ErrorMessage.stockNameIsNull;
+        }
+        if (Strings.isNullOrEmpty(dto.getUnit())) {
+            return ErrorMessage.stockUnitIsNull;
         }
         if (dto.getAmount() < 0) {
-            return "库存数量错误";
+            return ErrorMessage.stockAmountIsError;
         }
         return null;
     }
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<?> update(StockDto dto) {
+    public JsonResult<Integer> update(StockDto dto) {
         String error = checkStock(dto);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
         if (dto.getId() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "库存标识不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.stockIdIsError);
         }
         int i = stockService.update(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "更新库存失败");
-        }
+        return JsonResult.success(i);
     }
 
     @RequestMapping("/delete")
     @ResponseBody
-    public JsonResult<?> delete(Long[] id) {
+    public JsonResult<Integer> delete(Long[] id) {
         if (id == null || id.length == 0) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的库存");
         }
-        int i = stockService.delByIds(id);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED.getCode(), "删除库存失败");
-        }
+        int i = stockService.deleteByIds(id);
+        return JsonResult.success(i);
     }
 
 }

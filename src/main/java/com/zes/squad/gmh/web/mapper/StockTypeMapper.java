@@ -8,6 +8,8 @@ import com.zes.squad.gmh.web.entity.po.StockTypePo;
 
 public interface StockTypeMapper {
 
+    StockTypePo selectById(Long id);
+    
     List<StockTypePo> selectByStoreId(Long storeId);
 
     int insert(StockTypePo po);

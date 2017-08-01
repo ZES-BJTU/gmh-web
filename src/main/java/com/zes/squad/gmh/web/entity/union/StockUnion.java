@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class StockUnion {
 
+    private Long        id;
     private StockPo     stockPo;
     private StockTypePo stockTypePo;
 

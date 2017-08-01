@@ -2,24 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zes.squad.gmh.web.mapper.StockUnionMapper">
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.union.StockUnion">
+		<id column="id" jdbcType="BIGINT" property="id" />
 		<association property="stockPo"
 			resultMap="com.zes.squad.gmh.web.mapper.StockMapper.BaseResultMap" />
 		<association property="stockTypePo"
 			resultMap="com.zes.squad.gmh.web.mapper.StockTypeMapper.BaseResultMap"
 			columnPrefix="st_" />
 	</resultMap>
-	<select id="listStockUnions" resultMap="BaseResultMap">
+	<select id="listStockUnionsByCondition"
+		parameterType="com.zes.squad.gmh.web.entity.condition.StockQueryCondition"
+		resultMap="BaseResultMap">
 		SELECT
-		s.id,
+		s.`id`,
 		s.stock_type_id,
-		s.name,
-		s.unit,
-		s.amount,
+		s.`name`,
+		s.`unit`,
+		s.`amount`,
 		s.created_time,
 		s.modified_time,
-		st.id AS st_id,
-		st.store_id AS st_store_id,
-		st.name AS
+		st.`id` AS st_id,
+		st.store_id AS
+		st_store_id,
+		st.`name` AS
 		st_name,
 		st.created_time AS st_created_time,
 		st.modified_time AS
@@ -29,7 +33,7 @@
 		LEFT JOIN
 		stock_type st
 		ON s.stock_type_id =
-		st.id
+		st.`id`
 		<where>
 			<if test="storeId != null">
 				AND st.store_id = #{storeId, jdbcType=BIGINT}
@@ -38,8 +42,8 @@
 				AND s.stock_type_id = #{typeId, jdbcType=BIGINT}
 			</if>
 			<if test="searchString != null and searchString != ''">
-				<bind name="search" value="'%' + #{searchString} + '%'" />
-				AND CONCAT_WS("", name, unit, amount) LIKE
+				<bind name="search" value="'%' + searchString + '%'" />
+				AND CONCAT_WS("", s.`name`, s.`unit`, s.`amount`) LIKE
 				CONCAT(#{search})
 			</if>
 		</where>

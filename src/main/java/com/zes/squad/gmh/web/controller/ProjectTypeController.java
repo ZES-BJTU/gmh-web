@@ -130,7 +130,8 @@ public class ProjectTypeController {
     @ResponseBody
     public JsonResult<Integer> delete(Long[] id) {
         if (id == null || id.length == 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的美容项分类");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.projectTypeNotSelectedForDelete);
         }
         int i = projectTypeService.deleteByIds(id);
         return JsonResult.success(i);

@@ -28,7 +28,7 @@
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StockPo">
 		INSERT INTO
-		stock(stock_type_id,name,unit,amount)
+		stock(stock_type_id,`name`,unit,amount)
 		VALUES
 		(#{stockTypeId,
 		jdbcType=BIGINT},#{name, jdbcType=VARCHAR},#{unit,

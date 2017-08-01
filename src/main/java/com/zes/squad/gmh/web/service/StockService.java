@@ -8,15 +8,15 @@ import com.zes.squad.gmh.web.entity.vo.StockVo;
 
 public interface StockService {
 
-    List<StockVo> getAll();
+    List<StockVo> listStockVos();
 
-    List<StockVo> getByType(Long stockType);
+    List<StockVo> listStockVosByType(Long stockTypeId);
 
     int insert(StockDto dto);
 
     int update(StockDto dto);
 
-    int delByIds(Long[] Id);
+    int deleteByIds(Long[] Id);
 
     PagedList<StockVo> searchListByPage(Integer pageNum, Integer pageSize, Long typeId, String searchString);
 }
