@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class ProjectUnion {
 
+    private Long          id;
     private ProjectPo     projectPo;
     private ProjectTypePo projectTypePo;
 

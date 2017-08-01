@@ -8,15 +8,15 @@ import com.zes.squad.gmh.web.entity.vo.ProjectVo;
 
 public interface ProjectService {
 
-    List<ProjectVo> getAll();
+    List<ProjectVo> listProjects();
 
     PagedList<ProjectDto> listByPage(Integer pageNum, Integer pageSize);
 
-    List<ProjectVo> getByType(Long projectType);
+    List<ProjectVo> listByType(Long projectType);
 
     int insert(ProjectDto dto);
 
     int update(ProjectDto dto);
 
-    int delByIds(Long[] Id);
+    int deleteByIds(Long[] Id);
 }

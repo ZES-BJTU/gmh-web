@@ -105,6 +105,9 @@ public class ProjectTypeController {
         if (Strings.isNullOrEmpty(desc)) {
             return ErrorMessage.projectTopTypeIsError;
         }
+        if (Strings.isNullOrEmpty(dto.getTypeName())) {
+            return ErrorMessage.projectTypeNameIsNull;
+        }
         return null;
     }
 

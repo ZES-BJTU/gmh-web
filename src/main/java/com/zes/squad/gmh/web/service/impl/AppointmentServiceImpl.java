@@ -18,6 +18,7 @@ import com.zes.squad.gmh.common.enums.YesOrNoEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.po.AppointmentPo;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
@@ -106,7 +107,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         consumeRecordMapper.insert(recordPo);
         // 扣除会员卡储值
         if (chargeWay == ChargeWayEnum.CARD.getKey()) {
-            ProjectUnion union = projectUnionMapper.listProjectUnions(po.getProjectId()).get(0);
+            ProjectQueryCondition condition = new ProjectQueryCondition();
+            condition.setProjectId(po.getProjectId());
+            ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
             if (union == null) {
                 throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "获取美容项目信息失败");
             }

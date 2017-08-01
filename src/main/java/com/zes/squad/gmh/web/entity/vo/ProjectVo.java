@@ -7,9 +7,11 @@ import lombok.Data;
 @Data
 public class ProjectVo {
     private Long       id;
-    private Long       typeId;
+    private Integer    topType;
+    private String     topTypeName;
+    private String     typeName;
+    private Long       projectTypeId;
+    private String     projectTypeName;
     private String     projectName;
-    private String     unit;
     private BigDecimal retailPrice;
-    private BigDecimal charge;
 }

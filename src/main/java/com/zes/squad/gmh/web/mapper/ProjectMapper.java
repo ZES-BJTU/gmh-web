@@ -7,13 +7,13 @@ import com.zes.squad.gmh.web.entity.po.ProjectPo;
 
 public interface ProjectMapper {
 
-    List<ProjectPo> getAll(Long storeId);
+    List<ProjectPo> selectByStoreId(Long storeId);
 
     List<ProjectPo> getByType(Long typeId);
 
     int insert(ProjectPo po);
 
-    int update(ProjectPo po);
+    int updateSelective(ProjectPo po);
 
     int delById(Long id);
 

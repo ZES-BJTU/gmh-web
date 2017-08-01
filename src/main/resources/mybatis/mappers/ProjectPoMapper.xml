@@ -5,14 +5,12 @@
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="project_type_id" jdbcType="BIGINT" property="projectTypeId" />
 		<result column="name" jdbcType="VARCHAR" property="name" />
-		<result column="unit" jdbcType="VARCHAR" property="unit" />
 		<result column="retail_price" jdbcType="DECIMAL" property="retailPrice" />
-		<result column="charge" jdbcType="DECIMAL" property="charge" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`project_type_id`,`name`,`unit`,`retail_price`,`charge`,
+		`id`,`project_type_id`,`name`,`retail_price`,
 		`created_time`,
 		`modified_time`
 	</sql>
@@ -36,14 +34,13 @@
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ProjectPo">
 		INSERT INTO
-		project(project_type_id,name,unit,retail_price,charge)
+		project(project_type_id,`name`,retail_price)
 		VALUES
 		(#{projectTypeId,
-		jdbcType=BIGINT},#{name, jdbcType=VARCHAR}, #{unit,
-		jdbcType=VARCHAR},#{retailPrice, jdbcType=DECIMAL},#{charge,
+		jdbcType=BIGINT},#{name, jdbcType=VARCHAR}, #{retailPrice,
 		jdbcType=DECIMAL})
 	</insert>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.ProjectPo">
+	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.ProjectPo">
 		UPDATE project
 		<set>
 			<if test="projectTypeId != null">
@@ -52,14 +49,8 @@
 			<if test="name != null">
 				name = #{name, jdbcType=VARCHAR},
 			</if>
-			<if test="unit != null">
-				unit = #{unit, jdbcType=VARCHAR},
-			</if>
 			<if test="retailPrice != null">
 				retail_price = #{retailPrice, jdbcType=DECIMAL},
-			</if>
-			<if test="charge != null">
-				charge = #{charge, jdbcType=DECIMAL},
 			</if>
 		</set>
 		WHERE id=#{id, jdbcType=BIGINT}

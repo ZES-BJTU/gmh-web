@@ -27,6 +27,7 @@ import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
+import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
@@ -69,7 +70,9 @@ public class ConsumeServiceImpl implements ConsumeService {
             dto.setMemberId(unions.get(0).getMemberPo().getId());
             //处理会员消费
             if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
-                ProjectUnion union = projectUnionMapper.listProjectUnions(dto.getProjectId()).get(0);
+                ProjectQueryCondition condition = new ProjectQueryCondition();
+                condition.setProjectId(dto.getProjectId());
+                ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
                 if (union == null) {
                     throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "获取美容项目信息失败");
                 }

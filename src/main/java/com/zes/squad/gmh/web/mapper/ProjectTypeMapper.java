@@ -8,6 +8,12 @@ import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 
 public interface ProjectTypeMapper {
 
+    /**
+     * 根据id查询
+     * 
+     * @param id
+     * @return
+     */
     ProjectTypePo selectById(Long id);
 
     List<ProjectTypePo> selectByStoreId(Long storeId);
