@@ -1,7 +1,6 @@
 package com.zes.squad.gmh.web.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.context.ThreadContext;
@@ -25,15 +23,19 @@ public class StockTypeServiceImpl implements StockTypeService {
     @Autowired
     private StockTypeMapper stockTypeMapper;
 
-    public List<StockTypeVo> getAll() {
-        List<StockTypePo> pos = stockTypeMapper.getAll(ThreadContext.getStaffStoreId());
+    public List<StockTypeVo> listStockTypeVos() {
+        List<StockTypePo> pos = stockTypeMapper.selectByStoreId(ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
+        List<StockTypeVo> vos = buildStockTypeVosByPos(pos);
+        return vos;
+    }
+
+    private List<StockTypeVo> buildStockTypeVosByPos(List<StockTypePo> pos) {
         List<StockTypeVo> vos = Lists.newArrayList();
         for (StockTypePo po : pos) {
-            StockTypeVo vo = new StockTypeVo();
-            vo.setId(po.getId());
+            StockTypeVo vo = CommonConverter.map(po, StockTypeVo.class);
             vo.setTypeName(po.getName());
             vos.add(vo);
         }
@@ -49,20 +51,17 @@ public class StockTypeServiceImpl implements StockTypeService {
     public int update(StockTypeDto dto) {
         StockTypePo po = CommonConverter.map(dto, StockTypePo.class);
         po.setName(dto.getTypeName());
-        return stockTypeMapper.update(po);
+        return stockTypeMapper.updateSelective(po);
     }
 
-    public int delByIds(Long[] id) {
+    public int deleteByIds(Long[] id) {
         return stockTypeMapper.batchDelete(id);
     }
 
     @Override
     public PagedList<StockTypeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
         PageHelper.startPage(pageNum, pageSize);
-        Map<String, Object> map = Maps.newHashMap();
-        map.put("storeId", ThreadContext.getStaffStoreId());
-        map.put("searchString", searchString);
-        List<StockTypePo> pos = stockTypeMapper.search(map);
+        List<StockTypePo> pos = stockTypeMapper.search(ThreadContext.getStaffStoreId(),searchString);
         if (CollectionUtils.isEmpty(pos)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }

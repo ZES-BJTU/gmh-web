@@ -13,7 +13,7 @@
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
+	<select id="selectByStoreId" parameterType="long" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM stock_type WHERE store_id=#{storeId, jdbcType=BIGINT}
@@ -25,7 +25,7 @@
 		(#{storeId, jdbcType=BIGINT},#{name,
 		jdbcType=VARCHAR})
 	</insert>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.StockTypePo">
+	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.StockTypePo">
 		UPDATE stock_type
 		<set>
 			<if test="name != null">
@@ -45,13 +45,14 @@
 			#{id, jdbcType=BIGINT}
 		</foreach>
 	</delete>
-	<select id="search" parameterType="map" resultMap="BaseResultMap">
+	<select id="search" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM
-		stock_type WHERE store_id=#{storeId, jdbcType=BIGINT} AND
-		CONCAT_WS("",name)
-		LIKE
-		CONCAT('%',#{searchString},'%')
+		stock_type WHERE store_id=#{storeId, jdbcType=BIGINT}
+		<if test="searchString != null and searchString != ''">
+			<bind name="search" value="'%' + searchString + '%'" />
+			AND CONCAT_WS("",`name`) LIKE CONCAT(#{search})
+		</if>
 	</select>
 </mapper>

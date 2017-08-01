@@ -1,18 +1,20 @@
 package com.zes.squad.gmh.web.mapper;
 
 import java.util.List;
-import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.zes.squad.gmh.web.entity.po.StockTypePo;
 
 public interface StockTypeMapper {
 
-    List<StockTypePo> getAll(Long storeId);
+    List<StockTypePo> selectByStoreId(Long storeId);
 
     int insert(StockTypePo po);
 
-    int update(StockTypePo po);
+    int updateSelective(StockTypePo po);
 
+    @Deprecated
     int delById(Long id);
 
     /**
@@ -23,5 +25,5 @@ public interface StockTypeMapper {
      */
     int batchDelete(Long[] ids);
 
-    List<StockTypePo> search(Map<String, Object> map);
+    List<StockTypePo> search(@Param("storeId") Long storeId, @Param("searchString") String searchString);
 }
