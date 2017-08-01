@@ -16,12 +16,13 @@
 		`modified_time`
 	</sql>
 	<select id="search" parameterType="string" resultMap="BaseResultMap">
+		<bind name="search" value="'%' + searchString + '%'" />
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM shop WHERE CONCAT_WS("",
 		<include refid="Base_Column_List" />
 		)
-		LIKE CONCAT('%',#{searchString},'%')
+		LIKE CONCAT(#{search})
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
@@ -31,17 +32,17 @@
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo">
 		INSERT INTO
-		shop(name,manager,phone,address)
+		shop(`name`,`manager`,`phone`,`address`)
 		values(#{name,
 		jdbcType=VARCHAR},#{manager, jdbcType=VARCHAR},#{phone,
 		jdbcType=VARCHAR},#{address, jdbcType=VARCHAR})
 	</insert>
-	<select id="getAll" resultMap="BaseResultMap">
+	<select id="selectAll" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM shop
 	</select>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo">
+	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.ShopPo">
 		UPDATE shop
 		<set>
 			<if test="name != null">
@@ -62,5 +63,12 @@
 	<delete id="delById" parameterType="long">
 		DELETE FROM shop WHERE
 		id=#{id, jdbcType=BIGINT}
+	</delete>
+	<delete id="batchDelete" parameterType="long[]">
+		DELETE FROM shop WHERE id IN
+		<foreach collection="array" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
 	</delete>
 </mapper>

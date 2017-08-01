@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ShopVo {
+    
 	private Long   id;
 
     private String shopName;
@@ -13,4 +14,5 @@ public class ShopVo {
     private String phone;
     
     private String address;
+    
 }

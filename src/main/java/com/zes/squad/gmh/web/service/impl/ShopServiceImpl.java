@@ -1,6 +1,5 @@
 package com.zes.squad.gmh.web.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -12,6 +11,9 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.web.entity.dto.ShopDto;
 import com.zes.squad.gmh.web.entity.po.ShopPo;
 import com.zes.squad.gmh.web.entity.vo.ShopVo;
@@ -27,69 +29,74 @@ public class ShopServiceImpl implements ShopService {
     public int insert(ShopDto dto) {
         ShopPo po = CommonConverter.map(dto, ShopPo.class);
         po.setName(dto.getShopName());
-        int i = shopMapper.insert(po);
-        return i;
+        return shopMapper.insert(po);
     }
 
     public int update(ShopDto dto) {
+        ShopPo shopPo = shopMapper.selectById(dto.getId());
+        if (shopPo == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(),
+                    ErrorMessage.storeNotFound);
+        }
         ShopPo po = CommonConverter.map(dto, ShopPo.class);
         po.setName(dto.getShopName());
-        int i = shopMapper.update(po);
+        int i = shopMapper.updateSelective(po);
         return i;
     }
 
-    public List<ShopVo> getAll() {
+    public List<ShopVo> listAllShops() {
 
-        List<ShopPo> pos = shopMapper.getAll();
+        List<ShopPo> pos = shopMapper.selectAll();
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
-        List<ShopVo> vos = new ArrayList<ShopVo>();
-        for (int i = 0; i < pos.size(); i++) {
-            ShopVo vo = CommonConverter.map(pos.get(i), ShopVo.class);
-            vo.setShopName(pos.get(i).getName());
+        List<ShopVo> vos = Lists.newArrayList();
+        for (ShopPo po : pos) {
+            ShopVo vo = CommonConverter.map(po, ShopVo.class);
+            vo.setShopName(po.getName());
             vos.add(vo);
         }
         return vos;
     }
 
-    public int delByIds(Long[] id) {
-        int i = 0;
-        for (int j = 0; j < id.length; j++) {
-            int x = shopMapper.delById(id[j]);
-            i = i + x;
-        }
-        return i;
+    public int deleteByIds(Long[] id) {
+        return shopMapper.batchDelete(id);
     }
 
     @Override
     public PagedList<ShopDto> listByPage(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        List<ShopPo> shopPos = shopMapper.getAll();
-        if (CollectionUtils.isEmpty(shopPos)) {
+        List<ShopPo> pos = shopMapper.selectAll();
+        if (CollectionUtils.isEmpty(pos)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }
-        PageInfo<ShopPo> info = new PageInfo<>(shopPos);
-        PagedList<ShopDto> pagedDtos = CommonConverter.mapPageList(
-                PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), shopPos), ShopDto.class);
+        PageInfo<ShopPo> info = new PageInfo<>(pos);
+        List<ShopDto> dtos = buildShopDtosByPos(pos);
+        PagedList<ShopDto> pagedDtos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
         return pagedDtos;
     }
 
     @Override
     public PagedList<ShopDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
         PageHelper.startPage(pageNum, pageSize);
-        List<ShopPo> shopPos = shopMapper.search(searchString);
-        if (CollectionUtils.isEmpty(shopPos)) {
+        List<ShopPo> pos = shopMapper.search(searchString);
+        if (CollectionUtils.isEmpty(pos)) {
             return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
         }
-        PageInfo<ShopPo> info = new PageInfo<>(shopPos);
+        PageInfo<ShopPo> info = new PageInfo<>(pos);
+        List<ShopDto> dtos = buildShopDtosByPos(pos);
+        PagedList<ShopDto> pagedList = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
+        return pagedList;
+    }
+
+    private List<ShopDto> buildShopDtosByPos(List<ShopPo> pos) {
         List<ShopDto> dtos = Lists.newArrayList();
-        for (ShopPo po : shopPos) {
+        for (ShopPo po : pos) {
             ShopDto dto = CommonConverter.map(po, ShopDto.class);
             dto.setShopName(po.getName());
             dtos.add(dto);
         }
-        PagedList<ShopDto> pagedList = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
-        return pagedList;
+        return dtos;
     }
+
 }

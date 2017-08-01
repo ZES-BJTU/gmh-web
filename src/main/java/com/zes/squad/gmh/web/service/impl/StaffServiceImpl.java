@@ -244,7 +244,7 @@ public class StaffServiceImpl implements StaffService {
         shopPo.setId(storeId);
         shopPo.setManager(dto.getPrincipalName());
         shopPo.setPhone(dto.getPrincipalMobile());
-        shopMapper.update(shopPo);
+        shopMapper.updateSelective(shopPo);
         StaffPo po = CommonConverter.map(dto, StaffPo.class);
         return staffMapper.update(po);
     }

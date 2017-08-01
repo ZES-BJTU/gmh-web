@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.ShopDto;
 import com.zes.squad.gmh.web.entity.param.ShopParam;
@@ -27,19 +28,21 @@ public class ShopController {
 
     @RequestMapping("/getAll")
     @ResponseBody
-    public JsonResult<List<ShopVo>> getAll() {
-        List<ShopVo> voList = shopService.getAll();
-        return JsonResult.success(voList);
+    public JsonResult<List<ShopVo>> doListAllShops() {
+        List<ShopVo> vos = shopService.listAllShops();
+        return JsonResult.success(vos);
     }
 
     @RequestMapping("/listByPage")
     @ResponseBody
     public JsonResult<PagedList<ShopVo>> doListByPage(Integer pageNum, Integer pageSize) {
         if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageNumIsError);
         }
         if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageSizeIsError);
         }
         PagedList<ShopDto> pagedDtos = shopService.listByPage(pageNum, pageSize);
         PagedList<ShopVo> pagedVos = CommonConverter.mapPageList(pagedDtos, ShopVo.class);
@@ -51,10 +54,12 @@ public class ShopController {
     @ResponseBody
     public JsonResult<PagedList<ShopVo>> search(Integer pageNum, Integer pageSize, String searchString) {
         if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageNumIsError);
         }
         if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageSizeIsError);
         }
         PagedList<ShopDto> pagedDtos = shopService.searchListByPage(pageNum, pageSize, searchString);
         PagedList<ShopVo> pagedVos = CommonConverter.mapPageList(pagedDtos, ShopVo.class);
@@ -64,7 +69,7 @@ public class ShopController {
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<?> insert(ShopParam param) {
+    public JsonResult<Integer> insert(ShopParam param) {
         String error = checkCreateShopParam(param);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
@@ -72,6 +77,39 @@ public class ShopController {
         ShopDto dto = CommonConverter.map(param, ShopDto.class);
         int i = shopService.insert(dto);
         return JsonResult.success(i);
+    }
+
+    @RequestMapping("/update")
+    @ResponseBody
+    public JsonResult<Integer> update(ShopParam param) {
+        String error = checkModifyShopParam(param);
+        if (!Strings.isNullOrEmpty(error)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
+        }
+        ShopDto dto = CommonConverter.map(param, ShopDto.class);
+        int i = shopService.update(dto);
+        return JsonResult.success(i);
+    }
+
+    @RequestMapping("/delByIds")
+    @ResponseBody
+    public JsonResult<?> delByIds(Long[] id) {
+        if (id == null || id.length == 0) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的店铺");
+        }
+        int i = shopService.deleteByIds(id);
+        return JsonResult.success(i);
+    }
+
+    private String checkModifyShopParam(ShopParam param) {
+        String error = checkShopParam(param);
+        if (!Strings.isNullOrEmpty(error)) {
+            return error;
+        }
+        if (param.getId() == null) {
+            return "店铺标识不能为空";
+        }
+        return null;
     }
 
     private String checkCreateShopParam(ShopParam param) {
@@ -98,39 +136,6 @@ public class ShopController {
             return "店铺地址不能为空";
         }
         return null;
-    }
-
-    @RequestMapping("/update")
-    @ResponseBody
-    public JsonResult<?> update(ShopParam param) {
-        String error = checkModifyShopParam(param);
-        if (!Strings.isNullOrEmpty(error)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
-        }
-        ShopDto dto = CommonConverter.map(param, ShopDto.class);
-        int i = shopService.update(dto);
-        return JsonResult.success(i);
-    }
-
-    private String checkModifyShopParam(ShopParam param) {
-        String error = checkShopParam(param);
-        if (!Strings.isNullOrEmpty(error)) {
-            return error;
-        }
-        if (param.getId() == null) {
-            return "店铺标识不能为空";
-        }
-        return null;
-    }
-
-    @RequestMapping("/delByIds")
-    @ResponseBody
-    public JsonResult<?> delByIds(Long[] id) {
-        if (id == null || id.length == 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的店铺");
-        }
-        int i = shopService.delByIds(id);
-        return JsonResult.success(i);
     }
 
 }

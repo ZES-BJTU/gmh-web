@@ -12,9 +12,9 @@ public interface ShopService {
 
     int update(ShopDto dto);
 
-    int delByIds(Long[] id);
+    int deleteByIds(Long[] id);
 
-    List<ShopVo> getAll();
+    List<ShopVo> listAllShops();
 
     PagedList<ShopDto> listByPage(Integer pageNum, Integer pageSize);
 
