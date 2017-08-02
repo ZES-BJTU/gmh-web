@@ -105,11 +105,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString,
                                                    Integer jobId) {
-        PageHelper.startPage(pageNum, pageSize);
-        EmployeeJobQueryCondition condition = new EmployeeJobQueryCondition();
         if (jobId == 0) {
             jobId = null;
         }
+        PageHelper.startPage(pageNum, pageSize);
+        EmployeeJobQueryCondition condition = new EmployeeJobQueryCondition();
         condition.setPageNum(pageNum);
         condition.setPageSize(pageSize);
         condition.setStoreId(ThreadContext.getStaffStoreId());
