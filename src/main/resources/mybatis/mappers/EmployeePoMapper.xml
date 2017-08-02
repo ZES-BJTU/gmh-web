@@ -30,17 +30,17 @@
 	<select id="selectIdsByCondition"
 		parameterType="com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition"
 		resultMap="IdResultMap">
-		SELECT id FROM employee
+		SELECT e.id FROM employee e
 		<where>
 			<if test="storeId != null">
-				shop_id = #{storeId, jdbcType=BIGINT}
+				e.shop_id = #{storeId, jdbcType=BIGINT}
 			</if>
 			<if test="work != null">
-				AND `work` = #{work, jdbcType=TINYINT}
+				AND e.`work` = #{work, jdbcType=TINYINT}
 			</if>
 			<if test="searchString != null and searchString != ''">
 				<bind name="search" value="'%' + searchString + '%'" />
-				AND CONCAT_WS("",`name`,phone) LIKE CONCAT(#{search})
+				AND CONCAT_WS("",e.`name`,e.phone) LIKE CONCAT(#{search})
 			</if>
 		</where>
 	</select>

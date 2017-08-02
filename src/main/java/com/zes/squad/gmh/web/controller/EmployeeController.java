@@ -68,7 +68,7 @@ public class EmployeeController {
         if (jobId == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工工种为空");
         }
-        if (Strings.isNullOrEmpty(EnumUtils.getDescByKey(JobEnum.class, jobId))) {
+        if (jobId != 0 && Strings.isNullOrEmpty(EnumUtils.getDescByKey(JobEnum.class, jobId))) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工工种错误");
         }
         PagedList<EmployeeDto> pagedDtos = employeeService.searchListByPage(pageNum, pageSize, searchString, jobId);

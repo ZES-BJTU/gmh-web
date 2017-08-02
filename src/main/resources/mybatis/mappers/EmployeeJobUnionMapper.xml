@@ -13,6 +13,9 @@
 			resultMap="com.zes.squad.gmh.web.mapper.EmployeeJobMapper.BaseResultMap"
 			columnPrefix="ej_" />
 	</resultMap>
+	<resultMap id="IdResultMap" type="long">
+	   <id column="id" jdbcType="BIGINT" property="id"/>
+	</resultMap>
 	<sql id="Base_Column_List">
 		e.`id`,
 		e.`name`,
@@ -37,7 +40,33 @@
 		ej_created_time,
 		ej.modified_time AS ej_modified_time
 	</sql>
-	<select id="listEmployeeJobUnionsByCondition" resultMap="BaseResultMap">
+	<select id="selectIdsByCondition"
+		parameterType="com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition"
+		resultMap="IdResultMap">
+		SELECT e.id FROM
+		employee e
+		LEFT JOIN
+		employee_job ej
+		ON e.`id` =
+		ej.employee_id
+		<where>
+			<if test="storeId != null">
+				e.shop_id = #{storeId, jdbcType=BIGINT}
+			</if>
+			<if test="work != null">
+				AND e.`work` = #{work, jdbcType=TINYINT}
+			</if>
+			<if test="jobId != null">
+				AND ej.job_Type = #{jobId, jdbcType=BIGINT}
+			</if>
+			<if test="searchString != null and searchString != ''">
+				<bind name="search" value="'%' + searchString + '%'" />
+				AND CONCAT_WS("",e.`name`,e.phone) LIKE CONCAT(#{search})
+			</if>
+		</where>
+	</select>
+	<select id="listEmployeeJobUnionsByCondition" parameterType="list"
+		resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM
@@ -50,9 +79,6 @@
 		ej
 		ON e.`id` = ej.employee_id
 		<where>
-			<if test="jobId != null">
-				AND ej.job_type = #{jobId, jdbcType=INTEGER}
-			</if>
 			<if test="ids != null and ids.size() != 0">
 				AND e.id IN
 				<foreach collection="ids" item="id" separator="," open="("

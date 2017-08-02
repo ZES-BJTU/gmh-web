@@ -11,6 +11,7 @@ public class EmployeeJobQueryCondition extends QueryCondition {
 
     private Long    storeId;
     private Boolean work;
+    private Integer jobId;
     private String  searchString;
 
 }
