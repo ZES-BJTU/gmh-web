@@ -13,12 +13,19 @@ import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.SexEnum;
+import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
+import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
+import com.zes.squad.gmh.web.helper.LogicHelper;
+import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
 import com.zes.squad.gmh.web.service.MemberService;
@@ -29,39 +36,62 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private MemberMapper      memberMapper;
     @Autowired
+    private MemberLevelMapper memberLevelMapper;
+    @Autowired
     private MemberUnionMapper memberUnionMapper;
 
-    public List<MemberVo> getAll() {
-        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(ThreadContext.getStaffStoreId(), null);
+    public List<MemberVo> listMembers() {
+        MemberQueryCondition condition = new MemberQueryCondition();
+        condition.setStoreId(ThreadContext.getStaffStoreId());
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(condition);
         List<MemberVo> vos = buildMemberVosByUnions(unions);
         return vos;
     }
 
     @Override
     public int insert(MemberDto dto) {
-        dto.setStoreId(ThreadContext.getStaffStoreId());
+        MemberLevelPo memberLevelPo = memberLevelMapper.selectById(dto.getMemberLevelId());
+        LogicHelper.ensureEntityExist(memberLevelPo, ErrorMessage.memberLevelNotFound);
+        Long storeId = ThreadContext.getStaffStoreId();
+        MemberQueryCondition condition = new MemberQueryCondition();
+        condition.setStoreId(storeId);
+        condition.setPhone(dto.getPhone());
+        MemberPo memberPo = memberMapper.selectByCondition(condition);
+        LogicHelper.ensureEntityNotExist(memberPo, ErrorMessage.memberExistInStore);
+        dto.setStoreId(storeId);
         MemberPo po = CommonConverter.map(dto, MemberPo.class);
-        po.setMemberLevelId(dto.getLevelId());
-        po.setName(dto.getMemberName());
         return memberMapper.insert(po);
     }
 
     @Override
     public int update(MemberDto dto) {
+        MemberLevelPo memberLevelPo = memberLevelMapper.selectById(dto.getMemberLevelId());
+        LogicHelper.ensureEntityExist(memberLevelPo, ErrorMessage.memberLevelNotFound);
+        Long storeId = ThreadContext.getStaffStoreId();
+        MemberQueryCondition condition = new MemberQueryCondition();
+        condition.setStoreId(storeId);
+        condition.setPhone(dto.getPhone());
+        MemberPo memberPo = memberMapper.selectByCondition(condition);
+        if (memberPo != null && memberPo.getId() != dto.getId()) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED,
+                    ErrorMessage.memberExistInStore);
+        }
+        dto.setStoreId(storeId);
         MemberPo po = CommonConverter.map(dto, MemberPo.class);
-        po.setMemberLevelId(dto.getLevelId());
-        po.setName(dto.getMemberName());
-        return memberMapper.update(po);
+        return memberMapper.updateSelective(po);
     }
 
     @Override
-    public int delByIds(Long[] id) {
+    public int deleteByIds(Long[] id) {
         return memberMapper.batchDelete(id);
     }
 
     @Override
-    public MemberVo getByPhone(String phone) {
-        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(null, phone);
+    public MemberVo queryByPhone(String phone) {
+        MemberQueryCondition condition = new MemberQueryCondition();
+        condition.setStoreId(ThreadContext.getStaffStoreId());
+        condition.setPhone(phone);
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(condition);
         List<MemberVo> vos = buildMemberVosByUnions(unions);
         return vos.get(0);
     }
@@ -69,7 +99,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public PagedList<MemberVo> listByPage(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(ThreadContext.getStaffStoreId(), null);
+        MemberQueryCondition condition = new MemberQueryCondition();
+        condition.setStoreId(ThreadContext.getStaffStoreId());
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
             return PagedLists.newPagedList(pageNum, pageSize);
         }
@@ -83,10 +115,9 @@ public class MemberServiceImpl implements MemberService {
         List<MemberVo> vos = Lists.newArrayList();
         for (MemberUnion union : unions) {
             MemberVo vo = CommonConverter.map(union.getMemberPo(), MemberVo.class);
-            vo.setLevelId(union.getMemberPo().getMemberLevelId());
-            vo.setLevelName(union.getMemberLevelPo().getName());
-            vo.setMemberName(union.getMemberPo().getName());
-            vo.setSex(EnumUtils.getDescByKey(SexEnum.class, union.getMemberPo().getSex()));
+            vo.setMemberLevelName(union.getMemberLevelPo().getName());
+            vo.setSex(EnumUtils.getDescByKey(SexEnum.class,
+                    Integer.valueOf(String.valueOf(union.getMemberPo().getSex()))));
             vos.add(vo);
         }
         return vos;

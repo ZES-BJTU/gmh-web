@@ -1,24 +1,21 @@
 package com.zes.squad.gmh.web.mapper;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
-import com.zes.squad.gmh.web.entity.vo.MemberVo;
 
 public interface MemberMapper {
 
     MemberPo selectById(Long id);
 
-    List<MemberVo> getAll(Long storeId);
-
-    MemberVo getByPhone(String phone);
+    MemberPo selectByCondition(MemberQueryCondition condition);
 
     int insert(MemberPo po);
 
-    int update(MemberPo po);
+    int updateSelective(MemberPo po);
 
     /**
      * 更新美甲美睫储值
@@ -38,6 +35,7 @@ public interface MemberMapper {
      */
     int updateBeautyMoney(@Param("id") Long id, @Param("beautyMoney") BigDecimal beautyMoney);
 
+    @Deprecated
     int delById(Long id);
 
     int batchDelete(Long[] ids);

@@ -9,10 +9,10 @@ import lombok.Data;
 public class MemberVo {
     private Long       id;
     private Long       storeId;
-    private Long       levelId;
-    private String     levelName;
+    private Long       memberLevelId;
+    private String     memberLevelName;
     private String     phone;
-    private String     memberName;
+    private String     name;
     private String     sex;
     private Date       birthday;
     private Date       joinDate;

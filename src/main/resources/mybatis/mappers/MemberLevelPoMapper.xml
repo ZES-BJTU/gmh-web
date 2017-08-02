@@ -13,6 +13,11 @@
 		`created_time`,
 		`modified_time`
 	</sql>
+	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM member_level WHERE id=#{id, jdbcType=BIGINT}
+	</select>
 	<select id="selectByStoreId" parameterType="long" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />

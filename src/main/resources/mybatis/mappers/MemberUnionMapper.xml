@@ -3,13 +3,16 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.MemberUnionMapper">
 	<resultMap id="BaseResultMap"
 		type="com.zes.squad.gmh.web.entity.union.MemberUnion">
-		<association property="staffPo"
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<association property="memberPo"
 			resultMap="com.zes.squad.gmh.web.mapper.MemberMapper.BaseResultMap" />
-		<association property="shopPo"
+		<association property="memberLevelPo"
 			resultMap="com.zes.squad.gmh.web.mapper.MemberLevelMapper.BaseResultMap"
 			columnPrefix="ml_" />
 	</resultMap>
-	<select id="listMemberUnionsByCondition" resultMap="BaseResultMap">
+	<select id="listMemberUnionsByCondition"
+		parameterType="com.zes.squad.gmh.web.entity.condition.MemberQueryCondition"
+		resultMap="BaseResultMap">
 		SELECT
 		m.id,
 		m.store_id,
@@ -37,10 +40,10 @@
 		ON m.member_level_id = ml.id
 		<where>
 			<if test="storeId != null">
-				m.store_id = #{storeId, jdbcType=BIGINT}
+				AND m.store_id = #{storeId, jdbcType=BIGINT}
 			</if>
 			<if test="phone != null">
-				m.phone = #{phone, jdbcType=VARCHAR}
+				AND m.phone = #{phone, jdbcType=VARCHAR}
 			</if>
 		</where>
 	</select>

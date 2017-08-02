@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class MemberUnion {
 
+    private Long          id;
     private MemberPo      memberPo;
     private MemberLevelPo memberLevelPo;
 

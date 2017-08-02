@@ -28,6 +28,7 @@ import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
+import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
@@ -65,8 +66,10 @@ public class ConsumeServiceImpl implements ConsumeService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void addConsumeRecord(ConsumeRecordDto dto) {
-        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(ThreadContext.getStaffStoreId(),
-                dto.getMobile());
+        MemberQueryCondition memberCondition = new MemberQueryCondition();
+        memberCondition.setStoreId(ThreadContext.getStaffStoreId());
+        memberCondition.setPhone(dto.getMobile());
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(memberCondition);
         if (!CollectionUtils.isEmpty(unions)) {
             dto.setMemberId(unions.get(0).getMemberPo().getId());
             //处理会员消费

@@ -1,5 +1,12 @@
 package com.zes.squad.gmh.web.controller;
 
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidMobile;
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +14,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
@@ -18,87 +28,84 @@ import com.zes.squad.gmh.web.service.MemberService;
 @RequestMapping("/member")
 @Controller
 public class MemberController {
+
     @Autowired
     private MemberService memberService;
 
-    @RequestMapping("/getAll")
+    @RequestMapping("/listAll")
     @ResponseBody
-    public JsonResult<?> getAll() {
-        List<MemberVo> voList = memberService.getAll();
-        return JsonResult.success(voList);
+    public JsonResult<List<MemberVo>> doListMembers() {
+        List<MemberVo> vos = memberService.listMembers();
+        return JsonResult.success(vos);
     }
 
     @RequestMapping("/listByPage")
     @ResponseBody
     public JsonResult<PagedList<MemberVo>> doListByPage(Integer pageNum, Integer pageSize) {
-        if (pageNum == null || pageNum < 0) {
+        if (!isValidPageNum(pageNum)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageNumIsError);
         }
-        if (pageSize == null || pageSize < 0) {
+        if (!isValidPageSize(pageSize)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageSizeIsError);
         }
-        PagedList<MemberVo> pagedListVo = memberService.listByPage(pageNum, pageSize);
+        PagedList<MemberVo> pagedVos = memberService.listByPage(pageNum, pageSize);
 
-        return JsonResult.success(pagedListVo);
+        return JsonResult.success(pagedVos);
     }
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<?> insert(MemberDto dto) {
-        if (dto == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "会员信息不能为空");
-        }
-        MemberVo vo = memberService.getByPhone(dto.getPhone());
-        if (vo != null) {
-            return JsonResult.fail(10006, "该手机号已注册");
-        }
+    public JsonResult<Integer> insert(MemberDto dto) {
+        checkMemberDto(dto);
         int i = memberService.insert(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(10006, "新增失败");
-        }
+        return JsonResult.success(i);
     }
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<?> update(MemberDto dto) {
-        if (dto == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "会员信息不能为空");
-        }
-        if (dto.getId() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "会员标识不能为空");
-        }
+    public JsonResult<Integer> update(MemberDto dto) {
+        checkMemberDto(dto);
+        ensureParameterExist(dto.getId(), ErrorMessage.memberIdIsNull);
         int i = memberService.update(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(10006, "修改失败");
-        }
+        return JsonResult.success(i);
     }
 
     @RequestMapping("/delete")
     @ResponseBody
-    public JsonResult<?> delete(Long[] id) {
-        int i = 0;
-        i = memberService.delByIds(id);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(10006, "发生错误，没有数据被修改");
-        }
+    public JsonResult<Integer> delete(Long[] id) {
+        int i = memberService.deleteByIds(id);
+        return JsonResult.success(i);
     }
 
-    @RequestMapping("/getByPhone")
+    @RequestMapping("/queryByPhone")
     @ResponseBody
-    public JsonResult<?> getByPhone(String phone) {
-        MemberVo vo = memberService.getByPhone(phone);
-        if (vo == null) {
-            return JsonResult.fail(10002, "没有该会员");
-        } else {
-            return JsonResult.success(vo);
-        }
+    public JsonResult<MemberVo> doQueryByPhone(String phone) {
+        MemberVo vo = memberService.queryByPhone(phone);
+        return JsonResult.success(vo);
     }
+
+    private void checkMemberDto(MemberDto dto) {
+        ensureParameterExist(dto, ErrorMessage.paramIsNull);
+        ensureParameterExist(dto.getMemberLevelId(), ErrorMessage.memberLevelIdIsNull);
+        ensureParameterExist(dto.getPhone(), ErrorMessage.memberMobileIsNull);
+        ensureParameterValid(isValidMobile(dto.getPhone()), ErrorMessage.memberMobileIsError);
+        ensureParameterExist(dto.getName(), ErrorMessage.memberNameIsNull);
+        ensureParameterExist(dto.getSex(), ErrorMessage.memberSexIsNull);
+        ensureParameterValid(
+                !Strings.isNullOrEmpty(
+                        EnumUtils.getDescByKey(SexEnum.class, Integer.valueOf(String.valueOf(dto.getSex())))),
+                ErrorMessage.memberSexIsError);
+        ensureParameterExist(dto.getBirthday(), ErrorMessage.memberBirthdayIsNull);
+        ensureParameterExist(dto.getJoinDate(), ErrorMessage.memberCardOpenDateIsNull);
+        ensureParameterExist(dto.getValidDate(), ErrorMessage.memberCardValidDateIsNull);
+        ensureParameterValid(dto.getJoinDate().before(dto.getValidDate()),
+                ErrorMessage.memberCardOpenDateAfterValidDate);
+        ensureParameterValid(dto.getNailMoney() != null && dto.getNailMoney().compareTo(BigDecimal.ZERO) == 1,
+                ErrorMessage.memberNailMoneyIsError);
+        ensureParameterValid(dto.getBeautyMoney() != null && dto.getBeautyMoney().compareTo(BigDecimal.ZERO) == 1,
+                ErrorMessage.memberBeautyMoneyIsError);
+    }
+    
 }

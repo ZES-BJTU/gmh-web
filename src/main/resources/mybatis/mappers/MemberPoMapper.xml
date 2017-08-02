@@ -22,12 +22,21 @@
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
+	<select id="selectByCondition"
+		parameterType="com.zes.squad.gmh.web.entity.condition.MemberQueryCondition"
+		resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM
 		member
-		WHERE store_id=#{storeId, jdbcType=BIGINT}
+		<where>
+			<if test="storeId != null">
+				AND store_id = #{storeId, jdbcType=BIGINT}
+			</if>
+			<if test="phone != null and phone != ''">
+				AND phone = #{phone, jdbcType=VARCHAR}
+			</if>
+		</where>
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
@@ -42,7 +51,7 @@
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
 		INSERT INTO
-		member(store_id,member_level_id,phone,name,sex,birthday,join_date,valid_date,nail_money,beauty_money,remark)
+		member(store_id,member_level_id,phone,`name`,`sex`,birthday,join_date,valid_date,nail_money,beauty_money,remark)
 		VALUES
 		(#{storeId, jdbcType=BIGINT},#{memberLevelId,
 		jdbcType=BIGINT},#{phone, jdbcType=VARCHAR},#{name,
@@ -51,11 +60,11 @@
 		jdbcType=TIMESTAMP},#{nailMoney, jdbcType=DECIMAL},#{beautyMoney,
 		jdbcType=DECIMAL},#{remark, jdbcType=VARCHAR})
 	</insert>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
+	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
 		UPDATE member
 		<set>
 			<if test="memberLevelId != null">
-				level_id=#{levelId, jdbcType=BIGINT},
+				member_level_id=#{memberLevelId, jdbcType=BIGINT},
 			</if>
 			<if test="phone != null">
 				phone=#{phone, jdbcType=VARCHAR},
@@ -92,12 +101,9 @@
 		jdbcType=DECIMAL}
 	</update>
 	<update id="updateBeautyMoney">
-		UPDATE member SET beauty_money=#{beautyMoney, jdbcType=DECIMAL}
+		UPDATE member SET beauty_money=#{beautyMoney,
+		jdbcType=DECIMAL}
 	</update>
-	<delete id="delById" parameterType="long">
-		DELETE FROM member WHERE
-		id=#{id, jdbcType=BIGINT}
-	</delete>
 	<delete id="batchDelete" parameterType="long[]">
 		DELETE FROM member WHERE id IN
 		<foreach collection="array" item="id" separator="," open="("

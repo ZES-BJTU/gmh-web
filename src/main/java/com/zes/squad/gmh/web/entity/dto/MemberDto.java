@@ -9,9 +9,9 @@ import lombok.Data;
 public class MemberDto {
     private Long       id;
     private Long       storeId;
-    private Long       levelId;
+    private Long       memberLevelId;
     private String     phone;
-    private String     memberName;
+    private String     name;
     private Byte       sex;
     private Date       birthday;
     private Date       joinDate;

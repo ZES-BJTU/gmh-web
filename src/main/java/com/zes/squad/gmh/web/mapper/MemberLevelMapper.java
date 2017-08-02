@@ -6,6 +6,8 @@ import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 
 public interface MemberLevelMapper {
 
+    MemberLevelPo selectById(Long id);
+    
     List<MemberLevelPo> selectByStoreId(Long storeId);
 
     int insert(MemberLevelPo po);

@@ -24,7 +24,7 @@ public class CheckHelper {
     }
 
     public static boolean isValidMobile(String mobile) {
-        Pattern pattern = Pattern.compile("[0-9]{11}");
+        Pattern pattern = Pattern.compile("[1]{1}[0-9]{10}");
         Matcher matcher = pattern.matcher(mobile);
         if (!matcher.matches()) {
             return false;
