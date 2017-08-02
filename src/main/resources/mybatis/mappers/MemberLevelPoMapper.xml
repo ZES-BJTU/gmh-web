@@ -4,7 +4,7 @@
 	<resultMap id="BaseResultMap" type="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
-		<result column="name" jdbcType="VARCHAR" property="bane" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>

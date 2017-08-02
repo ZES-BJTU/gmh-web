@@ -34,6 +34,7 @@ public class MemberLevelServiceImpl implements MemberLevelService {
         for (MemberLevelPo po : pos) {
             MemberLevelVo vo = CommonConverter.map(po, MemberLevelVo.class);
             vo.setLevelName(po.getName());
+            vos.add(vo);
         }
         return vos;
     }
