@@ -14,6 +14,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
@@ -50,13 +51,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         condition.setWork(DEFAULT_IS_WORK);
         List<Long> ids = employeeMapper.selectIdsByCondition(condition);
         if (CollectionUtils.isEmpty(ids)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<Long> info = new PageInfo<>(ids);
         List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(ids);
         List<EmployeeDto> dtos = buildEmployeeDtosByUnions(unions);
-        PagedList<EmployeeDto> pagedDtos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(),
-                dtos);
+        PagedList<EmployeeDto> pagedDtos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(),
+                info.getTotal(), dtos);
         return pagedDtos;
     }
 
@@ -112,13 +113,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         condition.setSearchString(searchString);
         List<Long> ids = employeeMapper.selectIdsByCondition(condition);
         if (CollectionUtils.isEmpty(ids)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<Long> info = new PageInfo<>(ids);
         List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(ids);
         List<EmployeeDto> dtos = buildEmployeeDtosByUnions(unions);
-        PagedList<EmployeeDto> pagedDtos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(),
-                dtos);
+        PagedList<EmployeeDto> pagedDtos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(),
+                info.getTotal(), dtos);
         return pagedDtos;
     }
 

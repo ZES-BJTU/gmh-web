@@ -19,6 +19,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
@@ -112,11 +113,11 @@ public class ConsumeServiceImpl implements ConsumeService {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
         List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
-            return PagedList.newMe(condition.getPageNum(), condition.getPageSize(), 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(condition.getPageNum(), condition.getPageSize());
         }
         PageInfo<ConsumeRecordUnion> info = new PageInfo<>(unions);
         List<ConsumeRecordDto> dtos = buildConsumeRecordDtosByUnions(unions);
-        return PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
+        return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
     }
 
     @Override

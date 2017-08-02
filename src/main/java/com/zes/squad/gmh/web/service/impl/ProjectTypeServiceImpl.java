@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
@@ -68,11 +69,11 @@ public class ProjectTypeServiceImpl implements ProjectTypeService {
             pos = projectTypeMapper.search(ThreadContext.getStaffStoreId(), searchString, topType);
         }
         if (CollectionUtils.isEmpty(pos)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<ProjectTypePo> info = new PageInfo<>(pos);
-        PagedList<ProjectTypeDto> pagedDtos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(),
-                CommonConverter.mapList(pos, ProjectTypeDto.class));
+        PagedList<ProjectTypeDto> pagedDtos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(),
+                info.getTotal(), CommonConverter.mapList(pos, ProjectTypeDto.class));
         return pagedDtos;
     }
 }

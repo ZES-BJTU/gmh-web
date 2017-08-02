@@ -14,6 +14,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.JobEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
@@ -80,7 +81,7 @@ public class EmployeeController {
             vo.setJobVos(jobVos);
             vos.add(vo);
         }
-        return PagedList.newMe(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
+        return PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
     }
 
     @RequestMapping("/insert")

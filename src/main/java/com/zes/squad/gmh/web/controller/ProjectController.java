@@ -15,6 +15,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
@@ -50,10 +51,10 @@ public class ProjectController {
         }
         PagedList<ProjectDto> pagedDtos = projectService.listByPage(pageNum, pageSize);
         if (pagedDtos == null || CollectionUtils.isEmpty(pagedDtos.getData())) {
-            return JsonResult.success(PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList()));
+            return JsonResult.success(PagedLists.newPagedList(pageNum, pageSize, 0L, Lists.newArrayList()));
         }
         List<ProjectVo> vos = buildProjectVosByDtos(pagedDtos.getData());
-        PagedList<ProjectVo> pagedVos = PagedList.newMe(pagedDtos.getPageNum(), pagedDtos.getPageSize(),
+        PagedList<ProjectVo> pagedVos = PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(),
                 pagedDtos.getTotalCount(), vos);
 
         return JsonResult.success(pagedVos);

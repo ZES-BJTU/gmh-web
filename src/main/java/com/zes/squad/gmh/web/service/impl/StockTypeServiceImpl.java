@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.StockTypeDto;
 import com.zes.squad.gmh.web.entity.po.StockTypePo;
@@ -61,9 +62,9 @@ public class StockTypeServiceImpl implements StockTypeService {
     @Override
     public PagedList<StockTypeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
         PageHelper.startPage(pageNum, pageSize);
-        List<StockTypePo> pos = stockTypeMapper.search(ThreadContext.getStaffStoreId(),searchString);
+        List<StockTypePo> pos = stockTypeMapper.search(ThreadContext.getStaffStoreId(), searchString);
         if (CollectionUtils.isEmpty(pos)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<StockTypePo> info = new PageInfo<>(pos);
         List<StockTypeDto> dtos = Lists.newArrayList();
@@ -72,8 +73,8 @@ public class StockTypeServiceImpl implements StockTypeService {
             dto.setTypeName(po.getName());
             dtos.add(dto);
         }
-        PagedList<StockTypeDto> pagedDtos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(),
-                dtos);
+        PagedList<StockTypeDto> pagedDtos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(),
+                info.getTotal(), dtos);
         return pagedDtos;
     }
 }

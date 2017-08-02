@@ -1,5 +1,8 @@
 package com.zes.squad.gmh.web.controller;
 
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.MemberLevelDto;
@@ -23,75 +27,76 @@ public class MemberLevelController {
     @Autowired
     private MemberLevelService memberLevelService;
 
-    @RequestMapping("/getAll")
+    @RequestMapping("/listAll")
     @ResponseBody
-    public JsonResult<?> getAll() {
-        List<MemberLevelVo> vos = memberLevelService.getAll();
+    public JsonResult<?> doListMemberLevels() {
+        List<MemberLevelVo> vos = memberLevelService.listAllMemberLevels();
         return JsonResult.success(vos);
     }
 
     @RequestMapping("/listByPage")
     @ResponseBody
     public JsonResult<PagedList<MemberLevelVo>> doListByPage(Integer pageNum, Integer pageSize) {
-        if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+        if (isValidPageNum(pageNum)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageNumIsError);
         }
-        if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
+        if (isValidPageSize(pageSize)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.pageSizeIsError);
         }
-        PagedList<MemberLevelDto> pagedListDto = memberLevelService.listByPage(pageNum, pageSize);
-        PagedList<MemberLevelVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, MemberLevelVo.class);
+        PagedList<MemberLevelDto> pagedDtos = memberLevelService.listByPage(pageNum, pageSize);
+        PagedList<MemberLevelVo> pagedVos = CommonConverter.mapPageList(pagedDtos, MemberLevelVo.class);
 
-        return JsonResult.success(pagedListVo);
+        return JsonResult.success(pagedVos);
     }
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<?> insert(MemberLevelDto dto) {
-        if (dto == null || Strings.isNullOrEmpty(dto.getLevelName())) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "会员等级信息不能为空");
+    public JsonResult<Integer> insert(MemberLevelDto dto) {
+        String error = checkMemberLevelDto(dto);
+        if (!Strings.isNullOrEmpty(error)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
         dto.setStoreId(ThreadContext.getStaffStoreId());
         int i = memberLevelService.insert(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(10006, "新增失败");
-        }
+        return JsonResult.success(i);
     }
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<?> update(MemberLevelDto dto) {
-        if (dto == null || Strings.isNullOrEmpty(dto.getLevelName())) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "会员等级信息不能为空");
+    public JsonResult<Integer> update(MemberLevelDto dto) {
+        String error = checkMemberLevelDto(dto);
+        if (!Strings.isNullOrEmpty(error)) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
         if (dto.getId() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "会员等级信息标识不能为空");
-        }
-        if (dto.getStoreId() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "会员等级所属门店信息不能为空");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.memberLevelIdIsNull);
         }
         int i = memberLevelService.update(dto);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(10006, "修改失败");
-        }
+        return JsonResult.success(i);
     }
 
     @RequestMapping("/delete")
     @ResponseBody
-    public JsonResult<?> delete(Long[] id) {
+    public JsonResult<Integer> delete(Long[] id) {
         if (id == null || id.length == 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择要删除的会员等级信息");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.memberLevelNotSelectedForDelete);
         }
-        int i = 0;
-        i = memberLevelService.delByIds(id);
-        if (i > 0) {
-            return JsonResult.success(i);
-        } else {
-            return JsonResult.fail(10006, "发生错误，没有数据被修改");
-        }
+        int i = memberLevelService.deleteByIds(id);
+        return JsonResult.success(i);
     }
+
+    private String checkMemberLevelDto(MemberLevelDto dto) {
+        if (dto == null) {
+            return ErrorMessage.paramIsNull;
+        }
+        if (Strings.isNullOrEmpty(dto.getLevelName())) {
+            return ErrorMessage.memberLevelNameIsNull;
+        }
+        return null;
+    }
+
 }

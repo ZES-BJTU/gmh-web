@@ -12,6 +12,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
@@ -63,7 +64,7 @@ public class ConsumeController extends BaseController {
         PagedList<ConsumeRecordDto> pagedDtos = consumeService.listPagedConsumeRecords(condition);
         if (pagedDtos == null || CollectionUtils.isEmpty(pagedDtos.getData())) {
             return JsonResult.success(
-                    PagedList.newMe(pagedDtos.getPageNum(), pagedDtos.getPageSize(), 0L, Lists.newArrayList()));
+                    PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize()));
         }
         PagedList<ConsumeRecordVo> pagedVos = buildPagedConsumeRecordVosByDtos(pagedDtos);
         return JsonResult.success(pagedVos);
@@ -111,7 +112,7 @@ public class ConsumeController extends BaseController {
             }
             vos.add(vo);
         }
-        return PagedList.newMe(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
+        return PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
     }
 
     private String checkConsumeRecordExportParams(ConsumeRecordExportParams params) {

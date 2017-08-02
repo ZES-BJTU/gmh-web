@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.constant.RedisConsts;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
@@ -238,11 +239,12 @@ public class StaffServiceImpl implements StaffService {
         PageHelper.startPage(pageNum, pageSize);
         List<StaffShopUnion> unions = staffShopUnionMapper.listStaffShopUnions(searchString);
         if (CollectionUtils.isEmpty(unions)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<StaffShopUnion> info = new PageInfo<>(unions);
         List<StaffVo> vos = buildStaffVosByUnions(unions);
-        PagedList<StaffVo> pagedVos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), vos);
+        PagedList<StaffVo> pagedVos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(),
+                vos);
         return pagedVos;
     }
 

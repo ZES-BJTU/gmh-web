@@ -8,9 +8,13 @@ import com.zes.squad.gmh.web.entity.vo.MemberLevelVo;
 
 public interface MemberLevelService {
 
-	List<MemberLevelVo> getAll();
-	PagedList<MemberLevelDto> listByPage(Integer pageNum, Integer pageSize);
-	int insert(MemberLevelDto dto);
-	int update(MemberLevelDto dto);
-	int delByIds(Long[] Ids);
+    List<MemberLevelVo> listAllMemberLevels();
+
+    PagedList<MemberLevelDto> listByPage(Integer pageNum, Integer pageSize);
+
+    int insert(MemberLevelDto dto);
+
+    int update(MemberLevelDto dto);
+
+    int deleteByIds(Long[] Ids);
 }

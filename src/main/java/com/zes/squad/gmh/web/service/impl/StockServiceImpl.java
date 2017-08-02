@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhCacheException;
@@ -103,11 +104,12 @@ public class StockServiceImpl implements StockService {
         condition.setSearchString(searchString);
         List<StockUnion> unions = stockUnionMapper.listStockUnionsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<StockUnion> info = new PageInfo<>(unions);
         List<StockVo> vos = buildStockVosByUnions(unions);
-        PagedList<StockVo> pagedList = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), vos);
+        PagedList<StockVo> pagedList = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(),
+                vos);
         return pagedList;
     }
 

@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
@@ -70,10 +71,10 @@ public class MemberServiceImpl implements MemberService {
         PageHelper.startPage(pageNum, pageSize);
         List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(ThreadContext.getStaffStoreId(), null);
         if (CollectionUtils.isEmpty(unions)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<MemberUnion> info = new PageInfo<>(unions);
-        PagedList<MemberVo> pagedVos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(),
+        PagedList<MemberVo> pagedVos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(),
                 buildMemberVosByUnions(unions));
         return pagedVos;
     }

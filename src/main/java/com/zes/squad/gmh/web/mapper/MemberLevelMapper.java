@@ -6,12 +6,13 @@ import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 
 public interface MemberLevelMapper {
 
-    List<MemberLevelPo> getAll(Long storeId);
+    List<MemberLevelPo> selectByStoreId(Long storeId);
 
     int insert(MemberLevelPo po);
 
-    int update(MemberLevelPo po);
+    int updateSelective(MemberLevelPo po);
 
+    @Deprecated
     int delById(Long id);
 
     /**
@@ -20,5 +21,5 @@ public interface MemberLevelMapper {
      * @param ids
      * @return
      */
-    int batchDelete(List<Long> ids);
+    int batchDelete(Long[] ids);
 }

@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
@@ -72,11 +73,12 @@ public class ProjectServiceImpl implements ProjectService {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
         List<ProjectUnion> unions = projectUnionMapper.listProjectUnionsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<ProjectUnion> info = new PageInfo<>(unions);
         List<ProjectDto> dtos = buildProjectDtosByUnions(unions);
-        PagedList<ProjectDto> pagedDtos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
+        PagedList<ProjectDto> pagedDtos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(),
+                info.getTotal(), dtos);
         return pagedDtos;
     }
 

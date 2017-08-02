@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
@@ -68,11 +69,12 @@ public class ShopServiceImpl implements ShopService {
         PageHelper.startPage(pageNum, pageSize);
         List<ShopPo> pos = shopMapper.selectAll();
         if (CollectionUtils.isEmpty(pos)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<ShopPo> info = new PageInfo<>(pos);
         List<ShopDto> dtos = buildShopDtosByPos(pos);
-        PagedList<ShopDto> pagedDtos = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
+        PagedList<ShopDto> pagedDtos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(),
+                dtos);
         return pagedDtos;
     }
 
@@ -81,11 +83,12 @@ public class ShopServiceImpl implements ShopService {
         PageHelper.startPage(pageNum, pageSize);
         List<ShopPo> pos = shopMapper.search(searchString);
         if (CollectionUtils.isEmpty(pos)) {
-            return PagedList.newMe(pageNum, pageSize, 0L, Lists.newArrayList());
+            return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<ShopPo> info = new PageInfo<>(pos);
         List<ShopDto> dtos = buildShopDtosByPos(pos);
-        PagedList<ShopDto> pagedList = PagedList.newMe(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
+        PagedList<ShopDto> pagedList = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(),
+                dtos);
         return pagedList;
     }
 

@@ -13,20 +13,21 @@
 		`created_time`,
 		`modified_time`
 	</sql>
-	<select id="getAll" parameterType="Long" resultMap="BaseResultMap">
+	<select id="selectByStoreId" parameterType="long" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM member_level WHERE store_id=#{storeId, jdbcType=BIGINT}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
 		INSERT INTO
-		member_level(store_id,name)
+		member_level(store_id,`name`)
 		VALUES
 		(#{storeId, jdbcType=BIGINT},#{name,
 		jdbcType=VARCHAR})
 	</insert>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
-		UPDATE member_level SET
+	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
+		UPDATE member_level
+		SET
 		name=#{name, jdbcType=VARCHAR}
 		WHERE id=#{id, jdbcType=BIGINT}
 	</update>
@@ -34,11 +35,9 @@
 		DELETE FROM member_level
 		WHERE id=#{id, jdbcType=BIGINT}
 	</delete>
-	<delete id="batchDelete" parameterType="list">
-		DELETE FROM
-		member_level
-		WHERE id IN
-		<foreach collection="list" item="id" separator="," open="("
+	<delete id="batchDelete" parameterType="long[]">
+		DELETE FROM member_level WHERE id IN
+		<foreach collection="array" item="id" separator="," open="("
 			close=")">
 			#{id, jdbcType=BIGINT}
 		</foreach>
