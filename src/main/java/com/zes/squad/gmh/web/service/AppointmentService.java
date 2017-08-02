@@ -9,9 +9,9 @@ import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 
 public interface AppointmentService {
 
-    List<AppointmentVo> getAll();
+    List<AppointmentVo> listAllAppoints();
 
-    AppointmentVo getByPhone(String phone);
+    AppointmentVo queryByPhone(String phone);
 
     int insert(AppointmentDto dto);
 

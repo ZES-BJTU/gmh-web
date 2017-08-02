@@ -14,6 +14,7 @@ public interface EmployeeJobUnionMapper {
      * @param ids
      * @return
      */
-    List<EmployeeJobUnion> listEmployeeJobUnionsByCondition(@Param("ids") List<Long> ids);
+    List<EmployeeJobUnion> listEmployeeJobUnionsByCondition(@Param("jobId") Integer jobId,
+                                                            @Param("ids") List<Long> ids);
 
 }

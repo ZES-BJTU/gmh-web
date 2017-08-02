@@ -37,8 +37,7 @@
 		ej_created_time,
 		ej.modified_time AS ej_modified_time
 	</sql>
-	<select id="listEmployeeJobUnionsByCondition" parameterType="list"
-		resultMap="BaseResultMap">
+	<select id="listEmployeeJobUnionsByCondition" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM
@@ -51,8 +50,11 @@
 		ej
 		ON e.`id` = ej.employee_id
 		<where>
+			<if test="">
+				AND ej.job_type = #{jobId, jdbcType=INTEGER}
+			</if>
 			<if test="ids != null and ids.size() != 0">
-				e.id IN
+				AND e.id IN
 				<foreach collection="ids" item="id" separator="," open="("
 					close=")">
 					#{id, jdbcType=BIGINT}

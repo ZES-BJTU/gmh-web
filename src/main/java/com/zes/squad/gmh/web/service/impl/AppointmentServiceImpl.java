@@ -53,7 +53,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private MemberMapper           memberMapper;
 
     @Override
-    public List<AppointmentVo> getAll() {
+    public List<AppointmentVo> listAllAppoints() {
         List<AppointmentUnion> unions = appointmentUnionMapper
                 .listAppointmentUnionsByCondition(ThreadContext.getStaffStoreId(), null);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
@@ -61,7 +61,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public AppointmentVo getByPhone(String phone) {
+    public AppointmentVo queryByPhone(String phone) {
         List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(null, phone);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
         return vos.get(0);

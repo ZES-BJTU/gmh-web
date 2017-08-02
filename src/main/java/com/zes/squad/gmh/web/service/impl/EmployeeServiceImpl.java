@@ -54,7 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<Long> info = new PageInfo<>(ids);
-        List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(ids);
+        List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(null, ids);
         List<EmployeeDto> dtos = buildEmployeeDtosByUnions(unions);
         PagedList<EmployeeDto> pagedDtos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(),
                 info.getTotal(), dtos);
@@ -103,9 +103,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString) {
+    public PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString,
+                                                   Integer jobId) {
         PageHelper.startPage(pageNum, pageSize);
         EmployeeJobQueryCondition condition = new EmployeeJobQueryCondition();
+        if (jobId == 0) {
+            jobId = null;
+        }
         condition.setPageNum(pageNum);
         condition.setPageSize(pageSize);
         condition.setStoreId(ThreadContext.getStaffStoreId());
@@ -116,7 +120,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return PagedLists.newPagedList(pageNum, pageSize);
         }
         PageInfo<Long> info = new PageInfo<>(ids);
-        List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(ids);
+        List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(jobId, ids);
         List<EmployeeDto> dtos = buildEmployeeDtosByUnions(unions);
         PagedList<EmployeeDto> pagedDtos = PagedLists.newPagedList(info.getPageNum(), info.getPageSize(),
                 info.getTotal(), dtos);

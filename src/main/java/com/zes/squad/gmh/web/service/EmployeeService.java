@@ -20,5 +20,5 @@ public interface EmployeeService {
 
     int update(EmployeeDto dto);
 
-    PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString);
+    PagedList<EmployeeDto> searchListByPage(Integer pageNum, Integer pageSize, String searchString, Integer jobId);
 }
