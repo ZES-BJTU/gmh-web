@@ -30,7 +30,7 @@ public class MemberLevelController {
 
     @RequestMapping("/listAll")
     @ResponseBody
-    public JsonResult<?> doListMemberLevels() {
+    public JsonResult<List<MemberLevelVo>> doListMemberLevels() {
         List<MemberLevelVo> vos = memberLevelService.listAllMemberLevels();
         return JsonResult.success(vos);
     }
