@@ -4,20 +4,29 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
+import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.AppointmentStatusEnum;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.enums.YesOrNoEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
+import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
+import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
+import com.zes.squad.gmh.web.entity.condition.AppointmentUnionQueryCondition;
+import com.zes.squad.gmh.web.entity.condition.ConflictQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.po.AppointmentPo;
@@ -25,6 +34,7 @@ import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.po.ProjectPo;
+import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
@@ -53,18 +63,22 @@ public class AppointmentServiceImpl implements AppointmentService {
     private MemberMapper           memberMapper;
 
     @Override
-    public List<AppointmentVo> listAllAppoints() {
-        List<AppointmentUnion> unions = appointmentUnionMapper
-                .listAppointmentUnionsByCondition(ThreadContext.getStaffStoreId(), null);
+    public List<AppointmentVo> listAllAppointments() {
+        AppointmentUnionQueryCondition condition = new AppointmentUnionQueryCondition();
+        condition.setStoreId(ThreadContext.getStaffStoreId());
+        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
         return vos;
     }
 
     @Override
-    public AppointmentVo queryByPhone(String phone) {
-        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(null, phone);
+    public List<AppointmentVo> queryByPhone(String phone) {
+        AppointmentUnionQueryCondition condition = new AppointmentUnionQueryCondition();
+        condition.setStoreId(ThreadContext.getStaffStoreId());
+        condition.setPhone(phone);
+        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
-        return vos.get(0);
+        return vos;
     }
 
     @Override
@@ -143,9 +157,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public boolean isConflict(Long storeId, Long EmployeeId, Date beginTime, Date endTime) {
-        AppointmentPo po = appointmentMapper.selectByCondition(storeId, EmployeeId,
-                AppointmentStatusEnum.TO_DO.getKey(), beginTime, endTime);
+    public boolean isConflict(ConflictQueryCondition condition) {
+        AppointmentPo po = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(),
+                condition.getEmployeeId(), AppointmentStatusEnum.TO_DO.getKey(), condition.getBeginTime(),
+                condition.getBeginTime());
         if (po != null) {
             return false;
         }
@@ -159,14 +174,33 @@ public class AppointmentServiceImpl implements AppointmentService {
             EmployeePo employeePo = union.getEmployeePo();
             MemberPo memberPo = union.getMemberPo();
             ProjectPo projectPo = union.getProjectPo();
+            ProjectTypePo projectTypePo = union.getProjectTypePo();
             AppointmentVo vo = CommonConverter.map(appointmentPo, AppointmentVo.class);
+            vo.setStatus(EnumUtils.getDescByKey(AppointmentStatusEnum.class, appointmentPo.getStatus()));
             vo.setMemberName(memberPo.getName());
             vo.setEmployeeName(employeePo.getName());
             vo.setProjectName(projectPo.getName());
-            vo.setIsLine(appointmentPo.getLine().booleanValue() ? YesOrNoEnum.YES.getDesc() : YesOrNoEnum.NO.getDesc());
+            vo.setTopTypeName(EnumUtils.getDescByKey(ProjectTypeEnum.class, projectTypePo.getTopType()));
+            vo.setTypeName(projectTypePo.getTypeName());
+            vo.setLine(appointmentPo.getLine().booleanValue() ? YesOrNoEnum.YES.getDesc() : YesOrNoEnum.NO.getDesc());
             vos.add(vo);
         }
         return vos;
+    }
+
+    @Override
+    public PagedList<AppointmentVo> searchPagedAppointments(AppointmentQueryCondition condition) {
+        PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
+        AppointmentUnionQueryCondition queryCondition = new AppointmentUnionQueryCondition();
+        queryCondition.setStoreId(ThreadContext.getStaffStoreId());
+        queryCondition.setSearchString(condition.getSearchString());
+        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(queryCondition);
+        if (CollectionUtils.isEmpty(unions)) {
+            return PagedLists.newPagedList(condition.getPageNum(), condition.getPageSize());
+        }
+        PageInfo<AppointmentUnion> info = new PageInfo<>(unions);
+        List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
+        return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(), vos);
     }
 
 }

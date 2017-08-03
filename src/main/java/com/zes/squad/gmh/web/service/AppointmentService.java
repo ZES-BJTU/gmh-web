@@ -1,17 +1,21 @@
 package com.zes.squad.gmh.web.service;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
+import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
+import com.zes.squad.gmh.web.entity.condition.ConflictQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 
 public interface AppointmentService {
 
-    List<AppointmentVo> listAllAppoints();
+    List<AppointmentVo> listAllAppointments();
+    
+    PagedList<AppointmentVo> searchPagedAppointments(AppointmentQueryCondition condition);
 
-    AppointmentVo queryByPhone(String phone);
+    List<AppointmentVo> queryByPhone(String phone);
 
     int insert(AppointmentDto dto);
 
@@ -21,5 +25,5 @@ public interface AppointmentService {
 
     int finish(Long id, BigDecimal charge, Integer chargeWay);
 
-    boolean isConflict(Long storeId, Long EmployeeId, Date beginTime, Date endTime);
+    boolean isConflict(ConflictQueryCondition condition);
 }

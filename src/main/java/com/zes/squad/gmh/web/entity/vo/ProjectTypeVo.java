@@ -7,5 +7,6 @@ public class ProjectTypeVo {
 
     private Long    id;
     private Integer topType;
+    private String  topTypeName;
     private String  typeName;
 }

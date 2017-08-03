@@ -22,7 +22,7 @@
 		FROM shop WHERE CONCAT_WS("",
 		<include refid="Base_Column_List" />
 		)
-		LIKE CONCAT(#{search})
+		LIKE #{search}
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT

@@ -7,5 +7,6 @@ public class ProjectTypeDto {
     private Long    id;
     private Long    storeId;
     private Integer topType;
+    private String  topTypeName;
     private String  typeName;
 }

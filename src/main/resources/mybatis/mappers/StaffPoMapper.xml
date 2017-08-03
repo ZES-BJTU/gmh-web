@@ -27,8 +27,7 @@
 		<include refid="Base_Column_List" />
 		FROM staff WHERE
 		CONCAT_WS("",email,shop_name)
-		LIKE
-		CONCAT(#{searchString})
+		LIKE #{searchString}
 	</select>
 	<select id="selectByEmail" parameterType="string" resultMap="BaseResultMap">
 		SELECT

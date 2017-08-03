@@ -2,6 +2,8 @@ package com.zes.squad.gmh.web.controller;
 
 import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
 import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
 
 import java.util.List;
 
@@ -59,17 +61,12 @@ public class EmployeeController {
     @ResponseBody
     public JsonResult<PagedList<EmployeeVo>> search(Integer pageNum, Integer pageSize, String searchString,
                                                     Integer jobId) {
-        if (pageNum == null || pageNum < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页页码错误");
-        }
-        if (pageSize == null || pageSize < 0) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "分页大小错误");
-        }
-        if (jobId == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工工种为空");
-        }
-        if (jobId != 0 && Strings.isNullOrEmpty(EnumUtils.getDescByKey(JobEnum.class, jobId))) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工工种错误");
+        ensureParameterValid(CheckHelper.isValidPageNum(pageNum), ErrorMessage.pageNumIsError);
+        ensureParameterValid(CheckHelper.isValidPageSize(pageSize), ErrorMessage.pageSizeIsError);
+        ensureParameterExist(jobId, ErrorMessage.employeeJobTypeIsNull);
+        if (jobId != 0) {
+            ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(JobEnum.class, jobId)),
+                    ErrorMessage.employeeJobTypeIsError);
         }
         PagedList<EmployeeDto> pagedDtos = employeeService.searchListByPage(pageNum, pageSize, searchString, jobId);
         PagedList<EmployeeVo> pagedVos = buildPagedEmployeeVosByDtos(pagedDtos);

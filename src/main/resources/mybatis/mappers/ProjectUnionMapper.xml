@@ -45,6 +45,13 @@
 			<if test="projectTypeId != null">
 				AND p.project_type_id = #{projectTypeId, jdbcType=BIGINT}
 			</if>
+			<if test="searchString != null and searchString != ''">
+				<bind name="search" value="'%' + searchString + '%'" />
+				AND CONCAT_WS("",p.name,pt.type_name) LIKE #{search}
+			</if>
+			<if test="topType != null">
+				AND pt.top_type = #{topType, jdbcType=INTEGER}
+			</if>
 		</where>
 	</select>
 </mapper>

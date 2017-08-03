@@ -9,8 +9,10 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class ProjectQueryCondition extends QueryCondition {
 
-    private Long storeId;
-    private Long projectId;
-    private Long projectTypeId;
+    private Long    storeId;
+    private Long    projectId;
+    private Long    projectTypeId;
+    private String  searchString;
+    private Integer topType;
 
 }

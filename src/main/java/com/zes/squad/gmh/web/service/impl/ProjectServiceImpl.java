@@ -57,7 +57,6 @@ public class ProjectServiceImpl implements ProjectService {
             vo.setTopType(union.getProjectTypePo().getTopType());
             vo.setTopTypeName(EnumUtils.getDescByKey(ProjectTypeEnum.class, union.getProjectTypePo().getTopType()));
             vo.setTypeName(union.getProjectTypePo().getTypeName());
-            vo.setProjectTypeName(union.getProjectTypePo().getTypeName());
             vo.setProjectName(union.getProjectPo().getName());
             vos.add(vo);
         }
@@ -65,11 +64,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public PagedList<ProjectDto> listByPage(Integer pageNum, Integer pageSize) {
+    public PagedList<ProjectDto> search(Integer pageNum, Integer pageSize, Integer topType, String searchString) {
         ProjectQueryCondition condition = new ProjectQueryCondition();
         condition.setPageNum(pageNum);
         condition.setPageSize(pageSize);
         condition.setStoreId(ThreadContext.getStaffStoreId());
+        condition.setTopType(topType == 0 ? null : topType);
+        condition.setSearchString(searchString);
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
         List<ProjectUnion> unions = projectUnionMapper.listProjectUnionsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {

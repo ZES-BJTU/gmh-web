@@ -14,7 +14,7 @@
 			columnPrefix="ej_" />
 	</resultMap>
 	<resultMap id="IdResultMap" type="long">
-	   <id column="id" jdbcType="BIGINT" property="id"/>
+		<id column="id" jdbcType="BIGINT" property="id" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		e.`id`,
@@ -43,7 +43,7 @@
 	<select id="selectIdsByCondition"
 		parameterType="com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition"
 		resultMap="IdResultMap">
-		SELECT e.id FROM
+		SELECT e.`id` FROM
 		employee e
 		LEFT JOIN
 		employee_job ej
@@ -61,9 +61,10 @@
 			</if>
 			<if test="searchString != null and searchString != ''">
 				<bind name="search" value="'%' + searchString + '%'" />
-				AND CONCAT_WS("",e.`name`,e.phone) LIKE CONCAT(#{search})
+				AND CONCAT_WS("",e.`name`,e.phone) LIKE #{search}
 			</if>
 		</where>
+		GROUP BY e.`id`
 	</select>
 	<select id="listEmployeeJobUnionsByCondition" parameterType="list"
 		resultMap="BaseResultMap">

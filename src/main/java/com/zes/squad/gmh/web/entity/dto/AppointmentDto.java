@@ -15,6 +15,6 @@ public class AppointmentDto {
     private Date    beginTime;
     private Date    endTime;
     private Integer status;
-    private Integer isLine;
+    private Boolean line;
     private String  remark;
 }

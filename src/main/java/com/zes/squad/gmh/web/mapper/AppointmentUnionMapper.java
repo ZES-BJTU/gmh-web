@@ -2,19 +2,17 @@ package com.zes.squad.gmh.web.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
+import com.zes.squad.gmh.web.entity.condition.AppointmentUnionQueryCondition;
 import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 
 public interface AppointmentUnionMapper {
 
     /**
-     * 门店id
+     * 条件查询预约记录
      * 
-     * @param storeId
+     * @param condition
      * @return
      */
-    List<AppointmentUnion> listAppointmentUnionsByCondition(@Param("storeId") Long storeId,
-                                                            @Param("phone") String phone);
-
+    List<AppointmentUnion> listAppointmentUnionsByCondition(AppointmentUnionQueryCondition condition);
+    
 }

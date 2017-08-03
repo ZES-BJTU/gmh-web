@@ -10,8 +10,6 @@ public class ProjectVo {
     private Integer    topType;
     private String     topTypeName;
     private String     typeName;
-    private Long       projectTypeId;
-    private String     projectTypeName;
     private String     projectName;
     private BigDecimal retailPrice;
 }

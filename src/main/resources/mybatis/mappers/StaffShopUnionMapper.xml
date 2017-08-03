@@ -36,8 +36,7 @@
 			<if test="searchString != null and searchString != ''">
 				<bind name="search" value="'%' + searchString + '%'" />
 				CONCAT_WS("",s.email,sh.name,sh.manager,sh.phone)
-				LIKE
-				CONCAT(#{search})
+				LIKE #{search}
 			</if>
 		</where>
 	</select>

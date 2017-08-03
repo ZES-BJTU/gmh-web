@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.helper;
 
+import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
 
@@ -21,6 +22,12 @@ public class LogicHelper {
     public static void ensureParameterValid(boolean checkResult, String errorMessage) {
         if (!checkResult) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, errorMessage);
+        }
+    }
+
+    public static void ensureValueExist(String value, String errorMessage) {
+        if (Strings.isNullOrEmpty(value)) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, errorMessage);
         }
     }
 

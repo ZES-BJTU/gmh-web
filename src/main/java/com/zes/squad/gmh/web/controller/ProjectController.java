@@ -23,6 +23,7 @@ import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.dto.ProjectDto;
 import com.zes.squad.gmh.web.entity.vo.ProjectVo;
+import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.service.ProjectService;
 
 @RequestMapping("/project")
@@ -31,16 +32,17 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @RequestMapping("/getAll")
+    @RequestMapping("/listAll")
     @ResponseBody
     public JsonResult<List<ProjectVo>> doListProjects() {
         List<ProjectVo> vos = projectService.listProjects();
         return JsonResult.success(vos);
     }
 
-    @RequestMapping("/listByPage")
+    @RequestMapping("/search")
     @ResponseBody
-    public JsonResult<PagedList<ProjectVo>> doListByPage(Integer pageNum, Integer pageSize) {
+    public JsonResult<PagedList<ProjectVo>> doListByPage(Integer pageNum, Integer pageSize, Integer topType,
+                                                         String searchString) {
         if (!isValidPageNum(pageNum)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageNumIsError);
@@ -49,7 +51,13 @@ public class ProjectController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageSizeIsError);
         }
-        PagedList<ProjectDto> pagedDtos = projectService.listByPage(pageNum, pageSize);
+        LogicHelper.ensureParameterExist(topType, ErrorMessage.projectTopTypeIsNull);
+        if (topType != 0) {
+            LogicHelper.ensureParameterValid(
+                    !Strings.isNullOrEmpty(EnumUtils.getDescByKey(ProjectTypeEnum.class, topType)),
+                    ErrorMessage.projectTopTypeIsError);
+        }
+        PagedList<ProjectDto> pagedDtos = projectService.search(pageNum, pageSize,topType, searchString);
         if (pagedDtos == null || CollectionUtils.isEmpty(pagedDtos.getData())) {
             return JsonResult.success(PagedLists.newPagedList(pageNum, pageSize, 0L, Lists.newArrayList()));
         }

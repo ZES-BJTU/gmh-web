@@ -10,7 +10,7 @@ public interface ProjectService {
 
     List<ProjectVo> listProjects();
 
-    PagedList<ProjectDto> listByPage(Integer pageNum, Integer pageSize);
+    PagedList<ProjectDto> search(Integer pageNum, Integer pageSize, Integer topType, String searchString);
 
     List<ProjectVo> listByType(Long projectType);
 

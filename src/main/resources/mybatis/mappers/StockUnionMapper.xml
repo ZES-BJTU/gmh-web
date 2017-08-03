@@ -43,8 +43,7 @@
 			</if>
 			<if test="searchString != null and searchString != ''">
 				<bind name="search" value="'%' + searchString + '%'" />
-				AND CONCAT_WS("", s.`name`, s.`unit`, s.`amount`) LIKE
-				CONCAT(#{search})
+				AND CONCAT_WS("", s.`name`, s.`unit`, s.`amount`) LIKE #{search}
 			</if>
 		</where>
 	</select>

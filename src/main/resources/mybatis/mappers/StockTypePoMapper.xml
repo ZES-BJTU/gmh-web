@@ -57,7 +57,7 @@
 		stock_type WHERE store_id=#{storeId, jdbcType=BIGINT}
 		<if test="searchString != null and searchString != ''">
 			<bind name="search" value="'%' + searchString + '%'" />
-			AND CONCAT_WS("",`name`) LIKE CONCAT(#{search})
+			AND CONCAT_WS("",`name`) LIKE #{search}
 		</if>
 	</select>
 </mapper>
