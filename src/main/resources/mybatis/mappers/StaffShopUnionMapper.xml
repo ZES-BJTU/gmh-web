@@ -18,6 +18,8 @@
 		s.salt,
 		s.store_id,
 		s.staff_level,
+		s.`name`,
+		s.`mobile`,
 		s.created_time,
 		s.modified_time,
 		sh.`id` AS sh_id,
@@ -35,7 +37,7 @@
 		<where>
 			<if test="searchString != null and searchString != ''">
 				<bind name="search" value="'%' + searchString + '%'" />
-				CONCAT_WS("",s.email,sh.name,sh.manager,sh.phone)
+				CONCAT_WS("",s.email,s.`name`,s.`mobile`,sh.name,sh.manager,sh.phone)
 				LIKE #{search}
 			</if>
 		</where>

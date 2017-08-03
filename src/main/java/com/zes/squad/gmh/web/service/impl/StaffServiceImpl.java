@@ -248,18 +248,12 @@ public class StaffServiceImpl implements StaffService {
         return pagedVos;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public int update(StaffDto dto) {
         ShopPo po = shopMapper.selectById(dto.getStoreId());
         if (po == null) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, ErrorMessage.storeNotFound);
         }
-        ShopPo shopPo = new ShopPo();
-        shopPo.setId(dto.getStoreId());
-        shopPo.setManager(dto.getPrincipalName());
-        shopPo.setPhone(dto.getPrincipalMobile());
-        shopMapper.updateSelective(shopPo);
         StaffPo staffPo = CommonConverter.map(dto, StaffPo.class);
         return staffMapper.updateSelective(staffPo);
     }

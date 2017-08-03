@@ -1,7 +1,5 @@
 package com.zes.squad.gmh.web.mapper;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 
 import com.zes.squad.gmh.web.entity.po.StaffPo;
@@ -45,8 +43,6 @@ public interface StaffMapper {
      * @return
      */
     int updateSelective(StaffPo po);
-
-    List<StaffPo> search(String searchString);
 
     int deleteById(Long id);
 

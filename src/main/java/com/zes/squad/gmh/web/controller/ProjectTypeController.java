@@ -23,6 +23,7 @@ import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.ProjectTypeDto;
 import com.zes.squad.gmh.web.entity.vo.ProjectTopTypeVo;
 import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
+import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.service.ProjectTypeService;
 
 @RequestMapping("/projectType")
@@ -77,6 +78,11 @@ public class ProjectTypeController {
         if (topType == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.projectTopTypeIsNull);
+        }
+        if (topType != 0) {
+            LogicHelper.ensureParameterValid(
+                    !Strings.isNullOrEmpty(EnumUtils.getDescByKey(ProjectTypeEnum.class, topType)),
+                    ErrorMessage.projectTopTypeIsError);
         }
         List<ProjectTypeVo> vos = projectTypeService.listByTopType(topType);
         return JsonResult.success(vos);

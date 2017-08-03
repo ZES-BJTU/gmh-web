@@ -13,8 +13,8 @@ public class StaffParams {
 
     private Integer staffLevel;
 
-    private String  principalName;
+    private String  name;
 
-    private String  principalMobile;
+    private String  mobile;
 
 }

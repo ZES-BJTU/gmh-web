@@ -21,4 +21,8 @@ public class StaffVo {
 
     private Long   staffLevel;
 
+    private String name;
+
+    private String mobile;
+
 }

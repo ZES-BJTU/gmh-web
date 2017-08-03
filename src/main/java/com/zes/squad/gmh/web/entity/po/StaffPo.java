@@ -32,4 +32,8 @@ public class StaffPo extends Po {
      */
     private Integer           staffLevel;
 
+    private String            name;
+
+    private String            mobile;
+
 }

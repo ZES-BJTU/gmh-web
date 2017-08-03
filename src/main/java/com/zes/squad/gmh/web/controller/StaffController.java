@@ -24,6 +24,8 @@ import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.param.StaffParams;
 import com.zes.squad.gmh.web.entity.vo.StaffLevelVo;
 import com.zes.squad.gmh.web.entity.vo.StaffVo;
+import com.zes.squad.gmh.web.helper.CheckHelper;
+import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.service.StaffService;
 
 @RequestMapping("/staff")
@@ -143,22 +145,18 @@ public class StaffController extends BaseController {
     @RequestMapping("/update")
     @ResponseBody
     public JsonResult<Integer> update(StaffParams params) {
-        String error = checkStaffParam(params);
-        if (!Strings.isNullOrEmpty(error)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
+        if (params == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.paramIsNull);
         }
         if (params.getId() == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.staffIdIsNull);
         }
-        if (Strings.isNullOrEmpty(params.getPrincipalName())) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
-                    ErrorMessage.storePrincipalNameIsNull);
-        }
-        if (Strings.isNullOrEmpty(params.getPrincipalMobile())) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
-                    ErrorMessage.storePrincipalMobileIsNull);
-        }
+        LogicHelper.ensureParameterExist(params.getName(), ErrorMessage.staffNameIsNull);
+        LogicHelper.ensureParameterExist(params.getMobile(), ErrorMessage.staffMobileIsNull);
+        LogicHelper.ensureParameterValid(CheckHelper.isValidMobile(params.getMobile()),
+                ErrorMessage.staffMobileIsError);
         StaffDto dto = CommonConverter.map(params, StaffDto.class);
         int i = staffService.update(dto);
         return JsonResult.success(i);
@@ -204,6 +202,10 @@ public class StaffController extends BaseController {
         if (Strings.isNullOrEmpty(desc)) {
             return ErrorMessage.staffLevelIsError;
         }
+        LogicHelper.ensureParameterExist(params.getName(), ErrorMessage.staffNameIsNull);
+        LogicHelper.ensureParameterExist(params.getMobile(), ErrorMessage.staffMobileIsNull);
+        LogicHelper.ensureParameterValid(CheckHelper.isValidMobile(params.getMobile()),
+                ErrorMessage.staffMobileIsError);
         return null;
     }
 

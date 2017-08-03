@@ -8,11 +8,13 @@
 		<result column="salt" jdbcType="VARCHAR" property="salt" />
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
 		<result column="staff_level" jdbcType="BIGINT" property="staffLevel" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`email`,`password`,`salt`,`store_id`,`staff_level`,
+		`id`,`email`,`password`,`salt`,`store_id`,`staff_level`,`name`,`mobile`,
 		`created_time`,
 		`modified_time`
 	</sql>
@@ -21,14 +23,6 @@
 		<include refid="Base_Column_List" />
 		FROM staff WHERE id = #{id, jdbcType=BIGINT}
 	</select>
-	<select id="search" parameterType="string" resultMap="BaseResultMap">
-		<bind name="search" value="'%' + searchString + '%'" />
-		SELECT
-		<include refid="Base_Column_List" />
-		FROM staff WHERE
-		CONCAT_WS("",email,shop_name)
-		LIKE #{searchString}
-	</select>
 	<select id="selectByEmail" parameterType="string" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
@@ -36,11 +30,12 @@
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
 		insert into
-		staff(email,`password`,salt,store_id,staff_level)
+		staff(email,`password`,salt,store_id,staff_level,`name`,`mobile`)
 		values(#{email,
 		jdbcType=VARCHAR},#{password, jdbcType=VARCHAR},#{salt,
 		jdbcType=VARCHAR},#{storeId, jdbcType=BIGINT},#{staffLevel,
-		jdbcType=INTEGER})
+		jdbcType=INTEGER},#{name, jdbcType=VARCHAR},#{mobile,
+		jdbcType=VARCHAR})
 	</insert>
 	<update id="updatePassword">
 		UPDATE staff SET `password` = #{password,
@@ -57,6 +52,12 @@
 			</if>
 			<if test="staffLevel != null">
 				staff_level = #{staffLevel, jdbcType=INTEGER}
+			</if>
+			<if test="name != null">
+				name = #{name, jdbcType=VARCHAR}
+			</if>
+			<if test="mobile != null">
+				mobile = #{mobile, jdbcType=VARCHAR}
 			</if>
 		</set>
 		WHERE id = #{id, jdbcType=BIGINT}
