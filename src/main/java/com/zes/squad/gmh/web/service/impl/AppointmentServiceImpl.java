@@ -130,6 +130,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
         LogicHelper.ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
         AppointmentPo po = appointmentMapper.selectById(dto.getId());
+        LogicHelper.ensureEntityExist(po, ErrorMessage.appointmentNotFound);
         appointmentMapper.deleteById(dto.getId());
         //判断是否时间上冲突
         int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), po.getMemberId(), null,
@@ -142,7 +143,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         po.setEmployeeId(dto.getEmployeeId());
         po.setBeginTime(dto.getBeginTime());
         po.setEndTime(dto.getEndTime());
-        return appointmentMapper.updateSelective(po);
+        return appointmentMapper.insert(po);
     }
 
     @Override
