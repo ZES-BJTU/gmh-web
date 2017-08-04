@@ -7,6 +7,8 @@ import com.zes.squad.gmh.web.entity.po.ProjectPo;
 
 public interface ProjectMapper {
 
+    ProjectPo selectById(Long id);
+
     List<ProjectPo> selectByStoreId(Long storeId);
 
     List<ProjectPo> getByType(Long typeId);

@@ -14,5 +14,13 @@ public interface AppointmentUnionMapper {
      * @return
      */
     List<AppointmentUnion> listAppointmentUnionsByCondition(AppointmentUnionQueryCondition condition);
-    
+
+    /**
+     * 根据id查询
+     * 
+     * @param id
+     * @return
+     */
+    AppointmentUnion selectById(Long id);
+
 }

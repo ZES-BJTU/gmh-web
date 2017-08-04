@@ -43,4 +43,16 @@ public class LogicHelper {
         }
     }
 
+    public static void ensureArrayExist(Object[] objs, String errorMessage) {
+        if (objs == null || objs.length == 0) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, errorMessage);
+        }
+    }
+
+    public static void ensureConditionSatisfied(boolean condition, String errorMessage) {
+        if (!condition) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_CONDITION_NOT_SUPPORTTED, errorMessage);
+        }
+    }
+
 }

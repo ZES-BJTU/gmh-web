@@ -21,7 +21,6 @@ import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
-import com.zes.squad.gmh.web.entity.condition.ConflictQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.param.AppointmentQueryParams;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
@@ -62,10 +61,6 @@ public class AppointmentController {
     @ResponseBody
     public JsonResult<Integer> insert(AppointmentDto dto) {
         checkAppointmentDto(dto);
-        ConflictQueryCondition condition = CommonConverter.map(dto, ConflictQueryCondition.class);
-        if (appointmentService.isConflict(condition)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED.getCode(), "该员工时间冲突");
-        }
         int i = appointmentService.insert(dto);
         return JsonResult.success(i);
 
@@ -74,12 +69,12 @@ public class AppointmentController {
     @RequestMapping("/update")
     @ResponseBody
     public JsonResult<Integer> update(AppointmentDto dto) {
-        checkAppointmentDto(dto);
+        ensureParameterExist(dto, ErrorMessage.paramIsNull);
         ensureParameterExist(dto.getId(), ErrorMessage.appointmentIdIsNull);
-        ConflictQueryCondition condition = CommonConverter.map(dto, ConflictQueryCondition.class);
-        if (appointmentService.isConflict(condition)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED.getCode(), "该员工时间冲突");
-        }
+        ensureParameterExist(dto.getProjectId(), ErrorMessage.appointmentProjectIdIsNull);
+        ensureParameterExist(dto.getEmployeeId(), ErrorMessage.appointmentEmployeeIdIsNull);
+        ensureParameterExist(dto.getBeginTime(), ErrorMessage.appointmentBeginingTimeIsNull);
+        ensureParameterExist(dto.getEndTime(), ErrorMessage.appointmentEndingTimeIsNull);
         int i = appointmentService.update(dto);
         return JsonResult.success(i);
     }
@@ -88,7 +83,8 @@ public class AppointmentController {
     @ResponseBody
     public JsonResult<Integer> cancel(Long id) {
         if (id == null || id == 0L) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择预约");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.appointmentNotSelected);
         }
         int i = appointmentService.cancel(id);
         return JsonResult.success(i);
@@ -98,7 +94,8 @@ public class AppointmentController {
     @ResponseBody
     public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay) {
         if (id == null || id == 0L) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "请选择预约");
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.appointmentNotSelected);
         }
         int i = appointmentService.finish(id, charge, chargeWay);
         return JsonResult.success(i);
@@ -118,7 +115,6 @@ public class AppointmentController {
 
     private void checkAppointmentDto(AppointmentDto dto) {
         ensureEntityExist(dto, ErrorMessage.paramIsNull);
-        ensureParameterExist(dto.getMemberId(), ErrorMessage.memberIdIsNull);
         ensureParameterExist(dto.getPhone(), ErrorMessage.memberMobileIsNull);
         ensureParameterValid(isValidMobile(dto.getPhone()), ErrorMessage.memberMobileIsError);
         ensureParameterExist(dto.getProjectId(), ErrorMessage.projectIdIsNull);
@@ -126,7 +122,7 @@ public class AppointmentController {
         ensureParameterExist(dto.getBeginTime(), ErrorMessage.appointmentBeginingTimeIsNull);
         ensureParameterExist(dto.getEndTime(), ErrorMessage.appointmentBeginingTimeIsNull);
         ensureParameterValid(dto.getBeginTime().before(dto.getEndTime()),
-                ErrorMessage.appointmentBeginningTimeIsAfterEndingTime);
+                ErrorMessage.appointmentEndingTimeShouldAfterBeginningTime);
         ensureParameterExist(dto.getLine(), ErrorMessage.appointmentLineIsNull);
     }
 

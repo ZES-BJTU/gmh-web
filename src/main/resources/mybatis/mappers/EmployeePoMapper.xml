@@ -24,8 +24,7 @@
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
-		FROM employee WHERE shop_id = #{storeid, jdbcType=BIGINT} AND id =
-		#{id, jdbcType=BIGINT}
+		FROM employee WHERE id = #{id, jdbcType=BIGINT}
 	</select>
 	<select id="selectIdsByCondition"
 		parameterType="com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition"

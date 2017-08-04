@@ -19,10 +19,7 @@
 			resultMap="com.zes.squad.gmh.web.mapper.ProjectTypeMapper.BaseResultMap"
 			columnPrefix="pt_" />
 	</resultMap>
-	<select id="listAppointmentUnionsByCondition"
-		parameterType="com.zes.squad.gmh.web.entity.condition.AppointmentUnionQueryCondition"
-		resultMap="BaseResultMap">
-		SELECT
+	<sql id="BaseColumnList">
 		a.`id`,
 		a.`store_id`,
 		a.`member_id`,
@@ -37,32 +34,36 @@
 		a.`created_time`,
 		a.`modified_time`,
 		e.`id` AS e_id,
-		e.`name`
-		AS e_name,
+		e.`name` AS e_name,
 		m.`id` AS m_id,
 		m.`name` AS m_name,
 		p.`id` AS p_id,
-		p.`name` AS
-		p_name,
+		p.`name` AS p_name,
 		pt.`id` AS pt_id,
 		pt.top_type AS pt_top_type,
-		pt.type_name AS
-		pt_type_name
+		pt.type_name AS pt_type_name
+	</sql>
+	<select id="listAppointmentUnionsByCondition"
+		parameterType="com.zes.squad.gmh.web.entity.condition.AppointmentUnionQueryCondition"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="BaseColumnList" />
 		FROM appointment a
 		LEFT JOIN
 		employee e
-		ON a.employee_id =
-		e.`id`
-		LEFT JOIN member m
+		ON 
+		a.employee_id = e.`id`
+		LEFT JOIN
+		member m
 		ON
 		a.member_id = m.`id`
-		LEFT JOIN project p
+		LEFT JOIN 
+		project p
 		ON
 		a.project_id = p.`id`
 		LEFT JOIN project_type pt
 		ON
-		p.project_type_id =
-		pt.`id`
+		p.project_type_id = pt.`id`
 		<where>
 			<if test="storeId != null">
 				AND a.store_id = #{storeId, jdbcType=BIGINT}
@@ -76,5 +77,28 @@
 				LIKE #{search}
 			</if>
 		</where>
+	</select>
+	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="BaseColumnList" />
+		FROM appointment a
+		LEFT JOIN
+		employee e
+		ON a.employee_id =
+		e.`id`
+		LEFT JOIN
+		member m
+		ON
+		a.member_id = m.`id`
+		LEFT JOIN project p
+		ON
+		a.project_id =
+		p.`id`
+		LEFT JOIN project_type pt
+		ON
+		p.project_type_id =
+		pt.`id`
+		WHERE
+		a.`id` = #{id, jdbcType=BIGINT}
 	</select>
 </mapper>

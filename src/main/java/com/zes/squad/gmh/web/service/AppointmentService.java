@@ -5,17 +5,19 @@ import java.util.List;
 
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
-import com.zes.squad.gmh.web.entity.condition.ConflictQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
+import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 
 public interface AppointmentService {
 
     List<AppointmentVo> listAllAppointments();
-    
+
     PagedList<AppointmentVo> searchPagedAppointments(AppointmentQueryCondition condition);
 
     List<AppointmentVo> queryByPhone(String phone);
+
+    AppointmentUnion queryById(Long id);
 
     int insert(AppointmentDto dto);
 
@@ -25,5 +27,4 @@ public interface AppointmentService {
 
     int finish(Long id, BigDecimal charge, Integer chargeWay);
 
-    boolean isConflict(ConflictQueryCondition condition);
 }

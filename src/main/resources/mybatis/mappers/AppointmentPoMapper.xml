@@ -31,18 +31,31 @@
 		<include refid="Base_Column_List" />
 		from appointment where phone=#{phone}
 	</select>
-	<select id="selectByCondition" resultMap="BaseResultMap">
+	<select id="selectByCondition" resultType="int">
 		SELECT
-		<include refid="Base_Column_List" />
-		FROM appointment
-		WHERE 
-		store_id = #{storeId, jdbcType=BIGINT} AND
-		employee_id = #{employeeId, jdbcType=BIGINT} AND `status` = #{status,
-		jdbcType=INTEGER} AND (begin_time BETWEEN #{beginTime,
-		jdbcType=TIMESTAMP} AND #{endTime, jdbcType=TIMESTAMP} OR end_time
-		BETWEEN #{beginTime,
-		jdbcType=TIMESTAMP} AND #{endTime,
+		COUNT(*)
+		FROM
+		appointment
+		WHERE
+		store_id = #{storeId, jdbcType=BIGINT}
+		AND `status` = #{status, jdbcType=INTEGER}
+		<if test="employeeId != null">
+			AND employee_id = #{employeeId, jdbcType=BIGINT}
+		</if>
+		<if test="memberId != null">
+			AND member_id = #{memberId, jdbcType=BIGINT}
+		</if>
+		AND
+		(begin_time BETWEEN #{beginTime, jdbcType=TIMESTAMP} AND #{endTime,
 		jdbcType=TIMESTAMP})
+		OR
+		(end_time BETWEEN #{beginTime, jdbcType=TIMESTAMP} AND #{endTime,
+		jdbcType=TIMESTAMP}
+		)
+		OR
+		(#{beginTime, jdbcType=TIMESTAMP} <![CDATA[<]]>
+		begin_time AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[>]]>
+		end_time)
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
@@ -67,7 +80,7 @@
 		jdbcType=INTEGER},#{line, jdbcType=TINYINT},#{remark,
 		jdbcType=VARCHAR})
 	</insert>
-	<update id="update" parameterType="com.zes.squad.gmh.web.entity.po.AppointmentPo">
+	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.AppointmentPo">
 		UPDATE appointment
 		<set>
 			<if test="memberId != null">
@@ -100,19 +113,19 @@
 		</set>
 		WHERE id = #{id, jdbcType=BIGINT}
 	</update>
-	<update id="cancel">
+	<update id="updateForCancel">
 		UPDATE appointment SET
 		status = #{status,
 		jdbcType=INTEGER} WHERE id = #{id,
 		jdbcType=BIGINT}
 	</update>
-	<update id="finish">
+	<update id="updateForFinish">
 		UPDATE appointment SET
 		status = #{status,
 		jdbcType=INTEGER} WHERE id = #{id,
 		jdbcType=BIGINT}
 	</update>
-	<delete id="delById" parameterType="long">
+	<delete id="deleteById" parameterType="long">
 		DELETE FROM appointment WHERE
 		id=#{id, jdbcType=BIGINT}
 	</delete>
