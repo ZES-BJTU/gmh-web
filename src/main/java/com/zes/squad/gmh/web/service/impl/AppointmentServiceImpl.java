@@ -57,6 +57,8 @@ import lombok.Synchronized;
 @Service("appointmentJobService")
 public class AppointmentServiceImpl implements AppointmentService {
 
+    private static final int       DEFAULT_REMIND_MINUTE = 30;
+
     @Autowired
     private AppointmentMapper      appointmentMapper;
     @Autowired
@@ -247,7 +249,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentVo> remind() {
-        return null;
+        List<AppointmentUnion> unions = appointmentUnionMapper.selectByTime(DEFAULT_REMIND_MINUTE,
+                AppointmentStatusEnum.TO_DO.getKey());
+        if (CollectionUtils.isEmpty(unions)) {
+            return Lists.newArrayList();
+        }
+        List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
+        return vos;
     }
 
 }

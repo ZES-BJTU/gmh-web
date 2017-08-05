@@ -11,5 +11,7 @@ public class MemberQueryCondition extends QueryCondition {
 
     private Long   storeId;
     private String phone;
+    private String searchString;
+    private Long   memberLevelId;
 
 }

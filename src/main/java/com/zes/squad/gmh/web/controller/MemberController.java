@@ -39,9 +39,10 @@ public class MemberController {
         return JsonResult.success(vos);
     }
 
-    @RequestMapping("/listByPage")
+    @RequestMapping("/search")
     @ResponseBody
-    public JsonResult<PagedList<MemberVo>> doListByPage(Integer pageNum, Integer pageSize) {
+    public JsonResult<PagedList<MemberVo>> doSearch(Integer pageNum, Integer pageSize, Long memberLevelId,
+                                                    String searchString) {
         if (!isValidPageNum(pageNum)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageNumIsError);
@@ -50,7 +51,7 @@ public class MemberController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageSizeIsError);
         }
-        PagedList<MemberVo> pagedVos = memberService.listByPage(pageNum, pageSize);
+        PagedList<MemberVo> pagedVos = memberService.search(pageNum, pageSize, memberLevelId, searchString);
 
         return JsonResult.success(pagedVos);
     }
@@ -88,7 +89,6 @@ public class MemberController {
 
     private void checkMemberDto(MemberDto dto) {
         ensureParameterExist(dto, ErrorMessage.paramIsNull);
-        ensureParameterExist(dto.getMemberLevelId(), ErrorMessage.memberLevelIdIsNull);
         ensureParameterExist(dto.getPhone(), ErrorMessage.memberMobileIsNull);
         ensureParameterValid(isValidMobile(dto.getPhone()), ErrorMessage.memberMobileIsError);
         ensureParameterExist(dto.getName(), ErrorMessage.memberNameIsNull);

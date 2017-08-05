@@ -40,7 +40,8 @@
 		p.`id` AS p_id,
 		p.`name` AS p_name,
 		pt.`id` AS pt_id,
-		pt.top_type AS pt_top_type,
+		pt.top_type AS
+		pt_top_type,
 		pt.type_name AS pt_type_name
 	</sql>
 	<select id="listAppointmentUnionsByCondition"
@@ -51,19 +52,21 @@
 		FROM appointment a
 		LEFT JOIN
 		employee e
-		ON 
+		ON
 		a.employee_id = e.`id`
 		LEFT JOIN
 		member m
 		ON
 		a.member_id = m.`id`
-		LEFT JOIN 
+		LEFT JOIN
 		project p
 		ON
-		a.project_id = p.`id`
+		a.project_id =
+		p.`id`
 		LEFT JOIN project_type pt
 		ON
-		p.project_type_id = pt.`id`
+		p.project_type_id
+		= pt.`id`
 		<where>
 			<if test="storeId != null">
 				AND a.store_id = #{storeId, jdbcType=BIGINT}
@@ -100,5 +103,31 @@
 		pt.`id`
 		WHERE
 		a.`id` = #{id, jdbcType=BIGINT}
+	</select>
+	<select id="selectByTime" resultMap="BaseResultMap">
+		SELECT
+		<include refid="BaseColumnList" />
+		FROM appointment a
+		LEFT JOIN
+		employee e
+		ON a.employee_id =
+		e.`id`
+		LEFT JOIN
+		member m
+		ON
+		a.member_id = m.`id`
+		LEFT JOIN project p
+		ON
+		a.project_id =
+		p.`id`
+		LEFT JOIN project_type pt
+		ON
+		p.project_type_id =
+		pt.`id`
+		WHERE
+		a.`status` = #{status, jdbcType=INTEGER}
+		AND
+		a.end_time <![CDATA[<]]>
+		DATE_ADD(NOW(), INTERVAL #{minute, jdbcType=INTEGER} MINUTE)
 	</select>
 </mapper>

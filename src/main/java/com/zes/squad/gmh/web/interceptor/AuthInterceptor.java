@@ -38,6 +38,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 sendJsonResponse(response, JsonResult.fail(ErrorCodeEnum.WEB_EXCEPTION_AUTH_FAIL.getCode(), "请先登录"));
                 return false;
             }
+            log.info("获取用户token成功, url is {}, token is {}.", request.getRequestURI(), token);
             StaffDto staff = staffService.queryStaffByToken(token);
             ThreadContext.threadLocal.set(staff);
             return true;

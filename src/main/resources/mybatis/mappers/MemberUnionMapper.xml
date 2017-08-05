@@ -30,7 +30,8 @@
 		m.created_time,
 		m.modified_time,
 		ml.id AS ml_id,
-		ml.store_id AS ml_store_id,
+		ml.store_id AS
+		ml_store_id,
 		ml.name AS ml_name,
 		ml.created_time AS ml_created_time,
 		ml.modified_time AS ml_modified_time
@@ -44,6 +45,13 @@
 			</if>
 			<if test="phone != null">
 				AND m.phone = #{phone, jdbcType=VARCHAR}
+			</if>
+			<if test="memberLevel != null">
+				AND m.member_level_id = #{memberLevel, jdbcType=BIGINT}
+			</if>
+			<if test="searchString != null and searchString != ''">
+				<bind name="search" value="'%' + searchString + '%'" />
+				AND CONCAT_WS("",m.`name`,m.`phone`) LIKE #{search}
 			</if>
 		</where>
 	</select>

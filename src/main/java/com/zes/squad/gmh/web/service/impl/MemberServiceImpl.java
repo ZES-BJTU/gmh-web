@@ -104,10 +104,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public PagedList<MemberVo> listByPage(Integer pageNum, Integer pageSize) {
+    public PagedList<MemberVo> search(Integer pageNum, Integer pageSize, Long memberLevelId, String searchString) {
+        if (memberLevelId == 0) {
+            memberLevelId = null;
+        }
         PageHelper.startPage(pageNum, pageSize);
         MemberQueryCondition condition = new MemberQueryCondition();
         condition.setStoreId(ThreadContext.getStaffStoreId());
+        condition.setMemberLevelId(memberLevelId);
+        condition.setSearchString(searchString);
         List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
             return PagedLists.newPagedList(pageNum, pageSize);
@@ -130,9 +135,9 @@ public class MemberServiceImpl implements MemberService {
         return vos;
     }
 
-    private int calculateAgeByBirthday(Date birthDay) {
-        LogicHelper.ensureConditionSatisfied(birthDay != null, ErrorMessage.memberBirthdayIsNull);
-        Years years = Years.yearsBetween(new DateTime(birthDay.getTime()), new DateTime());
+    private int calculateAgeByBirthday(Date birthday) {
+        LogicHelper.ensureConditionSatisfied(birthday != null, ErrorMessage.memberBirthdayIsNull);
+        Years years = Years.yearsBetween(new DateTime(birthday.getTime()), new DateTime());
         return years.getYears();
     }
 
