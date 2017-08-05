@@ -78,6 +78,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<AppointmentVo> listAllAppointments() {
         AppointmentUnionQueryCondition condition = new AppointmentUnionQueryCondition();
         condition.setStoreId(ThreadContext.getStaffStoreId());
+        condition.setStatus(
+                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
         List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
         return vos;
@@ -156,8 +158,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
     @Override
-    public int finish(Long id, BigDecimal charge, BigDecimal discount, Integer chargeWay, String source,
-                      String remark) {
+    public int finish(Long id, BigDecimal charge, Integer chargeWay, String source, String remark) {
         AppointmentPo po = appointmentMapper.selectById(id);
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
         MemberPo memberPo = memberMapper.selectById(po.getMemberId());
@@ -170,11 +171,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         recordPo.setMobile(po.getPhone());
         recordPo.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
         recordPo.setConsumerName(memberPo.getName());
-        if (chargeWay != null) {
-            recordPo.setCharge(charge.multiply(discount));
-        } else {
-            recordPo.setCharge(charge);
-        }
+        recordPo.setCharge(charge);
         recordPo.setChargeWay(chargeWay);
         recordPo.setSource(source);
         recordPo.setConsumeTime(new Date());
@@ -225,8 +222,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         vo.setStatus(EnumUtils.getDescByKey(AppointmentStatusEnum.class, appointmentPo.getStatus()));
         vo.setMemberName(memberPo.getName());
         vo.setEmployeeName(employeePo.getName());
+        vo.setProjectCharge(projectPo.getRetailPrice());
         vo.setProjectName(projectPo.getName());
         vo.setTopTypeName(EnumUtils.getDescByKey(ProjectTypeEnum.class, projectTypePo.getTopType()));
+        vo.setTypeId(projectPo.getProjectTypeId());
         vo.setTypeName(projectTypePo.getTypeName());
         vo.setLine(appointmentPo.getLine().booleanValue() ? YesOrNoEnum.YES.getDesc() : YesOrNoEnum.NO.getDesc());
         return vo;
@@ -238,6 +237,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentUnionQueryCondition queryCondition = new AppointmentUnionQueryCondition();
         queryCondition.setStoreId(ThreadContext.getStaffStoreId());
         queryCondition.setSearchString(condition.getSearchString());
+        queryCondition.setStatus(
+                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
         List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(queryCondition);
         if (CollectionUtils.isEmpty(unions)) {
             return PagedLists.newPagedList(condition.getPageNum(), condition.getPageSize());

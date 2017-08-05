@@ -93,7 +93,7 @@ public class AppointmentController {
 
     @RequestMapping("/finish")
     @ResponseBody
-    public JsonResult<Integer> finish(Long id, BigDecimal charge, BigDecimal discount, Integer chargeWay, String source,
+    public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay, String source,
                                       String remark) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
@@ -101,13 +101,10 @@ public class AppointmentController {
         }
         ensureParameterExist(charge, ErrorMessage.consumeRecordChargeIsNull);
         ensureParameterValid(charge.compareTo(BigDecimal.ZERO) == 1, ErrorMessage.consumeRecordChargeIsError);
-        if (discount != null) {
-            ensureParameterValid(discount.compareTo(BigDecimal.ZERO) == 1, ErrorMessage.consumeRecordDiscountIsError);
-        }
         ensureParameterExist(chargeWay, ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay)),
                 ErrorMessage.consumeRecordChargeWayIsError);
-        int i = appointmentService.finish(id, charge, discount, chargeWay, source, remark);
+        int i = appointmentService.finish(id, charge, chargeWay, source, remark);
         return JsonResult.success(i);
     }
 

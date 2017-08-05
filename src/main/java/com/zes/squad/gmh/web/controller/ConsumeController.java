@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,6 +26,9 @@ import com.zes.squad.gmh.web.entity.param.ConsumeRecordExportParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
+import static com.zes.squad.gmh.web.helper.CheckHelper.*;
+
+import static com.zes.squad.gmh.web.helper.LogicHelper.*;
 import com.zes.squad.gmh.web.service.ConsumeService;
 
 @RequestMapping(path = "/consume")
@@ -40,11 +44,31 @@ public class ConsumeController extends BaseController {
     @RequestMapping("/add")
     @ResponseBody
     public JsonResult<Void> doAddConsumeRecord(ConsumeRecordParams params) {
+        checkConsumeRecordParams(params);
         ConsumeRecordDto dto = CommonConverter.map(params, ConsumeRecordDto.class);
         StaffDto staff = getStaff();
         dto.setStoreId(staff.getStoreId());
         consumeService.addConsumeRecord(dto);
         return JsonResult.success();
+    }
+
+    private void checkConsumeRecordParams(ConsumeRecordParams params) {
+        ensureParameterExist(params, ErrorMessage.paramIsNull);
+        ensureParameterExist(params.getProjectId(), ErrorMessage.projectNotSelected);
+        ensureParameterExist(params.getEmployeeId(), ErrorMessage.employeeNotSelected);
+        ensureParameterExist(params.getMobile(), ErrorMessage.consumeRecordMobileIsNull);
+        ensureParameterValid(isValidMobile(params.getMobile()), ErrorMessage.consumeRecordMobileIsError);
+        ensureParameterExist(params.getConsumerName(), ErrorMessage.consumerNameIsError);
+        ensureParameterExist(params.getCharge(), ErrorMessage.consumeRecordChargeIsNull);
+        ensureParameterValid(params.getCharge().compareTo(BigDecimal.ZERO) == 1,
+                ErrorMessage.consumeRecordChargeIsError);
+        if (params.getDiscount() != null) {
+            ensureParameterValid(params.getCharge().compareTo(BigDecimal.ZERO) == 1,
+                    ErrorMessage.consumeRecordChargeIsError);
+        }
+        ensureParameterExist(params.getChargeWay(), ErrorMessage.consumeRecordChargeWayIsNull);
+        ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, params.getChargeWay())),
+                ErrorMessage.consumeRecordChargeWayIsError);
     }
 
     @RequestMapping("/listByPage")
@@ -63,8 +87,7 @@ public class ConsumeController extends BaseController {
         condition.setStoreId(staff.getStoreId());
         PagedList<ConsumeRecordDto> pagedDtos = consumeService.listPagedConsumeRecords(condition);
         if (pagedDtos == null || CollectionUtils.isEmpty(pagedDtos.getData())) {
-            return JsonResult.success(
-                    PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize()));
+            return JsonResult.success(PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize()));
         }
         PagedList<ConsumeRecordVo> pagedVos = buildPagedConsumeRecordVosByDtos(pagedDtos);
         return JsonResult.success(pagedVos);

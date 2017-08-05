@@ -18,9 +18,12 @@ public class ConsumeRecordDto {
     private Boolean    member;
     private Long       memberId;
     private String     mobile;
-    private String     consumerName; //可以是会员也可以是非会员
+    private Integer    sex;
+    private String     consumerName;
     private BigDecimal charge;
     private Integer    chargeWay;
+    private String     source;
     private Date       consumeTime;
+    private String     remark;
 
 }

@@ -9,6 +9,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class AppointmentQueryCondition extends QueryCondition {
 
-    private String searchString;
+    private String        searchString;
 
 }
