@@ -5,6 +5,7 @@ import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
@@ -65,11 +67,21 @@ public class ProjectTypeController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageSizeIsError);
         }
-        PagedList<ProjectTypeDto> pagedListDto = projectTypeService.searchPagedProjectTypes(pageNum, pageSize, topType,
+        PagedList<ProjectTypeDto> pagedDtos = projectTypeService.searchPagedProjectTypes(pageNum, pageSize, topType,
                 searchString);
-        PagedList<ProjectTypeVo> pagedListVo = CommonConverter.mapPageList(pagedListDto, ProjectTypeVo.class);
+        if (pagedDtos == null || CollectionUtils.isEmpty(pagedDtos.getData())) {
+            return JsonResult.success(PagedLists.newPagedList(pageNum, pageSize));
+        }
+        List<ProjectTypeVo> vos = Lists.newArrayList();
+        for (ProjectTypeDto dto : pagedDtos.getData()) {
+            ProjectTypeVo vo = CommonConverter.map(dto, ProjectTypeVo.class);
+            vo.setTypeId(dto.getId());
+            vos.add(vo);
+        }
+        PagedList<ProjectTypeVo> pagedVos = PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(),
+                pagedDtos.getTotalCount(), vos);
 
-        return JsonResult.success(pagedListVo);
+        return JsonResult.success(pagedVos);
     }
 
     @RequestMapping("/listByTopType")

@@ -121,6 +121,7 @@ public class ProjectController {
         for (ProjectDto dto : dtos) {
             ProjectVo vo = CommonConverter.map(dto, ProjectVo.class);
             vo.setTopTypeName(EnumUtils.getDescByKey(ProjectTypeEnum.class, dto.getTopType()));
+            vo.setTypeId(dto.getProjectTypeId());
             vos.add(vo);
         }
         return vos;
