@@ -20,6 +20,7 @@
 		m.phone,
 		m.name,
 		m.sex,
+		m.age,
 		m.birthday,
 		m.join_date,
 		m.valid_date,
@@ -29,8 +30,7 @@
 		m.created_time,
 		m.modified_time,
 		ml.id AS ml_id,
-		ml.store_id AS
-		ml_store_id,
+		ml.store_id AS ml_store_id,
 		ml.name AS ml_name,
 		ml.created_time AS ml_created_time,
 		ml.modified_time AS ml_modified_time

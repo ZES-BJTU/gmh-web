@@ -3,9 +3,7 @@ package com.zes.squad.gmh.web.controller;
 import static com.zes.squad.gmh.web.helper.CheckHelper.isValidMobile;
 import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
 import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
-import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
-import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
-import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
+import static com.zes.squad.gmh.web.helper.LogicHelper.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,10 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
+import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
@@ -92,12 +93,21 @@ public class AppointmentController {
 
     @RequestMapping("/finish")
     @ResponseBody
-    public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay) {
+    public JsonResult<Integer> finish(Long id, BigDecimal charge, BigDecimal discount, Integer chargeWay, String source,
+                                      String remark) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.appointmentNotSelected);
         }
-        int i = appointmentService.finish(id, charge, chargeWay);
+        ensureParameterExist(charge, ErrorMessage.consumeRecordChargeIsNull);
+        ensureParameterValid(charge.compareTo(BigDecimal.ZERO) == 1, ErrorMessage.consumeRecordChargeIsError);
+        if (discount != null) {
+            ensureParameterValid(discount.compareTo(BigDecimal.ZERO) == 1, ErrorMessage.consumeRecordDiscountIsError);
+        }
+        ensureParameterExist(chargeWay, ErrorMessage.consumeRecordChargeWayIsNull);
+        ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay)),
+                ErrorMessage.consumeRecordChargeWayIsError);
+        int i = appointmentService.finish(id, charge, discount, chargeWay, source, remark);
         return JsonResult.success(i);
     }
 

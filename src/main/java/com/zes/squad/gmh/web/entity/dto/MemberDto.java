@@ -13,6 +13,7 @@ public class MemberDto {
     private String     phone;
     private String     name;
     private Byte       sex;
+    private Integer    age;
     private Date       birthday;
     private Date       joinDate;
     private Date       validDate;

@@ -8,6 +8,7 @@
 		<result column="phone" jdbcType="VARCHAR" property="phone" />
 		<result column="name" jdbcType="VARCHAR" property="name" />
 		<result column="sex" jdbcType="TINYINT" property="sex" />
+		<result column="age" jdbcType="INTEGER" property="age" />
 		<result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
 		<result column="join_date" jdbcType="TIMESTAMP" property="joinDate" />
 		<result column="valid_date" jdbcType="TIMESTAMP" property="validDate" />
@@ -18,7 +19,13 @@
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`store_id`,`member_level_id`,`phone`,`name`,`sex`,`birthday`,`join_date`,`valid_date`,`nail_money`,`beauty_money`,`remark`,
+		`id`,`store_id`,
+		`member_level_id`,
+		`phone`,`name`,
+		`sex`,`age`,
+		`birthday`,`join_date`,
+		`valid_date`,`nail_money`,
+		`beauty_money`,`remark`,
 		`created_time`,
 		`modified_time`
 	</sql>
@@ -51,14 +58,18 @@
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
 		INSERT INTO
-		member(store_id,member_level_id,phone,`name`,`sex`,birthday,join_date,valid_date,nail_money,beauty_money,remark)
+		member(store_id,member_level_id,phone,`name`,`sex`,`age`,birthday,join_date,valid_date,nail_money,beauty_money,remark)
 		VALUES
 		(#{storeId, jdbcType=BIGINT},#{memberLevelId,
 		jdbcType=BIGINT},#{phone, jdbcType=VARCHAR},#{name,
-		jdbcType=VARCHAR},#{sex, jdbcType=TINYINT},#{birthday,
-		jdbcType=TIMESTAMP},#{joinDate, jdbcType=TIMESTAMP},#{validDate,
-		jdbcType=TIMESTAMP},#{nailMoney, jdbcType=DECIMAL},#{beautyMoney,
-		jdbcType=DECIMAL},#{remark, jdbcType=VARCHAR})
+		jdbcType=VARCHAR},#{sex, jdbcType=TINYINT},#{age,
+		jdbcType=INTEGER},#{birthday,
+		jdbcType=TIMESTAMP},#{joinDate,
+		jdbcType=TIMESTAMP},#{validDate,
+		jdbcType=TIMESTAMP},#{nailMoney,
+		jdbcType=DECIMAL},#{beautyMoney,
+		jdbcType=DECIMAL},#{remark,
+		jdbcType=VARCHAR})
 	</insert>
 	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.MemberPo">
 		UPDATE member
@@ -74,6 +85,9 @@
 			</if>
 			<if test="sex != null">
 				sex=#{sex, jdbcType=TINYINT},
+			</if>
+			<if test="age != null">
+				age = #{age, jdbcType=INTEGER}
 			</if>
 			<if test="birthday != null">
 				birthday=#{birthday, jdbcType=TIMESTAMP},

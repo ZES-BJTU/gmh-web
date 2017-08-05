@@ -14,6 +14,7 @@ public class MemberVo {
     private String     phone;
     private String     name;
     private String     sex;
+    private Integer    age;
     private Date       birthday;
     private Date       joinDate;
     private Date       validDate;

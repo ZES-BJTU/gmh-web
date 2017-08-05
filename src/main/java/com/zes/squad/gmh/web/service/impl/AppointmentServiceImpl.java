@@ -1,6 +1,8 @@
 package com.zes.squad.gmh.web.service.impl;
 
-import static com.zes.squad.gmh.web.helper.LogicHelper.*;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureConditionSatisfied;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -152,20 +154,29 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
     @Override
-    public int finish(Long id, BigDecimal charge, Integer chargeWay) {
+    public int finish(Long id, BigDecimal charge, BigDecimal discount, Integer chargeWay, String source,
+                      String remark) {
         AppointmentPo po = appointmentMapper.selectById(id);
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
+        MemberPo memberPo = memberMapper.selectById(po.getMemberId());
         ConsumeRecordPo recordPo = new ConsumeRecordPo();
         recordPo.setStoreId(po.getStoreId());
         recordPo.setProjectId(po.getProjectId());
         recordPo.setEmployeeId(po.getEmployeeId());
-        recordPo.setMemberId(po.getEmployeeId());
-        EmployeePo employeePo = employeeMapper.selectById(po.getEmployeeId());
-        ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-        recordPo.setConsumerName(employeePo.getName());
-        recordPo.setCharge(charge);
+        recordPo.setMember(true);
+        recordPo.setMemberId(po.getMemberId());
+        recordPo.setMobile(po.getPhone());
+        recordPo.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
+        recordPo.setConsumerName(memberPo.getName());
+        if (chargeWay != null) {
+            recordPo.setCharge(charge.multiply(discount));
+        } else {
+            recordPo.setCharge(charge);
+        }
         recordPo.setChargeWay(chargeWay);
+        recordPo.setSource(source);
         recordPo.setConsumeTime(new Date());
+        recordPo.setRemark(remark);
         consumeRecordMapper.insert(recordPo);
         // 扣除会员卡储值
         if (chargeWay == ChargeWayEnum.CARD.getKey()) {
@@ -173,7 +184,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             condition.setProjectId(po.getProjectId());
             ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
             ensureEntityExist(union, ErrorMessage.appointmentNotFound);
-            MemberPo memberPo = memberMapper.selectById(po.getMemberId());
             BigDecimal nailMoney = memberPo.getNailMoney();
             BigDecimal beautyMoney = memberPo.getBeautyMoney();
             Integer projectType = union.getProjectTypePo().getTopType();
@@ -191,8 +201,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                         ErrorMessage.projectTopTypeIsError);
             }
         }
-        int result = appointmentMapper.updateForFinish(id, AppointmentStatusEnum.DONE.getKey());
-        return result;
+        return appointmentMapper.updateForFinish(id, AppointmentStatusEnum.DONE.getKey());
     }
 
     private List<AppointmentVo> buildAppointmentVosByUnions(List<AppointmentUnion> unions) {

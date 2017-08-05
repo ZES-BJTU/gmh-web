@@ -97,6 +97,7 @@ public class MemberController {
                 !Strings.isNullOrEmpty(
                         EnumUtils.getDescByKey(SexEnum.class, Integer.valueOf(String.valueOf(dto.getSex())))),
                 ErrorMessage.memberSexIsError);
+        ensureParameterExist(dto.getAge(), ErrorMessage.memberAgeIsNull);
         ensureParameterExist(dto.getBirthday(), ErrorMessage.memberBirthdayIsNull);
         ensureParameterExist(dto.getJoinDate(), ErrorMessage.memberCardOpenDateIsNull);
         ensureParameterExist(dto.getValidDate(), ErrorMessage.memberCardValidDateIsNull);
@@ -107,5 +108,5 @@ public class MemberController {
         ensureParameterValid(dto.getBeautyMoney() != null && dto.getBeautyMoney().compareTo(BigDecimal.ZERO) == 1,
                 ErrorMessage.memberBeautyMoneyIsError);
     }
-    
+
 }
