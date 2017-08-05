@@ -3,6 +3,7 @@
 <mapper namespace="com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper">
 	<resultMap id="BaseResultMap"
 		type="com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion">
+		<id column="id" jdbcType="BIGINT" property="id" />
 		<association property="consumeRecordPo"
 			resultMap="com.zes.squad.gmh.web.mapper.ConsumeRecordMapper.BaseResultMap" />
 		<association property="shopPo"

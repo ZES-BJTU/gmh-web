@@ -17,11 +17,16 @@ public class ConsumeRecordPo extends Po {
     private Long              storeId;
     private Long              projectId;
     private Long              employeeId;
+    private Boolean           member;
     private Long              memberId;
     private String            mobile;
+    private Integer           age;
+    private Integer           sex;
     private String            consumerName;         //可以是会员也可以是非会员
     private BigDecimal        charge;
     private Integer           chargeWay;
+    private String            source;
     private Date              consumeTime;
+    private String            remark;
 
 }

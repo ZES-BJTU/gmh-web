@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class ConsumeRecordUnion {
 
+    private Long            id;
+
     private ConsumeRecordPo consumeRecordPo;
 
     private ShopPo          shopPo;
