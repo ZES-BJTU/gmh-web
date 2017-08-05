@@ -224,6 +224,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         vo.setEmployeeName(employeePo.getName());
         vo.setProjectCharge(projectPo.getRetailPrice());
         vo.setProjectName(projectPo.getName());
+        vo.setTopType(projectTypePo.getTopType());
         vo.setTopTypeName(EnumUtils.getDescByKey(ProjectTypeEnum.class, projectTypePo.getTopType()));
         vo.setTypeId(projectPo.getProjectTypeId());
         vo.setTypeName(projectTypePo.getTypeName());

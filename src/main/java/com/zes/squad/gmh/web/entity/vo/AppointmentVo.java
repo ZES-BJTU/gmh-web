@@ -13,6 +13,7 @@ public class AppointmentVo {
     private Long       memberId;
     private String     memberName;
     private String     phone;
+    private Integer    topType;
     private String     topTypeName;
     private Long       typeId;
     private String     typeName;
