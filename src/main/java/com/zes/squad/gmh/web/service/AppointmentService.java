@@ -26,5 +26,7 @@ public interface AppointmentService {
     int cancel(Long id);
 
     int finish(Long id, BigDecimal charge,BigDecimal discount, Integer chargeWay, String source, String remark);
+    
+    List<AppointmentVo> remind();
 
 }

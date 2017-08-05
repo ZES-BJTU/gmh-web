@@ -245,4 +245,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(), vos);
     }
 
+    @Override
+    public List<AppointmentVo> remind() {
+        return null;
+    }
+
 }

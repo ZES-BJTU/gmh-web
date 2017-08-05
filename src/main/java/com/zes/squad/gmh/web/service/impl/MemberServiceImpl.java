@@ -1,8 +1,11 @@
 package com.zes.squad.gmh.web.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Years;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +63,10 @@ public class MemberServiceImpl implements MemberService {
         LogicHelper.ensureEntityNotExist(memberPo, ErrorMessage.memberExistInStore);
         dto.setStoreId(storeId);
         MemberPo po = CommonConverter.map(dto, MemberPo.class);
+        if (po.getJoinDate() == null) {
+            po.setJoinDate(new Date());
+        }
+        po.setAge(calculateAgeByBirthday(po.getBirthday()));
         return memberMapper.insert(po);
     }
 
@@ -121,6 +128,12 @@ public class MemberServiceImpl implements MemberService {
             vos.add(vo);
         }
         return vos;
+    }
+
+    private int calculateAgeByBirthday(Date birthDay) {
+        LogicHelper.ensureConditionSatisfied(birthDay != null, ErrorMessage.memberBirthdayIsNull);
+        Years years = Years.yearsBetween(new DateTime(birthDay.getTime()), new DateTime());
+        return years.getYears();
     }
 
 }

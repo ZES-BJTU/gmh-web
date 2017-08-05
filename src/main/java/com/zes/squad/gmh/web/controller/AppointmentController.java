@@ -113,8 +113,9 @@ public class AppointmentController {
 
     @RequestMapping("/remind")
     @ResponseBody
-    public JsonResult<String> doRemindAppointmentTime() {
-        return JsonResult.success();
+    public JsonResult<List<AppointmentVo>> doRemindAppointmentTime() {
+        List<AppointmentVo> vos = appointmentService.remind();
+        return JsonResult.success(vos);
     }
 
     private void checkAppointmentQueryParams(AppointmentQueryParams params) {

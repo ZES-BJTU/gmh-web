@@ -72,7 +72,7 @@ public class ProjectServiceImpl implements ProjectService {
         condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setTopType(topType == 0 ? null : topType);
         condition.setSearchString(searchString);
-        condition.setProjectTypeId(projectType);
+        condition.setProjectTypeId(projectType == 0 ? null : projectType);
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
         List<ProjectUnion> unions = projectUnionMapper.listProjectUnionsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {

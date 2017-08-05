@@ -97,12 +97,12 @@ public class MemberController {
                 !Strings.isNullOrEmpty(
                         EnumUtils.getDescByKey(SexEnum.class, Integer.valueOf(String.valueOf(dto.getSex())))),
                 ErrorMessage.memberSexIsError);
-        ensureParameterExist(dto.getAge(), ErrorMessage.memberAgeIsNull);
         ensureParameterExist(dto.getBirthday(), ErrorMessage.memberBirthdayIsNull);
-        ensureParameterExist(dto.getJoinDate(), ErrorMessage.memberCardOpenDateIsNull);
         ensureParameterExist(dto.getValidDate(), ErrorMessage.memberCardValidDateIsNull);
-        ensureParameterValid(dto.getJoinDate().before(dto.getValidDate()),
-                ErrorMessage.memberCardOpenDateAfterValidDate);
+        if (dto.getJoinDate() != null) {
+            ensureParameterValid(dto.getJoinDate().before(dto.getValidDate()),
+                    ErrorMessage.memberCardOpenDateAfterValidDate);
+        }
         ensureParameterValid(dto.getNailMoney() != null && dto.getNailMoney().compareTo(BigDecimal.ZERO) == 1,
                 ErrorMessage.memberNailMoneyIsError);
         ensureParameterValid(dto.getBeautyMoney() != null && dto.getBeautyMoney().compareTo(BigDecimal.ZERO) == 1,
