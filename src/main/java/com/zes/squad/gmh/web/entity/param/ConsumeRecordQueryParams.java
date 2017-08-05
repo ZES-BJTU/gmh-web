@@ -9,5 +9,6 @@ public class ConsumeRecordQueryParams {
     private Integer pageSize;
     private String  startTime;
     private String  endTime;
+    private String  searchString;
 
 }

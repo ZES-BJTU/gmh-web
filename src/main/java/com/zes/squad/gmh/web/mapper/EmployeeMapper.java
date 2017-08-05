@@ -51,4 +51,6 @@ public interface EmployeeMapper {
     List<EmployeePo> search(Map<String, Object> map);
 
     EmployeePo selectById(@Param("id") Long id);
+
+    List<EmployeePo> selectByIds(List<Long> ids);
 }

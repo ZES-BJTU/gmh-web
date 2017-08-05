@@ -3,7 +3,9 @@ package com.zes.squad.gmh.web.controller;
 import static com.zes.squad.gmh.web.helper.CheckHelper.isValidMobile;
 import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageNum;
 import static com.zes.squad.gmh.web.helper.CheckHelper.isValidPageSize;
-import static com.zes.squad.gmh.web.helper.LogicHelper.*;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,6 +27,7 @@ import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.param.AppointmentQueryParams;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
+import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.service.AppointmentService;
 
 @RequestMapping("/appointment")
@@ -47,6 +50,14 @@ public class AppointmentController {
         AppointmentQueryCondition condition = CommonConverter.map(params, AppointmentQueryCondition.class);
         PagedList<AppointmentVo> pagedVos = appointmentService.searchPagedAppointments(condition);
         return JsonResult.success(pagedVos);
+    }
+
+    @RequestMapping("/listEmployeesByProject")
+    @ResponseBody
+    public JsonResult<List<EmployeeItemVo>> doListEmployeesByProject(Long projectId) {
+        ensureParameterExist(projectId, ErrorMessage.projectIdIsNull);
+        List<EmployeeItemVo> vos = appointmentService.listEmployeesByProject(projectId);
+        return JsonResult.success(vos);
     }
 
     @RequestMapping("/queryByPhone")
@@ -93,8 +104,7 @@ public class AppointmentController {
 
     @RequestMapping("/finish")
     @ResponseBody
-    public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay, String source,
-                                      String remark) {
+    public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay, String source, String remark) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.appointmentNotSelected);

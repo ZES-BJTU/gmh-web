@@ -8,6 +8,7 @@ import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
+import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 
 public interface AppointmentService {
 
@@ -26,7 +27,9 @@ public interface AppointmentService {
     int cancel(Long id);
 
     int finish(Long id, BigDecimal charge, Integer chargeWay, String source, String remark);
-    
+
     List<AppointmentVo> remind();
+
+    List<EmployeeItemVo> listEmployeesByProject(Long projectId);
 
 }

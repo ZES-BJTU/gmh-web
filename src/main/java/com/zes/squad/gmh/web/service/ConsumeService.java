@@ -11,7 +11,7 @@ public interface ConsumeService {
      * 
      * @param dto
      */
-    void addConsumeRecord(ConsumeRecordDto dto);
+    void createConsumeRecord(ConsumeRecordDto dto);
 
     /**
      * 分页查询

@@ -26,6 +26,15 @@
 		<include refid="Base_Column_List" />
 		FROM employee WHERE id = #{id, jdbcType=BIGINT}
 	</select>
+	<select id="selectByIds" parameterType="list" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM employee WHERE id IN
+		<foreach collection="list" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
+	</select>
 	<select id="selectIdsByCondition"
 		parameterType="com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition"
 		resultMap="IdResultMap">

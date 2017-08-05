@@ -36,6 +36,7 @@ import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.po.AppointmentPo;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
+import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.po.ProjectPo;
@@ -43,12 +44,15 @@ import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
+import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.mapper.AppointmentMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
+import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.ProjectMapper;
+import com.zes.squad.gmh.web.mapper.ProjectTypeMapper;
 import com.zes.squad.gmh.web.mapper.ProjectUnionMapper;
 import com.zes.squad.gmh.web.service.AppointmentService;
 
@@ -68,11 +72,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private EmployeeMapper         employeeMapper;
     @Autowired
+    private EmployeeJobMapper      employeeJobMapper;
+    @Autowired
     private ProjectUnionMapper     projectUnionMapper;
     @Autowired
     private ProjectMapper          projectMapper;
     @Autowired
     private MemberMapper           memberMapper;
+    @Autowired
+    private ProjectTypeMapper      projectTypeMapper;
 
     @Override
     public List<AppointmentVo> listAllAppointments() {
@@ -258,6 +266,33 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
         return vos;
+    }
+
+    @Override
+    public List<EmployeeItemVo> listEmployeesByProject(Long projectId) {
+        ProjectPo projectPo = projectMapper.selectById(projectId);
+        ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
+        ProjectTypePo projectTypePo = projectTypeMapper.selectById(projectPo.getProjectTypeId());
+        ensureEntityExist(projectTypePo, ErrorMessage.projectTypeNotFound);
+        List<EmployeeJobPo> pos = employeeJobMapper
+                .selectByJobType(getJobTypeByProjectTopType(projectTypePo.getTopType()));
+        List<Long> ids = Lists.newArrayList();
+        for (EmployeeJobPo po : pos) {
+            ids.add(po.getEmployeeId());
+        }
+        List<EmployeeItemVo> vos = Lists.newArrayList();
+        List<EmployeePo> employeePos = employeeMapper.selectByIds(ids);
+        for (EmployeePo po : employeePos) {
+            EmployeeItemVo vo = new EmployeeItemVo();
+            vo.setEmployeeId(po.getId());
+            vo.setEmployeeName(po.getName());
+            vos.add(vo);
+        }
+        return vos;
+    }
+
+    private Integer getJobTypeByProjectTopType(Integer topType) {
+        return null;
     }
 
 }

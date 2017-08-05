@@ -41,14 +41,14 @@ public class ConsumeController extends BaseController {
     @Autowired
     private ConsumeService      consumeService;
 
-    @RequestMapping("/add")
+    @RequestMapping("/create")
     @ResponseBody
-    public JsonResult<Void> doAddConsumeRecord(ConsumeRecordParams params) {
+    public JsonResult<Void> doCreateConsumeRecord(ConsumeRecordParams params) {
         checkConsumeRecordParams(params);
         ConsumeRecordDto dto = CommonConverter.map(params, ConsumeRecordDto.class);
         StaffDto staff = getStaff();
         dto.setStoreId(staff.getStoreId());
-        consumeService.addConsumeRecord(dto);
+        consumeService.createConsumeRecord(dto);
         return JsonResult.success();
     }
 
@@ -71,7 +71,7 @@ public class ConsumeController extends BaseController {
                 ErrorMessage.consumeRecordChargeWayIsError);
     }
 
-    @RequestMapping("/listByPage")
+    @RequestMapping("/search")
     @ResponseBody
     public JsonResult<PagedList<ConsumeRecordVo>> doListPagedConsumeRecords(ConsumeRecordQueryParams params) {
         String error = checkConsumeRecordQueryParams(params);

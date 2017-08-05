@@ -1,5 +1,8 @@
 package com.zes.squad.gmh.web.service.impl;
 
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureConditionSatisfied;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -44,6 +47,7 @@ import com.zes.squad.gmh.web.mapper.ProjectUnionMapper;
 import com.zes.squad.gmh.web.property.ExportProperties;
 import com.zes.squad.gmh.web.service.ConsumeService;
 
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -64,43 +68,37 @@ public class ConsumeServiceImpl implements ConsumeService {
     private ConsumeRecordUnionMapper consumeRecordUnionMapper;
 
     @Transactional(propagation = Propagation.REQUIRED)
+    @Synchronized
     @Override
-    public void addConsumeRecord(ConsumeRecordDto dto) {
+    public void createConsumeRecord(ConsumeRecordDto dto) {
         MemberQueryCondition memberCondition = new MemberQueryCondition();
         memberCondition.setStoreId(ThreadContext.getStaffStoreId());
         memberCondition.setPhone(dto.getMobile());
         List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(memberCondition);
         if (!CollectionUtils.isEmpty(unions)) {
+            dto.setMember(true);
             dto.setMemberId(unions.get(0).getMemberPo().getId());
             //处理会员消费
             if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
                 ProjectQueryCondition condition = new ProjectQueryCondition();
                 condition.setProjectId(dto.getProjectId());
                 ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
-                if (union == null) {
-                    throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, "获取美容项目信息失败");
-                }
+                ensureEntityExist(union, ErrorMessage.projectNotFound);
                 MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
                 BigDecimal nailMoney = memberPo.getNailMoney();
                 BigDecimal beautyMoney = memberPo.getBeautyMoney();
                 Integer projectType = union.getProjectTypePo().getTopType();
                 if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
-                    synchronized (this) {
-                        if (nailMoney.compareTo(dto.getCharge()) == -1) {
-                            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED, "美甲美睫储值不足");
-                        }
-                        //扣除美甲美睫储值
-                        memberMapper.updateNailMoney(dto.getMemberId(), nailMoney.subtract(dto.getCharge()));
-                    }
+                    ensureConditionSatisfied(nailMoney.compareTo(dto.getCharge()) != -1,
+                            ErrorMessage.nailMoneyNotEnough);
+                    //扣除美甲美睫储值
+                    memberMapper.updateNailMoney(dto.getMemberId(), nailMoney.subtract(dto.getCharge()));
                 } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
                         || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
-                    synchronized (this) {
-                        if (beautyMoney.compareTo(dto.getCharge()) == -1) {
-                            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED, "美容储值不足");
-                        }
-                        //扣除美容储值
-                        memberMapper.updateBeautyMoney(dto.getMemberId(), beautyMoney.subtract(dto.getCharge()));
-                    }
+                    ensureConditionSatisfied(beautyMoney.compareTo(dto.getCharge()) != -1,
+                            ErrorMessage.beautyMoneyNotEnough);
+                    //扣除美容储值
+                    memberMapper.updateBeautyMoney(dto.getMemberId(), beautyMoney.subtract(dto.getCharge()));
                 } else {
                     throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS, "美容项目分类不合法");
                 }

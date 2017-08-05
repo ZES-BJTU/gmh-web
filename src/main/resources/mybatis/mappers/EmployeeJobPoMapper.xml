@@ -19,6 +19,13 @@
 		<include refid="Base_Column_List" />
 		FROM employee_job
 	</select>
+	<select id="selectByJobType" parameterType="int" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM employee_job
+		WHERE
+		`job_type` = #{jobType, jdbcType=INTEGER}
+	</select>
 	<insert id="batchInsert" parameterType="list">
 		INSERT INTO
 		employee_job(`employee_id`,`job_type`,`job_name`)
