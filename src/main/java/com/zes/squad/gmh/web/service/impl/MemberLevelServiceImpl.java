@@ -26,7 +26,7 @@ public class MemberLevelServiceImpl implements MemberLevelService {
     private MemberLevelMapper memberLevelMapper;
 
     public List<MemberLevelVo> listAllMemberLevels() {
-        List<MemberLevelPo> pos = memberLevelMapper.selectByStoreId(ThreadContext.getStaffStoreId());
+        List<MemberLevelPo> pos = memberLevelMapper.selectByCondition(ThreadContext.getStaffStoreId(), null);
         if (CollectionUtils.isEmpty(pos)) {
             return Lists.newArrayList();
         }
@@ -57,9 +57,9 @@ public class MemberLevelServiceImpl implements MemberLevelService {
     }
 
     @Override
-    public PagedList<MemberLevelDto> listByPage(Integer pageNum, Integer pageSize) {
+    public PagedList<MemberLevelDto> search(Integer pageNum, Integer pageSize, String searchString) {
         PageHelper.startPage(pageNum, pageSize);
-        List<MemberLevelPo> pos = memberLevelMapper.selectByStoreId(ThreadContext.getStaffStoreId());
+        List<MemberLevelPo> pos = memberLevelMapper.selectByCondition(ThreadContext.getStaffStoreId(), searchString);
         if (CollectionUtils.isEmpty(pos)) {
             return PagedLists.newPagedList(pageNum, pageSize);
         }

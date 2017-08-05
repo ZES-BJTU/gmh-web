@@ -10,7 +10,7 @@ public interface MemberLevelService {
 
     List<MemberLevelVo> listAllMemberLevels();
 
-    PagedList<MemberLevelDto> listByPage(Integer pageNum, Integer pageSize);
+    PagedList<MemberLevelDto> search(Integer pageNum, Integer pageSize, String searchString);
 
     int insert(MemberLevelDto dto);
 

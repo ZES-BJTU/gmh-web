@@ -18,16 +18,21 @@
 		<include refid="Base_Column_List" />
 		FROM member_level WHERE id=#{id, jdbcType=BIGINT}
 	</select>
-	<select id="selectByStoreId" parameterType="long" resultMap="BaseResultMap">
+	<select id="selectByCondition" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM member_level WHERE store_id=#{storeId, jdbcType=BIGINT}
+		<if test="searchString != null and searchString != ''">
+			<bind name="search" value="'%' + searchString + '%'" />
+			AND CONCAT_WS("",`name`) LIKE #{search}
+		</if>
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">
 		INSERT INTO
 		member_level(store_id,`name`)
 		VALUES
-		(#{storeId, jdbcType=BIGINT},#{name,
+		(#{storeId,
+		jdbcType=BIGINT},#{name,
 		jdbcType=VARCHAR})
 	</insert>
 	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.MemberLevelPo">

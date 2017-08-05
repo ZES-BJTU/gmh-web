@@ -24,7 +24,7 @@ import com.zes.squad.gmh.web.service.MemberLevelService;
 @RequestMapping("/memberLevel")
 @Controller
 public class MemberLevelController {
-    
+
     @Autowired
     private MemberLevelService memberLevelService;
 
@@ -35,9 +35,9 @@ public class MemberLevelController {
         return JsonResult.success(vos);
     }
 
-    @RequestMapping("/listByPage")
+    @RequestMapping("/search")
     @ResponseBody
-    public JsonResult<PagedList<MemberLevelVo>> doListByPage(Integer pageNum, Integer pageSize) {
+    public JsonResult<PagedList<MemberLevelVo>> doListByPage(Integer pageNum, Integer pageSize, String searchString) {
         if (!isValidPageNum(pageNum)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageNumIsError);
@@ -46,7 +46,7 @@ public class MemberLevelController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageSizeIsError);
         }
-        PagedList<MemberLevelDto> pagedDtos = memberLevelService.listByPage(pageNum, pageSize);
+        PagedList<MemberLevelDto> pagedDtos = memberLevelService.search(pageNum, pageSize, searchString);
         PagedList<MemberLevelVo> pagedVos = CommonConverter.mapPageList(pagedDtos, MemberLevelVo.class);
 
         return JsonResult.success(pagedVos);
