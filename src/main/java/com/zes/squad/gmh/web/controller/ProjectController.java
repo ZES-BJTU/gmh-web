@@ -42,7 +42,7 @@ public class ProjectController {
     @RequestMapping("/search")
     @ResponseBody
     public JsonResult<PagedList<ProjectVo>> doListByPage(Integer pageNum, Integer pageSize, Integer topType,
-                                                         String searchString) {
+                                                         Long projectType, String searchString) {
         if (!isValidPageNum(pageNum)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.pageNumIsError);
@@ -57,7 +57,7 @@ public class ProjectController {
                     !Strings.isNullOrEmpty(EnumUtils.getDescByKey(ProjectTypeEnum.class, topType)),
                     ErrorMessage.projectTopTypeIsError);
         }
-        PagedList<ProjectDto> pagedDtos = projectService.search(pageNum, pageSize,topType, searchString);
+        PagedList<ProjectDto> pagedDtos = projectService.search(pageNum, pageSize, topType, projectType, searchString);
         if (pagedDtos == null || CollectionUtils.isEmpty(pagedDtos.getData())) {
             return JsonResult.success(PagedLists.newPagedList(pageNum, pageSize, 0L, Lists.newArrayList()));
         }

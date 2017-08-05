@@ -64,13 +64,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public PagedList<ProjectDto> search(Integer pageNum, Integer pageSize, Integer topType, String searchString) {
+    public PagedList<ProjectDto> search(Integer pageNum, Integer pageSize, Integer topType, Long projectType,
+                                        String searchString) {
         ProjectQueryCondition condition = new ProjectQueryCondition();
         condition.setPageNum(pageNum);
         condition.setPageSize(pageSize);
         condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setTopType(topType == 0 ? null : topType);
         condition.setSearchString(searchString);
+        condition.setProjectTypeId(projectType);
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
         List<ProjectUnion> unions = projectUnionMapper.listProjectUnionsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
