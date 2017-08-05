@@ -1,7 +1,6 @@
 package com.zes.squad.gmh.web.service.impl;
 
-import static com.zes.squad.gmh.web.helper.LogicHelper.ensureConditionSatisfied;
-import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
+import static com.zes.squad.gmh.web.helper.LogicHelper.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -42,7 +41,6 @@ import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
-import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.AppointmentMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
@@ -93,9 +91,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public AppointmentUnion queryById(Long id) {
-        LogicHelper.ensureParameterExist(id, ErrorMessage.appointmentIdIsNull);
+        ensureParameterExist(id, ErrorMessage.appointmentIdIsNull);
         AppointmentUnion union = appointmentUnionMapper.selectById(id);
-        LogicHelper.ensureEntityExist(union, ErrorMessage.appointmentIsNull);
+        ensureEntityExist(union, ErrorMessage.appointmentIsNull);
         return union;
     }
 
@@ -104,17 +102,17 @@ public class AppointmentServiceImpl implements AppointmentService {
         MemberQueryCondition memberQueryCondition = new MemberQueryCondition();
         memberQueryCondition.setPhone(dto.getPhone());
         MemberPo memberPo = memberMapper.selectByCondition(memberQueryCondition);
-        LogicHelper.ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
+        ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
         ProjectPo projectPo = projectMapper.selectById(dto.getProjectId());
-        LogicHelper.ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
+        ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
         EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
-        LogicHelper.ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+        ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
         int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), memberPo.getId(), null,
                 AppointmentStatusEnum.TO_DO.getKey(), dto.getBeginTime(), dto.getEndTime());
-        LogicHelper.ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
+        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
         count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, employeePo.getId(),
                 AppointmentStatusEnum.TO_DO.getKey(), dto.getBeginTime(), dto.getEndTime());
-        LogicHelper.ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
+        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
         dto.setStoreId(ThreadContext.getStaffStoreId());
         dto.setMemberId(memberPo.getId());
         dto.setStatus(AppointmentStatusEnum.TO_DO.getKey());
@@ -126,19 +124,19 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public int update(AppointmentDto dto) {
         ProjectPo projectPo = projectMapper.selectById(dto.getProjectId());
-        LogicHelper.ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
+        ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
         EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
-        LogicHelper.ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+        ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
         AppointmentPo po = appointmentMapper.selectById(dto.getId());
-        LogicHelper.ensureEntityExist(po, ErrorMessage.appointmentNotFound);
+        ensureEntityExist(po, ErrorMessage.appointmentNotFound);
         appointmentMapper.deleteById(dto.getId());
         //判断是否时间上冲突
         int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), po.getMemberId(), null,
                 AppointmentStatusEnum.TO_DO.getKey(), dto.getBeginTime(), dto.getEndTime());
-        LogicHelper.ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
+        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
         count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, dto.getEmployeeId(),
                 AppointmentStatusEnum.TO_DO.getKey(), dto.getBeginTime(), dto.getEndTime());
-        LogicHelper.ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
+        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
         po.setProjectId(dto.getProjectId());
         po.setEmployeeId(dto.getEmployeeId());
         po.setBeginTime(dto.getBeginTime());
