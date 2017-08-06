@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Years;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +25,7 @@ import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
+import com.zes.squad.gmh.web.helper.CalculateHelper;
 import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
@@ -66,7 +65,7 @@ public class MemberServiceImpl implements MemberService {
         if (po.getJoinDate() == null) {
             po.setJoinDate(new Date());
         }
-        po.setAge(calculateAgeByBirthday(po.getBirthday()));
+        po.setAge(CalculateHelper.calculateAgeByBirthday(po.getBirthday()));
         return memberMapper.insert(po);
     }
 
@@ -133,12 +132,6 @@ public class MemberServiceImpl implements MemberService {
             vos.add(vo);
         }
         return vos;
-    }
-
-    private int calculateAgeByBirthday(Date birthday) {
-        LogicHelper.ensureConditionSatisfied(birthday != null, ErrorMessage.memberBirthdayIsNull);
-        Years years = Years.yearsBetween(new DateTime(birthday.getTime()), new DateTime());
-        return years.getYears();
     }
 
 }

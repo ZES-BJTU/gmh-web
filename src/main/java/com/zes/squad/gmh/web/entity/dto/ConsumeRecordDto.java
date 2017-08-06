@@ -18,6 +18,7 @@ public class ConsumeRecordDto {
     private Boolean    member;
     private Long       memberId;
     private String     mobile;
+    private Integer    age;
     private Integer    sex;
     private String     consumerName;
     private BigDecimal charge;

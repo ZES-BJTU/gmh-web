@@ -123,10 +123,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
         ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
         int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), memberPo.getId(), null,
-                AppointmentStatusEnum.TO_DO.getKey(), dto.getBeginTime(), dto.getEndTime());
+                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+                dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
         count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, employeePo.getId(),
-                AppointmentStatusEnum.TO_DO.getKey(), dto.getBeginTime(), dto.getEndTime());
+                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+                dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
         dto.setStoreId(ThreadContext.getStaffStoreId());
         dto.setMemberId(memberPo.getId());
@@ -147,21 +149,30 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentMapper.deleteById(dto.getId());
         //判断是否时间上冲突
         int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), po.getMemberId(), null,
-                AppointmentStatusEnum.TO_DO.getKey(), dto.getBeginTime(), dto.getEndTime());
+                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+                dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
         count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, dto.getEmployeeId(),
-                AppointmentStatusEnum.TO_DO.getKey(), dto.getBeginTime(), dto.getEndTime());
+                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+                dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
         po.setProjectId(dto.getProjectId());
         po.setEmployeeId(dto.getEmployeeId());
         po.setBeginTime(dto.getBeginTime());
         po.setEndTime(dto.getEndTime());
+        po.setLine(dto.getLine());
+        po.setRemark(dto.getRemark());
         return appointmentMapper.insert(po);
     }
 
     @Override
     public int cancel(Long id) {
         return appointmentMapper.updateForCancel(id, AppointmentStatusEnum.CANCEL.getKey());
+    }
+    
+    @Override
+    public int start(Long id) {
+        return appointmentMapper.updateForStart(id, AppointmentStatusEnum.IN_PROCESS.getKey());
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

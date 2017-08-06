@@ -41,6 +41,7 @@ import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
+import com.zes.squad.gmh.web.helper.CalculateHelper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
@@ -95,6 +96,8 @@ public class ConsumeServiceImpl implements ConsumeService {
             //处理会员消费
             if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
                 MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
+                ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
+                dto.setAge(CalculateHelper.calculateAgeByBirthday(memberPo.getBirthday()));
                 BigDecimal nailMoney = memberPo.getNailMoney();
                 BigDecimal beautyMoney = memberPo.getBeautyMoney();
                 Integer projectType = projectUnion.getProjectTypePo().getTopType();

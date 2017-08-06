@@ -10,6 +10,7 @@ public class ConsumeRecordParams {
     private Long       projectId;
     private Long       employeeId;
     private String     mobile;
+    private Integer    age;
     private Integer    sex;
     private String     consumerName;
     private BigDecimal charge;

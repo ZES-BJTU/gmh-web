@@ -7,7 +7,7 @@
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
 		<result column="project_id" jdbcType="BIGINT" property="projectId" />
 		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
-		<result column="member" jdbcType="BIT" property="member" />
+		<result column="member" jdbcType="TINYINT" property="member" />
 		<result column="member_id" jdbcType="BIGINT" property="memberId" />
 		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
 		<result column="age" jdbcType="INTEGER" property="age" />
@@ -46,7 +46,7 @@
 		(#{storeId,jdbcType=BIGINT},
 		#{projectId,jdbcType=BIGINT},
 		#{employeeId,jdbcType=BIGINT},
-		#{member,jdbcType=BIT},
+		#{member,jdbcType=TINYINT},
 		#{memberId,jdbcType=BIGINT},
 		#{mobile,jdbcType=VARCHAR},
 		#{age,jdbcType=INTEGER},

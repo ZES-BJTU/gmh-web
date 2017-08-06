@@ -25,6 +25,8 @@ public interface AppointmentService {
     int update(AppointmentDto dto);
 
     int cancel(Long id);
+    
+    int start(Long id);
 
     int finish(Long id, BigDecimal charge, Integer chargeWay, String source, String remark);
 

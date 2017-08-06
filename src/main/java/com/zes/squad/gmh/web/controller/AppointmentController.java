@@ -8,6 +8,7 @@ import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,17 @@ public class AppointmentController {
         return JsonResult.success(i);
     }
 
+    @RequestMapping("/start")
+    @ResponseBody
+    public JsonResult<Integer> start(Long id) {
+        if (id == null || id == 0L) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
+                    ErrorMessage.appointmentNotSelected);
+        }
+        int i = appointmentService.start(id);
+        return JsonResult.success(i);
+    }
+    
     @RequestMapping("/cancel")
     @ResponseBody
     public JsonResult<Integer> cancel(Long id) {
@@ -139,6 +151,7 @@ public class AppointmentController {
         ensureParameterExist(dto.getEmployeeId(), ErrorMessage.employeeNotSelected);
         ensureParameterExist(dto.getBeginTime(), ErrorMessage.appointmentBeginingTimeIsNull);
         ensureParameterExist(dto.getEndTime(), ErrorMessage.appointmentBeginingTimeIsNull);
+        ensureParameterValid(dto.getBeginTime().after(new Date()), ErrorMessage.appointmentBeginingTimeIsError);
         ensureParameterValid(dto.getBeginTime().before(dto.getEndTime()),
                 ErrorMessage.appointmentEndingTimeShouldAfterBeginningTime);
         ensureParameterExist(dto.getLine(), ErrorMessage.appointmentLineIsNull);
