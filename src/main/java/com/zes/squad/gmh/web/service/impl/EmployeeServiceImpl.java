@@ -15,6 +15,8 @@ import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
+import com.zes.squad.gmh.common.enums.JobEnum;
+import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
@@ -135,7 +137,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             dto.setEmName(union.getEmployeePo().getName());
             dto.setShopName(union.getShopPo().getName());
             dto.setIsWork(union.getEmployeePo().getWork());
-            List<JobDto> jobDtos = CommonConverter.mapList(union.getEmployeeJobPos(), JobDto.class);
+            List<JobDto> jobDtos = Lists.newArrayList();
+            for (EmployeeJobPo jobPo : union.getEmployeeJobPos()) {
+                JobDto jobDto = CommonConverter.map(jobPo, JobDto.class);
+                jobDto.setJobName(EnumUtils.getDescByKey(JobEnum.class, jobPo.getJobType()));
+                jobDtos.add(jobDto);
+            }
             dto.setJobDtos(jobDtos);
             dtos.add(dto);
         }

@@ -52,5 +52,5 @@ public interface EmployeeMapper {
 
     EmployeePo selectById(@Param("id") Long id);
 
-    List<EmployeePo> selectByIds(List<Long> ids);
+    List<EmployeePo> selectByIds(@Param("ids") List<Long> ids, @Param("work") Boolean work);
 }

@@ -34,7 +34,6 @@
 		ej.employee_id AS ej_employee_id,
 		ej.job_type
 		AS ej_job_type,
-		ej.job_name AS ej_job_name,
 		ej.created_time
 		AS
 		ej_created_time,

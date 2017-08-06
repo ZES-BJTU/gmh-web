@@ -13,5 +13,4 @@ public class EmployeeJobPo extends Po {
 
     private Long              employeeId;
     private Integer           jobType;
-    private String            jobName;
 }

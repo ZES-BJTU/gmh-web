@@ -5,12 +5,11 @@
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
 		<result column="job_type" jdbcType="INTEGER" property="jobType" />
-		<result column="job_name" jdbcType="VARCHAR" property="jobName" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`employee_id`,`job_type`,`job_name`,
+		`id`,`employee_id`,`job_type`,
 		`created_time`,
 		`modified_time`
 	</sql>
@@ -28,20 +27,18 @@
 	</select>
 	<insert id="batchInsert" parameterType="list">
 		INSERT INTO
-		employee_job(`employee_id`,`job_type`,`job_name`)
+		employee_job(`employee_id`,`job_type`)
 		VALUES
 		<foreach collection="list" item="po" separator=",">
 			(#{po.employeeId, jdbcType=BIGINT},
-			#{po.jobType, jdbcType=INTEGER},
-			#{po.jobName, jdbcType=VARCHAR})
+			#{po.jobType, jdbcType=INTEGER})
 		</foreach>
 	</insert>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.EmployeeJobPo">
 		INSERT INTO
-		employee_job(employee_id,job_type,job_name)
+		employee_job(employee_id,job_type)
 		VALUES(#{employeeId,
-		jdbcType=BIGINT},#{jobType, jdbcType=INTEGER},#{jobName,
-		jdbcType=VARCHAR})
+		jdbcType=BIGINT},#{jobType, jdbcType=INTEGER})
 	</insert>
 	<delete id="delteByEmployeeId" parameterType="long">
 		DELETE FROM

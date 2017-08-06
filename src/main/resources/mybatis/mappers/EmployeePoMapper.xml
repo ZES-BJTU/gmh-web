@@ -29,11 +29,18 @@
 	<select id="selectByIds" parameterType="list" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
-		FROM employee WHERE id IN
-		<foreach collection="list" item="id" separator="," open="("
-			close=")">
-			#{id, jdbcType=BIGINT}
-		</foreach>
+		FROM employee
+		WHERE id IN
+		<if test="ids != null and ids.size() != 0">
+			AND
+			<foreach collection="ids" item="id" separator="," open="("
+				close=")">
+				#{id, jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="work != null">
+			AND work = #{work, jdbcType=TINYINT}
+		</if>
 	</select>
 	<select id="selectIdsByCondition"
 		parameterType="com.zes.squad.gmh.web.entity.condition.EmployeeJobQueryCondition"
