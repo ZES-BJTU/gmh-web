@@ -140,4 +140,13 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.batchDelete(id);
     }
 
+    @Override
+    public ProjectVo queryById(Long id) {
+        ProjectPo po = projectMapper.selectById(id);
+        ProjectVo vo = CommonConverter.map(po, ProjectVo.class);
+        vo.setProjectName(po.getName());
+        vo.setTypeId(po.getProjectTypeId());
+        return vo;
+    }
+
 }

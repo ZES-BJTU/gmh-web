@@ -26,6 +26,6 @@ public interface ConsumeService {
      * 
      * @param condition
      */
-    void exportToExcel(ConsumeRecordQueryCondition condition);
+    byte[] exportToExcel(ConsumeRecordQueryCondition condition);
 
 }

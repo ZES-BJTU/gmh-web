@@ -4,9 +4,7 @@ import static com.zes.squad.gmh.web.helper.LogicHelper.ensureCollectionNotEmpty;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureConditionSatisfied;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,6 +24,7 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
+import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
@@ -94,10 +93,10 @@ public class ConsumeServiceImpl implements ConsumeService {
             dto.setMember(true);
             dto.setMemberId(unions.get(0).getMemberPo().getId());
             //处理会员消费
+            MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
+            dto.setAge(CalculateHelper.calculateAgeByBirthday(memberPo.getBirthday()));
             if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
-                MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
                 ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
-                dto.setAge(CalculateHelper.calculateAgeByBirthday(memberPo.getBirthday()));
                 BigDecimal nailMoney = memberPo.getNailMoney();
                 BigDecimal beautyMoney = memberPo.getBeautyMoney();
                 Integer projectType = projectUnion.getProjectTypePo().getTopType();
@@ -139,14 +138,18 @@ public class ConsumeServiceImpl implements ConsumeService {
     }
 
     @Override
-    public void exportToExcel(ConsumeRecordQueryCondition condition) {
+    public byte[] exportToExcel(ConsumeRecordQueryCondition condition) {
         List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
                     ErrorMessage.consumeRecordIsEmpty);
         }
         //写文件
-        exportRecordToFile(unions);
+        ByteArrayOutputStream output = exportRecordToFile(unions);
+        if (output == null) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED, ErrorMessage.exportOccursFail);
+        }
+        return output.toByteArray();
     }
 
     private List<ConsumeRecordDto> buildConsumeRecordDtosByUnions(List<ConsumeRecordUnion> unions) {
@@ -156,7 +159,8 @@ public class ConsumeServiceImpl implements ConsumeService {
             dto.setStoreName(union.getShopPo().getName());
             dto.setProjectName(union.getProjectPo().getName());
             dto.setEmployeeName(union.getEmployeePo().getName());
-            if (union.getConsumeRecordPo().getEmployeeId() != null) {
+            if (union.getConsumeRecordPo().getEmployeeId() != null
+                    && union.getConsumeRecordPo().getMember().booleanValue()) {
                 dto.setMember(true);
             } else {
                 dto.setMember(false);
@@ -166,13 +170,12 @@ public class ConsumeServiceImpl implements ConsumeService {
         return dtos;
     }
 
-    private void exportRecordToFile(List<ConsumeRecordUnion> unions) {
+    private ByteArrayOutputStream exportRecordToFile(List<ConsumeRecordUnion> unions) {
         try {
             String charset = ExportProperties.get("charset");
-            String path = ExportProperties.get("path");
-            String fileName = ThreadContext.getStaffStoreId() + "_" + formatDate(new Date()) + ".csv";
-            OutputStream output = new FileOutputStream(new File(path + fileName), true);
-            output.write(("序号,门店名称,美容项目名称,美容师,是否会员,顾客姓名,顾客手机号,消费金额,支付方式,消费时间" + DEFAULT_NEXT_LINE).getBytes(charset));
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            output.write(("序号,门店名称,美容项目名称,操作员,是否会员,顾客姓名,联系方式,年龄,性别,消费金额,支付方式,来源,消费时间,备注" + DEFAULT_NEXT_LINE)
+                    .getBytes(charset));
             int i = 1;
             for (ConsumeRecordUnion union : unions) {
                 //序号
@@ -188,7 +191,8 @@ public class ConsumeServiceImpl implements ConsumeService {
                 output.write(union.getEmployeePo().getName().getBytes(charset));
                 output.write(",".getBytes(charset));
                 //是否会员
-                if (union.getConsumeRecordPo().getEmployeeId() != null) {
+                if (union.getConsumeRecordPo().getEmployeeId() != null
+                        && union.getConsumeRecordPo().getMember().booleanValue()) {
                     output.write("是".getBytes(charset));
                     output.write(",".getBytes(charset));
                 } else {
@@ -198,8 +202,15 @@ public class ConsumeServiceImpl implements ConsumeService {
                 //顾客姓名
                 output.write(union.getConsumeRecordPo().getConsumerName().getBytes(charset));
                 output.write(",".getBytes(charset));
-                //顾客手机号
+                //联系方式
                 output.write(union.getConsumeRecordPo().getMobile().getBytes(charset));
+                output.write(",".getBytes(charset));
+                //年龄
+                output.write(String.valueOf(union.getConsumeRecordPo().getAge()).getBytes(charset));
+                output.write(",".getBytes(charset));
+                //性别
+                output.write(
+                        EnumUtils.getDescByKey(SexEnum.class, union.getConsumeRecordPo().getSex()).getBytes(charset));
                 output.write(",".getBytes(charset));
                 //消费金额
                 output.write(String.valueOf(union.getConsumeRecordPo().getCharge()).getBytes(charset));
@@ -208,22 +219,25 @@ public class ConsumeServiceImpl implements ConsumeService {
                 output.write(EnumUtils.getDescByKey(ChargeWayEnum.class, union.getConsumeRecordPo().getChargeWay())
                         .getBytes(charset));
                 output.write(",".getBytes(charset));
+                //来源
+                output.write(union.getConsumeRecordPo().getSource().getBytes(charset));
+                output.write(",".getBytes(charset));
                 //消费时间
                 output.write(formatDateTime(union.getConsumeRecordPo().getConsumeTime()).getBytes(charset));
                 output.write(",".getBytes(charset));
                 output.write(DEFAULT_NEXT_LINE.getBytes(charset));
+                //备注
+                output.write(union.getConsumeRecordPo().getRemark().getBytes(charset));
+                output.write(",".getBytes(charset));
                 i++;
             }
             output.flush();
             output.close();
+            return output;
         } catch (Exception e) {
             log.error("消费记录导出到文件异常", e);
+            return null;
         }
-    }
-
-    private static String formatDate(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(date);
     }
 
     private static String formatDateTime(Date date) {

@@ -14,6 +14,9 @@ public class DateTimeConverter implements Converter<String, Date> {
             return null;
         }
         Long dateTime = Long.valueOf(source);
+        if (dateTime.longValue() < 0L) {
+            dateTime = 0L;
+        }
         return new Date(dateTime);
     }
 

@@ -1,5 +1,7 @@
 package com.zes.squad.gmh.web.entity.condition;
 
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -10,7 +12,8 @@ import lombok.ToString;
 public class ConsumeRecordQueryCondition extends QueryCondition {
 
     private Long   storeId;
-    private String startTime;
-    private String endTime;
+    private Date   startTime;
+    private Date   endTime;
+    private String searchString;
 
 }

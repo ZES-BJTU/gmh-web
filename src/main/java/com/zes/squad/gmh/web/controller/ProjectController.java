@@ -90,6 +90,14 @@ public class ProjectController {
         return JsonResult.success(i);
     }
 
+    @RequestMapping("/query")
+    @ResponseBody
+    public JsonResult<ProjectVo> query(Long id) {
+        LogicHelper.ensureEntityExist(id, ErrorMessage.projectIdIsNull);
+        ProjectVo vo = projectService.queryById(id);
+        return JsonResult.success(vo);
+    }
+
     @RequestMapping("/update")
     @ResponseBody
     public JsonResult<Integer> update(ProjectDto dto) {

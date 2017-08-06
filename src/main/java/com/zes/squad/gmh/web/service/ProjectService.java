@@ -16,6 +16,8 @@ public interface ProjectService {
     List<ProjectVo> listByType(Long projectType);
 
     int insert(ProjectDto dto);
+    
+    ProjectVo queryById(Long id);
 
     int update(ProjectDto dto);
 

@@ -23,6 +23,8 @@ public class ConsumeRecordVo {
     private String     consumerName;
     private BigDecimal charge;
     private String     chargeWay;
+    private String     source;
     private Date       consumeTime;
+    private String     remark;
 
 }

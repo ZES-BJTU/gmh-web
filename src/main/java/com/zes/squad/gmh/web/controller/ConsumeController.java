@@ -4,8 +4,12 @@ import static com.zes.squad.gmh.web.helper.CheckHelper.isValidMobile;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +26,10 @@ import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
+import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
@@ -33,6 +39,9 @@ import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
 import com.zes.squad.gmh.web.service.ConsumeService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RequestMapping(path = "/consume")
 @Controller
 public class ConsumeController extends BaseController {
@@ -99,20 +108,23 @@ public class ConsumeController extends BaseController {
     }
 
     @RequestMapping("/export")
-    public JsonResult<Void> doExportToExcel(ConsumeRecordExportParams params) {
+    public void doExportToExcel(ConsumeRecordExportParams params, HttpServletResponse response) {
         String error = checkConsumeRecordExportParams(params);
         if (!Strings.isNullOrEmpty(error)) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
         ConsumeRecordQueryCondition condition = CommonConverter.map(params, ConsumeRecordQueryCondition.class);
-        StaffDto staff = getStaff();
-        if (staff == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND.getCode(),
-                    ErrorMessage.staffIsNull);
+        condition.setStoreId(ThreadContext.getStaffStoreId());
+        byte[] bytes = consumeService.exportToExcel(condition);
+        try {
+            response.setContentType("application/octet-stream;charset=UTF-8");
+            ServletOutputStream output = response.getOutputStream();
+            output.write(bytes);
+            output.flush();
+            output.close();
+        } catch (IOException e) {
+            log.error("获取文件输出流失败", e);
         }
-        condition.setStoreId(staff.getStoreId());
-        consumeService.exportToExcel(condition);
-        return JsonResult.success();
     }
 
     private String checkConsumeRecordQueryParams(ConsumeRecordQueryParams params) {
@@ -132,6 +144,7 @@ public class ConsumeController extends BaseController {
         List<ConsumeRecordVo> vos = Lists.newArrayList();
         for (ConsumeRecordDto dto : pagedDtos.getData()) {
             ConsumeRecordVo vo = CommonConverter.map(dto, ConsumeRecordVo.class);
+            vo.setSex(EnumUtils.getDescByKey(SexEnum.class, dto.getSex()));
             vo.setChargeWay(EnumUtils.getDescByKey(ChargeWayEnum.class, dto.getChargeWay()));
             if (dto.getMember().booleanValue()) {
                 vo.setConsumerDesc(MEMBER);
