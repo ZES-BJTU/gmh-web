@@ -281,7 +281,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             ids.add(po.getEmployeeId());
         }
         List<EmployeeItemVo> vos = Lists.newArrayList();
-        List<EmployeePo> employeePos = employeeMapper.selectByIds(ids, true);
+        List<EmployeePo> employeePos = employeeMapper.selectByIds(ids, true, ThreadContext.getStaffStoreId());
         for (EmployeePo po : employeePos) {
             EmployeeItemVo vo = new EmployeeItemVo();
             vo.setEmployeeId(po.getId());
