@@ -15,10 +15,12 @@ public class ConsumeRecordVo {
     private String     projectName;
     private Long       employeeId;
     private String     employeeName;
-    private String     memberDesc;
+    private String     consumerDesc;
     private Long       memberId;
     private String     mobile;
-    private String     consumerName; //可以是会员也可以是非会员
+    private Integer    age;
+    private String     sex;
+    private String     consumerName;
     private BigDecimal charge;
     private String     chargeWay;
     private Date       consumeTime;

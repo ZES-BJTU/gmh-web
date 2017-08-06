@@ -129,9 +129,9 @@ public class ConsumeController extends BaseController {
             ConsumeRecordVo vo = CommonConverter.map(dto, ConsumeRecordVo.class);
             vo.setChargeWay(EnumUtils.getDescByKey(ChargeWayEnum.class, dto.getChargeWay()));
             if (dto.getMember().booleanValue()) {
-                vo.setMemberDesc(MEMBER);
+                vo.setConsumerDesc(MEMBER);
             } else {
-                vo.setMemberDesc(CONSUMER);
+                vo.setConsumerDesc(CONSUMER);
             }
             vos.add(vo);
         }

@@ -68,7 +68,7 @@ public class ProjectController {
         return JsonResult.success(pagedVos);
     }
 
-    @RequestMapping("/getByType")
+    @RequestMapping("/listByProjectType")
     @ResponseBody
     public JsonResult<List<ProjectVo>> doListByType(Long typeId) {
         if (typeId == null) {
