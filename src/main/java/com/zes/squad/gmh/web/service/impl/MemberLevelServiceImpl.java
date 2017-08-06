@@ -12,11 +12,16 @@ import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
+import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
+import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.MemberLevelDto;
 import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
+import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.vo.MemberLevelVo;
 import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
+import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.service.MemberLevelService;
 
 @Service("memberLevelService")
@@ -24,6 +29,8 @@ public class MemberLevelServiceImpl implements MemberLevelService {
 
     @Autowired
     private MemberLevelMapper memberLevelMapper;
+    @Autowired
+    private MemberMapper      memberMapper;
 
     public List<MemberLevelVo> listAllMemberLevels() {
         List<MemberLevelPo> pos = memberLevelMapper.selectByCondition(ThreadContext.getStaffStoreId(), null);
@@ -52,8 +59,12 @@ public class MemberLevelServiceImpl implements MemberLevelService {
     }
 
     public int deleteByIds(Long[] ids) {
+        List<MemberPo> pos = memberMapper.selectByIds(ids);
+        if (!CollectionUtils.isEmpty(pos)) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED,
+                    ErrorMessage.memberNotNullForDeleteLevel);
+        }
         return memberLevelMapper.batchDelete(ids);
-
     }
 
     @Override

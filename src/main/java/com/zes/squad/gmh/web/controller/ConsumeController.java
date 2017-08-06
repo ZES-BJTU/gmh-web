@@ -1,5 +1,9 @@
 package com.zes.squad.gmh.web.controller;
 
+import static com.zes.squad.gmh.web.helper.CheckHelper.isValidMobile;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -15,6 +19,7 @@ import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
+import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.util.EnumUtils;
@@ -26,9 +31,6 @@ import com.zes.squad.gmh.web.entity.param.ConsumeRecordExportParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
-import static com.zes.squad.gmh.web.helper.CheckHelper.*;
-
-import static com.zes.squad.gmh.web.helper.LogicHelper.*;
 import com.zes.squad.gmh.web.service.ConsumeService;
 
 @RequestMapping(path = "/consume")
@@ -69,6 +71,9 @@ public class ConsumeController extends BaseController {
         ensureParameterExist(params.getChargeWay(), ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, params.getChargeWay())),
                 ErrorMessage.consumeRecordChargeWayIsError);
+        ensureParameterExist(params.getSex(), ErrorMessage.consumerSexIsNull);
+        ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(SexEnum.class, params.getSex())),
+                ErrorMessage.consumerSexIsError);
     }
 
     @RequestMapping("/search")

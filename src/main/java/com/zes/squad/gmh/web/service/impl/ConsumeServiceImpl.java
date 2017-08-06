@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.service.impl;
 
+import static com.zes.squad.gmh.web.helper.LogicHelper.ensureCollectionNotEmpty;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureConditionSatisfied;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
 
@@ -35,12 +36,14 @@ import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
+import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper;
+import com.zes.squad.gmh.web.mapper.EmployeeMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
 import com.zes.squad.gmh.web.mapper.ProjectUnionMapper;
@@ -66,11 +69,22 @@ public class ConsumeServiceImpl implements ConsumeService {
     private MemberMapper             memberMapper;
     @Autowired
     private ConsumeRecordUnionMapper consumeRecordUnionMapper;
+    @Autowired
+    private EmployeeMapper           employeeMapper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
     @Override
     public void createConsumeRecord(ConsumeRecordDto dto) {
+        //确保美容项目合法
+        ProjectQueryCondition condition = new ProjectQueryCondition();
+        condition.setProjectId(dto.getProjectId());
+        List<ProjectUnion> projectUnions = projectUnionMapper.listProjectUnionsByCondition(condition);
+        ensureCollectionNotEmpty(projectUnions, ErrorMessage.projectNotFound);
+        ProjectUnion projectUnion = projectUnions.get(0);
+        //确保员工合法
+        EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
+        ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
         MemberQueryCondition memberCondition = new MemberQueryCondition();
         memberCondition.setStoreId(ThreadContext.getStaffStoreId());
         memberCondition.setPhone(dto.getMobile());
@@ -80,14 +94,10 @@ public class ConsumeServiceImpl implements ConsumeService {
             dto.setMemberId(unions.get(0).getMemberPo().getId());
             //处理会员消费
             if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
-                ProjectQueryCondition condition = new ProjectQueryCondition();
-                condition.setProjectId(dto.getProjectId());
-                ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
-                ensureEntityExist(union, ErrorMessage.projectNotFound);
                 MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
                 BigDecimal nailMoney = memberPo.getNailMoney();
                 BigDecimal beautyMoney = memberPo.getBeautyMoney();
-                Integer projectType = union.getProjectTypePo().getTopType();
+                Integer projectType = projectUnion.getProjectTypePo().getTopType();
                 if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
                     ensureConditionSatisfied(nailMoney.compareTo(dto.getCharge()) != -1,
                             ErrorMessage.nailMoneyNotEnough);
@@ -103,6 +113,10 @@ public class ConsumeServiceImpl implements ConsumeService {
                     throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS, "美容项目分类不合法");
                 }
             }
+        } else {
+            ensureConditionSatisfied(dto.getChargeWay() == ChargeWayEnum.CASH.getKey(),
+                    ErrorMessage.consumerShouldChooseCash);
+            dto.setMember(false);
         }
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
         po.setConsumeTime(new Date());

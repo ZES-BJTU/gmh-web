@@ -51,6 +51,20 @@
 		FROM member
 		WHERE id = #{id, jdbcType=BIGINT}
 	</select>
+	<select id="selectByIds" parameterType="long[]" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM member
+		<where>
+			member_level_id IN
+			<if test="ids != null and ids.length != 0">
+				<foreach collection="ids" item="id" separator="," open="("
+					close=")">
+					#{id, jdbcType=BIGINT}
+				</foreach>
+			</if>
+		</where>
+	</select>
 	<select id="getByPhone" parameterType="string" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />

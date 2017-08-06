@@ -103,9 +103,9 @@ public class MemberController {
             ensureParameterValid(dto.getJoinDate().before(dto.getValidDate()),
                     ErrorMessage.memberCardOpenDateAfterValidDate);
         }
-        ensureParameterValid(dto.getNailMoney() != null && dto.getNailMoney().compareTo(BigDecimal.ZERO) == 1,
+        ensureParameterValid(dto.getNailMoney() != null && dto.getNailMoney().compareTo(BigDecimal.ZERO) != -1,
                 ErrorMessage.memberNailMoneyIsError);
-        ensureParameterValid(dto.getBeautyMoney() != null && dto.getBeautyMoney().compareTo(BigDecimal.ZERO) == 1,
+        ensureParameterValid(dto.getBeautyMoney() != null && dto.getBeautyMoney().compareTo(BigDecimal.ZERO) != -1,
                 ErrorMessage.memberBeautyMoneyIsError);
     }
 

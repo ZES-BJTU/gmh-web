@@ -22,6 +22,7 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.AppointmentStatusEnum;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
+import com.zes.squad.gmh.common.enums.JobEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.enums.YesOrNoEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
@@ -214,6 +215,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     private List<AppointmentVo> buildAppointmentVosByUnions(List<AppointmentUnion> unions) {
         List<AppointmentVo> vos = Lists.newArrayList();
         for (AppointmentUnion union : unions) {
+            if (union.getAppointmentPo() == null || union.getEmployeePo() == null || union.getMemberPo() == null
+                    || union.getProjectPo() == null || union.getProjectTypePo() == null) {
+                continue;
+            }
             AppointmentVo vo = buildAppointmentVoByUnion(union);
             vos.add(vo);
         }
@@ -292,6 +297,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     private Integer getJobTypeByProjectTopType(Integer topType) {
+        if (topType.intValue() == JobEnum.NAIL_TECHNICIAN.getKey()) {
+            return ProjectTypeEnum.NAIL.getKey();
+        }
+        if (topType.intValue() == JobEnum.BEAUTY_STYLIST.getKey()) {
+            return ProjectTypeEnum.LIDS.getKey();
+        }
+        if (topType.intValue() == JobEnum.BEAUTICIAN.getKey()) {
+            return ProjectTypeEnum.BEAUTY.getKey();
+        }
         return null;
     }
 

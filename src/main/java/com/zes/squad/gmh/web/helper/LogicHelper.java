@@ -1,5 +1,11 @@
 package com.zes.squad.gmh.web.helper;
 
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.GmhException;
@@ -46,6 +52,18 @@ public class LogicHelper {
     public static void ensureArrayExist(Object[] objs, String errorMessage) {
         if (objs == null || objs.length == 0) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, errorMessage);
+        }
+    }
+
+    public static <T> void ensureCollectionNotEmpty(Collection<T> collection, String errorMessage) {
+        if (CollectionUtils.isEmpty(collection)) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY, errorMessage);
+        }
+    }
+
+    public static <K, V> void ensureMapNotEmpty(Map<K, V> map, String errorMessage) {
+        if (MapUtils.isEmpty(map)) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY, errorMessage);
         }
     }
 

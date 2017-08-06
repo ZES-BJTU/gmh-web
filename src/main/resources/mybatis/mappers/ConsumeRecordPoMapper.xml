@@ -56,7 +56,7 @@
 		#{chargeWay,jdbcType=INTEGER},
 		#{source,jdbcType=VARCHAR},
 		#{consumeTime,jdbcType=TIMESTAMP},
-		#{remark,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}
 		);
 	</insert>
 </mapper>
