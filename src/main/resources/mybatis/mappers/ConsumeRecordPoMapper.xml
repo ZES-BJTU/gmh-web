@@ -15,6 +15,7 @@
 		<result column="consumer_name" jdbcType="VARCHAR" property="consumerName" />
 		<result column="charge" jdbcType="DECIMAL" property="charge" />
 		<result column="charge_way" jdbcType="INTEGER" property="chargeWay" />
+		<result column="counselor" jdbcType="INTEGER" property="counselor" />
 		<result column="source" jdbcType="VARCHAR" property="source" />
 		<result column="consume_time" jdbcType="TIMESTAMP" property="consumeTime" />
 		<result column="remark" jdbcType="VARCHAR" property="remark" />
@@ -25,7 +26,7 @@
 		`id`,`store_id`,`project_id`,
 		`employee_id`,`member`,`member_id`,`mobile`,
 		`age`,`sex`,`consumer_name`,`charge`,
-		`charge_way`,`source`,`consume_time`,`remark`,
+		`charge_way`,`counselor`,`source`,`consume_time`,`remark`,
 		`created_time`,`modified_time`
 	</sql>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.ConsumeRecordPo">
@@ -40,7 +41,7 @@
 		`member_id`,`mobile`,
 		`age`,`sex`,
 		`consumer_name`,`charge`,
-		`charge_way`,`source`,
+		`charge_way`,`counselor`,`source`,
 		`consume_time`,`remark`)
 		VALUES
 		(#{storeId,jdbcType=BIGINT},
@@ -54,6 +55,7 @@
 		#{consumerName,jdbcType=BIGINT},
 		#{charge,jdbcType=DECIMAL},
 		#{chargeWay,jdbcType=INTEGER},
+		#{counselor,jdbcType=INTEGER},
 		#{source,jdbcType=VARCHAR},
 		#{consumeTime,jdbcType=TIMESTAMP},
 		#{remark,jdbcType=VARCHAR}

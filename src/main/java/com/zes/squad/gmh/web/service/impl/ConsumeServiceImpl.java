@@ -31,6 +31,7 @@ import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
+import com.zes.squad.gmh.common.enums.JobEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.enums.YesOrNoEnum;
@@ -44,6 +45,7 @@ import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
+import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion;
@@ -52,6 +54,7 @@ import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.helper.CalculateHelper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper;
+import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
@@ -77,6 +80,8 @@ public class ConsumeServiceImpl implements ConsumeService {
     private ConsumeRecordUnionMapper consumeRecordUnionMapper;
     @Autowired
     private EmployeeMapper           employeeMapper;
+    @Autowired
+    private EmployeeJobMapper        employeeJobMepper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
@@ -91,6 +96,23 @@ public class ConsumeServiceImpl implements ConsumeService {
         //确保员工合法
         EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
         ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+        if (dto.getCounselorId() != null) {
+            employeePo = employeeMapper.selectById(dto.getCounselorId());
+            ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+            List<EmployeeJobPo> employeeJobPos = employeeJobMepper.selectByEmployeeId(employeePo.getId());
+            if (CollectionUtils.isEmpty(employeeJobPos)) {
+                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
+                        ErrorMessage.employeeJobNotFound);
+            }
+            boolean contain = false;
+            for (EmployeeJobPo po : employeeJobPos) {
+                if (po.getJobType() == JobEnum.MANAGER.getKey() || po.getJobType() == JobEnum.COUNSELOR.getKey()) {
+                    contain = true;
+                    break;
+                }
+            }
+            ensureConditionSatisfied(contain, ErrorMessage.employeeJobTypeIsError);
+        }
         MemberQueryCondition memberCondition = new MemberQueryCondition();
         memberCondition.setStoreId(ThreadContext.getStaffStoreId());
         memberCondition.setPhone(dto.getMobile());
@@ -162,6 +184,8 @@ public class ConsumeServiceImpl implements ConsumeService {
         List<ConsumeRecordDto> dtos = Lists.newArrayList();
         for (ConsumeRecordUnion union : unions) {
             ConsumeRecordDto dto = CommonConverter.map(union.getConsumeRecordPo(), ConsumeRecordDto.class);
+            dto.setCounselorId(union.getEmployeePo().getId());
+            dto.setCounselorName(union.getEmployeePo().getName());
             dto.setStoreName(union.getShopPo().getName());
             dto.setProjectName(union.getProjectPo().getName());
             dto.setEmployeeName(union.getEmployeePo().getName());

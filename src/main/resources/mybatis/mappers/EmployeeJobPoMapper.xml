@@ -25,6 +25,13 @@
 		WHERE
 		`job_type` = #{jobType, jdbcType=INTEGER}
 	</select>
+	<select id="selectByEmployeeId" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM employee_job
+		WHERE
+		employee_id = #{employeeId, jdbcType=BIGINT}
+	</select>
 	<insert id="batchInsert" parameterType="list">
 		INSERT INTO
 		employee_job(`employee_id`,`job_type`)

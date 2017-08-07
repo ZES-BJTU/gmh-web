@@ -23,6 +23,8 @@ public class ConsumeRecordDto {
     private String     consumerName;
     private BigDecimal charge;
     private Integer    chargeWay;
+    private Long       counselorId;
+    private String     counselorName;
     private String     source;
     private Date       consumeTime;
     private String     remark;

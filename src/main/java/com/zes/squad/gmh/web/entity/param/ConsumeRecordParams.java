@@ -16,6 +16,7 @@ public class ConsumeRecordParams {
     private BigDecimal charge;
     private BigDecimal discount;
     private Integer    chargeWay;
+    private Long       counselorId;
     private String     source;
     private String     remark;
 

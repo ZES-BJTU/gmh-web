@@ -25,6 +25,7 @@ public class ConsumeRecordPo extends Po {
     private String            consumerName;         //可以是会员也可以是非会员
     private BigDecimal        charge;
     private Integer           chargeWay;
+    private Integer           counselor;
     private String            source;
     private Date              consumeTime;
     private String            remark;

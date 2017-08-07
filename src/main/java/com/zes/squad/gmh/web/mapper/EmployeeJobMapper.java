@@ -23,4 +23,6 @@ public interface EmployeeJobMapper {
     int delteByEmployeeId(Long employeeId);
 
     List<EmployeeJobPo> selectByJobType(Integer jobType);
+
+    List<EmployeeJobPo> selectByEmployeeId(Long employeeId);
 }
