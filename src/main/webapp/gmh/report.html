@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Standard Meta -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <!-- Site Properties -->
+  <title>光美焕-报表管理</title>
+  <link rel="shortcut icon" type="image/x-icon" href="css/images/favicon.ico">
+
+  <!--JQuery-->
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery.serialize-object.min.js"></script>
+
+  <!--Semantic-UI-->
+  <link rel="stylesheet" type="text/css" href="css/semantic-ui/semantic.css">
+  <script src="css/semantic-ui/semantic.js"></script>
+
+  <!--Style-->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!--Script-->
+  <script src="js/action.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/echarts.js"></script>
+  <script src="js/script.js"></script>
+</head>
+
+<body>
+  <button class="ui blue button fake-button" style="display:none;"></button>
+  <button class="ui blue button load-shop-list" style="display:none;"></button>
+  <div id="left-menu" class="ui left fixed vertical pointing menu">
+    <a class="item" href="home.html">首页</a>
+    <a class="item" href="reserve.html">预约管理</a>
+    <a class="item" href="record.html">到店美容管理</a>
+    <a class="item" href="project.html">美容项管理</a>
+    <a class="item" href="projectType.html">美容项分类管理</a>
+    <a class="item" href="vip.html">会员管理</a>
+    <a class="item" href="vipLevel.html">会员等级管理</a>
+    <a class="item" href="stock.html">库存管理</a>
+    <a class="item" href="stockType.html">库存分类管理</a>
+    <a class="item" href="employee.html">员工管理</a>
+    <a class="item active" href="report.html">报表管理</a>
+    <a class="item" href="staff.html">用户管理</a>
+    <a class="item" href="shop.html">店铺管理</a>
+  </div>
+  <div class="ui top fixed menu">
+    <div class="item">
+      <img src="css/images/logo.png">光美焕科技皮肤护理
+    </div>
+    <div class="ui dropdown right item">
+      <span id="user-name"></span>
+      <i class="dropdown icon"></i>
+      <div class="menu">
+        <a class="item">修改密码</a>
+        <a class="item logout">退出登录</a>
+      </div>
+    </div>
+  </div>
+  <div class="main-wrapper">
+    <div class="ui fluid container">
+      <div class="ui grid">
+        <div class="row">
+          <div class="four wide left floated left aligned column">
+            <button class="ui blue button new-shop">新建</button>
+          </div>
+          <div class="four wide right floated right aligned column">
+            <form id="" class="ui form search shop-search">
+              <div class="ui action input">
+                <input type="text" class="search-input" placeholder="请输入搜索内容">
+                <button class="ui button submit">搜索</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="one column row">
+          <div class="column">
+            <table class="ui compact table theme">
+              <thead>
+                <tr>
+                  <th>店铺名</th>
+                  <th>负责人</th>
+                  <th>负责人电话</th>
+                  <th>地址</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="shop-list">
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="column">
+            <div class="ui borderless menu paging">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ui mini modal new-shop-modal">
+    <div class="header">新建店铺</div>
+    <div class="content">
+      <form id="new-shop" class="ui form">
+        <div class="field">
+          <label>店铺名</label>
+          <input type="text" name="shopName" placeholder="请输入店铺名">
+        </div>
+        <div class="field">
+          <label>负责人</label>
+          <input type="text" name="manager" placeholder="请输入负责人姓名">
+        </div>
+        <div class="field">
+          <label>负责人电话</label>
+          <input type="text" name="phone" placeholder="请输入负责人电话">
+        </div>
+        <div class="field">
+          <label>地址</label>
+          <input type="text" name="address" placeholder="请输入地址">
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui black deny right labeled icon button">
+        取消
+        <i class="remove icon"></i>
+      </div>
+      <div class="ui positive right labeled icon button">
+        提交
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="ui mini modal mod-shop-modal">
+    <div class="header">修改店铺</div>
+    <div class="content">
+      <span id="mod-shop-id" style="display:none"></span>
+      <form id="mod-shop" class="ui form">
+        <div class="field">
+          <label>店铺名</label>
+          <input type="text" name="shopName" placeholder="请输入店铺名">
+        </div>
+        <div class="field">
+          <label>负责人</label>
+          <input type="text" name="manager" placeholder="请输入负责人姓名">
+        </div>
+        <div class="field">
+          <label>负责人电话</label>
+          <input type="text" name="phone" placeholder="请输入负责人电话">
+        </div>
+        <div class="field">
+          <label>地址</label>
+          <input type="text" name="address" placeholder="请输入地址">
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui black deny right labeled icon button">
+        取消
+        <i class="remove icon"></i>
+      </div>
+      <div class="ui positive right labeled icon button">
+        提交
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="ui basic tiny modal del-shop-modal">
+    <div class="ui icon header">
+      <i class="trash icon"></i>确认删除？
+    </div>
+    <div class="content">
+      <span id="del-shop-id" style="display:none"></span>
+    </div>
+    <div class="actions delete-action">
+      <div class="ui black deny right labeled icon button">
+        取消
+        <i class="remove icon"></i>
+      </div>
+      <div class="ui positive right labeled icon button">
+        提交
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 存储搜索的信息,用于点击页码时调用
+    var searchInfo = '';
+    $(document).ready(function () {
+      //店铺管理搜索
+      $('.shop-search').form({
+        onSuccess: function (e) {
+          //阻止表单的提交
+          e.preventDefault();
+          searchInfo = $('.search-input').val();
+          loadSearchShopList(1, 10, 'search');
+        }
+      })
+
+      $('.shop-search').form('submit');
+
+      //分页按钮点击事件
+      $(document).on('click', '.paging .item', function () {
+        loadSearchShopList($(this).text(), 10, 'paging');
+      })
+
+      function loadSearchShopList(pagenum, pagesize, type) {
+        $('.load-shop-list').api({
+          action: 'shop search',
+          method: 'GET',
+          serializeForm: true,
+          on:'now',
+          data: {
+            pageNum: pagenum,
+            pageSize: pagesize
+          },
+          beforeXHR: function (xhr) {
+            verifyToken();
+            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          },
+          beforeSend: function (settings) {
+            if (type == 'search') {
+              settings.data.searchString = $('.search-input').val();
+              return settings;
+            } else {
+              settings.data.searchString = searchInfo;
+              return settings;
+            }
+          },
+          onSuccess: function (response) {
+            if (response.error != null) {
+              alert(response.code + ' : ' + response.error);
+            } else {
+              $('#shop-list').empty();
+              $('.paging').empty();
+              for (var i = 0; i < response.data.totalPages; i++) {
+                var $item = $('<a class="item">' + (i + 1) + '</a>');
+                $('.paging').append($item);
+              }
+              $.each(response.data.data, function (i, data) {
+                var $tr = $('<tr></tr>');
+                var $id = $('<td class="shopId" style="display:none">' + data.id + '</td>');
+                var $shopName = $('<td class="shopName">' + data.shopName + '</td>');
+                var $manager = $('<td class="shopManager">' + data.manager + '</td>');
+                var $phone = $('<td class="shopPhone">' + data.phone + '</td>');
+                var $address = $('<td class="shopAddress">' + data.address + '</td>');
+                var $operate = $(
+                  '<td><button class="ui tiny orange button mod-shop">修改</button><button class="ui tiny red button del-shop">删除</button></td>'
+                )
+                $tr.append($id);
+                $tr.append($shopName);
+                $tr.append($manager);
+                $tr.append($phone);
+                $tr.append($address);
+                $tr.append($operate);
+                $('#shop-list').append($tr);
+              })
+              $('.paging').children().eq(pagenum - 1).addClass('active');
+            }
+          },
+          onFailure: function (response) {
+            alert('服务器暂无响应');
+          }
+        })
+      }
+
+      //新建店铺模态框
+      $('.new-shop').on('click', function () {
+        $('.new-shop-modal').modal({
+            closable: false,
+            onDeny: function () {
+              $('#new-shop').form('clear');
+            },
+            onApprove: function () {
+              $('#new-shop').submit();
+              return false;
+            }
+          })
+          .modal('show');
+      })
+      //新建店铺信息提交
+      $('#new-shop').form({
+        on: 'change',
+        inline: true,
+        fields: {
+          newShopName: {
+            identifier: 'shopName',
+            rules: [{
+              type: 'empty',
+              prompt: '店铺名不能为空'
+            }]
+          },
+          newShopManager: {
+            identifier: 'manager',
+            rules: [{
+              type: 'empty',
+              prompt: '负责人不能为空'
+            }]
+          },
+          newShopPhone: {
+            identifier: 'phone',
+            rules: [{
+                type: 'empty',
+                prompt: '电话不能为空'
+              },
+              {
+                type: 'number',
+                prompt: '请输入有效的电话'
+              }
+            ]
+          },
+          newShopAddress: {
+            identifier: 'address',
+            rules: [{
+              type: 'empty',
+              prompt: '地址不能为空'
+            }]
+          },
+        },
+        onSuccess: function (e) {
+          //阻止表单的提交
+          e.preventDefault();
+        }
+      }).api({
+        action: 'shop insert',
+        method: 'POST',
+        serializeForm: true,
+        beforeXHR: function (xhr) {
+          verifyToken();
+          xhr.setRequestHeader('X-token', getCookie('token'));
+        },
+        onSuccess: function (response) {
+          if (response.error != null) {
+            alert(response.code + ' : ' + response.error);
+          } else {
+            $('#new-shop').form('clear');
+            $('.new-shop-modal').modal('hide');
+            loadSearchShopList(1, 10,'search');
+          }
+        },
+        onFailure: function (response) {
+          alert('服务器暂无响应');
+        },
+      });
+
+      //修改店铺模态框
+      $(document).on('click', '.mod-shop', function () {
+        $('#mod-shop-id').text($(this).parent().parent().find('.shopId').text())
+        $('#mod-shop').find('input[name="shopName"]').val($(this).parent().parent().find('.shopName').text());
+        $('#mod-shop').find('input[name="manager"]').val($(this).parent().parent().find('.shopManager').text());
+        $('#mod-shop').find('input[name="phone"]').val($(this).parent().parent().find('.shopPhone').text());
+        $('#mod-shop').find('input[name="address"]').val($(this).parent().parent().find('.shopAddress').text());
+        $('.mod-shop-modal').modal({
+            closable: false,
+            onDeny: function () {
+              $('#mod-shop').form('clear');
+              $('#mod-shop-id').text('');
+            },
+            onApprove: function () {
+              $('#mod-shop').submit();
+              return false;
+            }
+          })
+          .modal('show');
+      })
+      //修改店铺信息提交
+      $('#mod-shop').form({
+        on: 'change',
+        inline: true,
+        fields: {
+          modShopName: {
+            identifier: 'shopName',
+            rules: [{
+              type: 'empty',
+              prompt: '店铺名不能为空'
+            }]
+          },
+          modShopManager: {
+            identifier: 'manager',
+            rules: [{
+              type: 'empty',
+              prompt: '负责人不能为空'
+            }]
+          },
+          modShopPhone: {
+            identifier: 'phone',
+            rules: [{
+                type: 'empty',
+                prompt: '电话不能为空'
+              },
+              {
+                type: 'number',
+                prompt: '请输入有效的电话'
+              }
+            ]
+          },
+          modShopAddress: {
+            identifier: 'address',
+            rules: [{
+              type: 'empty',
+              prompt: '地址不能为空'
+            }]
+          },
+        },
+        onSuccess: function (e) {
+          //阻止表单的提交
+          e.preventDefault();
+        }
+      }).api({
+        action: 'shop update',
+        method: 'POST',
+        serializeForm: true,
+        beforeXHR: function (xhr) {
+          verifyToken();
+          xhr.setRequestHeader('X-token', getCookie('token'));
+        },
+        beforeSend: function (settings) {
+          if ($('#mod-shop-id').text() != '') {
+            settings.data.id = $('#mod-shop-id').text();
+            return settings;
+          } else {
+            alert('ID为空');
+            return false;
+          }
+        },
+        onSuccess: function (response) {
+          if (response.error != null) {
+            alert(response.code + ' : ' + response.error);
+          } else {
+            $('#mod-shop-id').text('');
+            $('#mod-shop').form('clear');
+            $('.mod-shop-modal').modal('hide');
+            loadSearchShopList(1, 10,'search');
+          }
+        },
+        onFailure: function (response) {
+          alert('服务器暂无响应');
+        }
+      });
+
+      //删除店铺模态框
+      $(document).on('click', '.del-shop', function () {
+        $('#del-shop-id').text($(this).parent().parent().find('.shopId').text())
+        $('.del-shop-modal').modal({
+            closable: false,
+            onDeny: function () {
+              $('#del-shop-id').text('');
+            },
+            onApprove: function () {
+              $('.fake-button').api({
+                action: 'shop delByIds',
+                method: 'POST',
+                on: 'now',
+                beforeXHR: function (xhr) {
+                  verifyToken();
+                  xhr.setRequestHeader('X-token', getCookie('token'));
+                },
+                beforeSend: function (settings) {
+                  if ($('#del-shop-id').text() != '') {
+                    settings.data.id = $('#del-shop-id').text();
+                    return settings;
+                  } else {
+                    alert('ID为空');
+                    return false;
+                  }
+                },
+                onSuccess: function (response) {
+                  if (response.error != null) {
+                    alert(response.code + ' : ' + response.error);
+                  } else {
+                    $('#del-shop-id').text('');
+                    $('.del-shop-modal').modal('hide');
+                    loadSearchShopList(1, 10,'search');
+                  }
+                },
+                onFailure: function (response) {
+                  alert('服务器暂无响应');
+                }
+              })
+              return false;
+            }
+          })
+          .modal('show');
+      })
+    })
+  </script>
+</body>
+
+</html>

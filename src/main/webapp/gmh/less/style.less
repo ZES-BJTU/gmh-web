@@ -14,12 +14,14 @@ body {
         background-color: @theme-color-darker;
     }
 }
+.grid-100{
+    height: 100%;
+}
 
 .grid.login-grid {
-    height: 100%;
+    .grid-100;
     margin: 0;
     background: url('images/background.jpg') center no-repeat;
-    ;
     background-size: cover;
     .login-column {
         max-width: 400px;
@@ -76,10 +78,13 @@ body {
 }
 
 .ui.form.search {
-    margin-right: 70px;
     button {
         .light-blue-btn;
     }
+}
+
+.ui.action.input {
+    width: 200px;
 }
 
 .ui.table.theme {
@@ -89,6 +94,39 @@ body {
 .ui.modal>.delete-action {
     text-align: center;
 }
-.ui.selection.dropdown{
-    min-width: auto;
+
+.ui.selection.dropdown {
+    min-width: 11em;
+}
+
+.ui.grid.modify-pwd-grid{
+    .grid-100;
+    margin-top:100px;
+    & .column .form .button {
+        .light-blue-btn;
+    }
+}
+
+.home-item{
+    cursor: pointer;
+}
+
+.new-employee-modal .ui.checkbox{
+    margin: 5px 15px 0 15px;
+}
+
+td.remark{
+    // width: 40px;
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+
+.ui.record-search input.time-select{
+    width: 130px;
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    &:focus{
+        border-radius: 0;
+    }
 }

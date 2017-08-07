@@ -9,6 +9,9 @@ body {
 .light-blue-btn:hover {
   background-color: #49bfd6;
 }
+.grid-100 {
+  height: 100%;
+}
 .grid.login-grid {
   height: 100%;
   margin: 0;
@@ -65,15 +68,15 @@ body {
   padding: 20px;
   width: calc(100% - 210px);
 }
-.ui.form.search {
-  margin-right: 70px;
-}
 .ui.form.search button {
   color: #ffffff;
   background-color: #7bcad9;
 }
 .ui.form.search button:hover {
   background-color: #49bfd6;
+}
+.ui.action.input {
+  width: 200px;
 }
 .ui.table.theme {
   border-top: 0.2em solid #7bcad9;
@@ -82,5 +85,35 @@ body {
   text-align: center;
 }
 .ui.selection.dropdown {
-  min-width: auto;
+  min-width: 11em;
+}
+.ui.grid.modify-pwd-grid {
+  height: 100%;
+  margin-top: 100px;
+}
+.ui.grid.modify-pwd-grid .column .form .button {
+  color: #ffffff;
+  background-color: #7bcad9;
+}
+.ui.grid.modify-pwd-grid .column .form .button:hover {
+  background-color: #49bfd6;
+}
+.home-item {
+  cursor: pointer;
+}
+.new-employee-modal .ui.checkbox {
+  margin: 5px 15px 0 15px;
+}
+td.remark {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ui.record-search input.time-select {
+  width: 130px;
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}
+.ui.record-search input.time-select:focus {
+  border-radius: 0;
 }

@@ -1,6 +1,8 @@
 $(document).ready(function () {
     //下拉框初始化
     $('.ui.dropdown').dropdown();
+    //复选框初始化
+    $('.ui.checkbox').checkbox();
     //菜单按钮点击事件
     $('#left-menu .item').on('click', function () {
         $(this).addClass('active').siblings().removeClass('active');
@@ -24,7 +26,7 @@ $(document).ready(function () {
             if (response.error != null) {
                 // $('#login').form('add errors', [response.code,response.error]);
             } else {
-                $('#user-name').text(response.data.principalName);
+                $('#user-name').text(response.data.name);
             }
         },
         onFailure: function (response) {
@@ -94,5 +96,8 @@ $(document).ready(function () {
                 redirect('index.html');
             }
         }
+    })
+    $(document).on('click','.home-item',function(){
+        redirect('home.html');
     })
 })
