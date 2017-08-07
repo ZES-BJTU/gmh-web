@@ -1,5 +1,7 @@
 package com.zes.squad.gmh.web.service;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
@@ -26,6 +28,6 @@ public interface ConsumeService {
      * 
      * @param condition
      */
-    byte[] exportToExcel(ConsumeRecordQueryCondition condition);
+    HSSFWorkbook exportToExcel(ConsumeRecordQueryCondition condition);
 
 }

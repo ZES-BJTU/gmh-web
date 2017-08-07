@@ -4,18 +4,21 @@ import static com.zes.squad.gmh.web.helper.CheckHelper.isValidMobile;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
 
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
-import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -26,7 +29,6 @@ import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
-import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
@@ -38,6 +40,7 @@ import com.zes.squad.gmh.web.entity.param.ConsumeRecordParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
 import com.zes.squad.gmh.web.service.ConsumeService;
+import com.zes.squad.gmh.web.view.ExcelView;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -108,23 +111,19 @@ public class ConsumeController extends BaseController {
     }
 
     @RequestMapping("/export")
-    public void doExportToExcel(ConsumeRecordExportParams params, HttpServletResponse response) {
-        String error = checkConsumeRecordExportParams(params);
-        if (!Strings.isNullOrEmpty(error)) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
-        }
+    public ModelAndView doExportToExcel(ConsumeRecordExportParams params, ModelMap map, HttpServletRequest request,
+                                        HttpServletResponse response) {
+        checkConsumeRecordExportParams(params);
         ConsumeRecordQueryCondition condition = CommonConverter.map(params, ConsumeRecordQueryCondition.class);
         condition.setStoreId(ThreadContext.getStaffStoreId());
-        byte[] bytes = consumeService.exportToExcel(condition);
+        HSSFWorkbook workbook = consumeService.exportToExcel(condition);
+        ExcelView excelView = new ExcelView();
         try {
-            response.setContentType("application/octet-stream;charset=UTF-8");
-            ServletOutputStream output = response.getOutputStream();
-            output.write(bytes);
-            output.flush();
-            output.close();
-        } catch (IOException e) {
-            log.error("获取文件输出流失败", e);
+            excelView.buildExcelDocument(null, workbook, request, response);
+        } catch (Exception e) {
+            log.error("构建excel文档对象异常", e);
         }
+        return new ModelAndView(excelView, map);
     }
 
     private String checkConsumeRecordQueryParams(ConsumeRecordQueryParams params) {
@@ -157,6 +156,17 @@ public class ConsumeController extends BaseController {
     }
 
     private String checkConsumeRecordExportParams(ConsumeRecordExportParams params) {
+        if (params != null && params.getStartTime() == null && params.getEndTime() != null) {
+            ensureParameterValid(params.getEndTime().before(new Date()), ErrorMessage.consumeRecordEndTimeIsError);
+        }
+        if (params != null && params.getStartTime() != null && params.getEndTime() == null) {
+            ensureParameterValid(params.getStartTime().before(new Date()), ErrorMessage.consumeRecordStartTimeIsError);
+        }
+        if (params != null && params.getStartTime() != null && params.getEndTime() != null) {
+            ensureParameterValid(params.getStartTime().before(params.getEndTime()),
+                    ErrorMessage.consumeRecordStartTimeIsAfterEndTime);
+            ensureParameterValid(params.getEndTime().before(new Date()), ErrorMessage.consumeRecordEndTimeIsError);
+        }
         return null;
     }
 }

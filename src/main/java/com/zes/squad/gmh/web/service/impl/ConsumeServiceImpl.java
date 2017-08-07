@@ -4,13 +4,21 @@ import static com.zes.squad.gmh.web.helper.LogicHelper.ensureCollectionNotEmpty;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureConditionSatisfied;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
 
-import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,6 +33,7 @@ import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
+import com.zes.squad.gmh.common.enums.YesOrNoEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
@@ -47,7 +56,6 @@ import com.zes.squad.gmh.web.mapper.EmployeeMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
 import com.zes.squad.gmh.web.mapper.ProjectUnionMapper;
-import com.zes.squad.gmh.web.property.ExportProperties;
 import com.zes.squad.gmh.web.service.ConsumeService;
 
 import lombok.Synchronized;
@@ -56,8 +64,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service("consumeRecordService")
 public class ConsumeServiceImpl implements ConsumeService {
-
-    private static final String      DEFAULT_NEXT_LINE = "\r\n";
 
     @Autowired
     private ConsumeRecordMapper      consumeRecordmapper;
@@ -138,18 +144,18 @@ public class ConsumeServiceImpl implements ConsumeService {
     }
 
     @Override
-    public byte[] exportToExcel(ConsumeRecordQueryCondition condition) {
+    public HSSFWorkbook exportToExcel(ConsumeRecordQueryCondition condition) {
         List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
                     ErrorMessage.consumeRecordIsEmpty);
         }
         //写文件
-        ByteArrayOutputStream output = exportRecordToFile(unions);
-        if (output == null) {
+        HSSFWorkbook workbook = exportRecordToFile(unions);
+        if (workbook == null) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_FAILED, ErrorMessage.exportOccursFail);
         }
-        return output.toByteArray();
+        return workbook;
     }
 
     private List<ConsumeRecordDto> buildConsumeRecordDtosByUnions(List<ConsumeRecordUnion> unions) {
@@ -170,71 +176,169 @@ public class ConsumeServiceImpl implements ConsumeService {
         return dtos;
     }
 
-    private ByteArrayOutputStream exportRecordToFile(List<ConsumeRecordUnion> unions) {
+    private HSSFWorkbook exportRecordToFile(List<ConsumeRecordUnion> unions) {
         try {
-            String charset = ExportProperties.get("charset");
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            output.write(("序号,门店名称,美容项目名称,操作员,是否会员,顾客姓名,联系方式,年龄,性别,消费金额,支付方式,来源,消费时间,备注" + DEFAULT_NEXT_LINE)
-                    .getBytes(charset));
-            int i = 1;
-            for (ConsumeRecordUnion union : unions) {
+            //创建excel工作簿
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            //创建excel表
+            HSSFSheet sheet = workbook.createSheet("消费记录");
+            //单元格样式(水平垂直居中)
+            HSSFCellStyle style = workbook.createCellStyle();
+            style.setAlignment(HorizontalAlignment.LEFT);
+            style.setVerticalAlignment(VerticalAlignment.CENTER);
+            int row = 0;
+            HSSFRow hssfRow = sheet.createRow(row);
+            int column = 0;
+            HSSFCell cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("序号");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("门店名称");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("美容项目名称");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("操作员");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("是否会员");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("顾客姓名");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("联系方式");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("年龄");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("性别");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("消费金额");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("支付方式");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("来源");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("消费时间");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("备注");
+            cell.setCellStyle(style);
+            ConsumeRecordUnion union = null;
+            for (row = 1; row <= unions.size(); row++) {
+                column = 0;
+                union = unions.get(row - 1);
+                hssfRow = sheet.createRow(row);
                 //序号
-                output.write(i);
-                output.write(",".getBytes(charset));
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(row);
+                cell.setCellStyle(style);
                 //门店名称
-                output.write(union.getShopPo().getName().getBytes(charset));
-                output.write(",".getBytes(charset));
+                String shopName = union.getShopPo().getName();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(shopName == null ? "" : shopName);
+                cell.setCellStyle(style);
                 //美容项目
-                output.write(union.getProjectPo().getName().getBytes(charset));
-                output.write(",".getBytes(charset));
-                //美容师
-                output.write(union.getEmployeePo().getName().getBytes(charset));
-                output.write(",".getBytes(charset));
+                String projectName = union.getProjectPo().getName();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(projectName == null ? "" : projectName);
+                cell.setCellStyle(style);
+                //操作员
+                String employeeName = union.getEmployeePo().getName();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(employeeName == null ? "" : employeeName);
+                cell.setCellStyle(style);
                 //是否会员
-                if (union.getConsumeRecordPo().getEmployeeId() != null
-                        && union.getConsumeRecordPo().getMember().booleanValue()) {
-                    output.write("是".getBytes(charset));
-                    output.write(",".getBytes(charset));
-                } else {
-                    output.write("否".getBytes(charset));
-                    output.write(",".getBytes(charset));
-                }
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(union.getConsumeRecordPo().getEmployeeId() != null
+                        && union.getConsumeRecordPo().getMember().booleanValue() ? YesOrNoEnum.YES.getDesc()
+                                : YesOrNoEnum.NO.getDesc());
+                cell.setCellStyle(style);
                 //顾客姓名
-                output.write(union.getConsumeRecordPo().getConsumerName().getBytes(charset));
-                output.write(",".getBytes(charset));
+                String consumerName = union.getConsumeRecordPo().getConsumerName();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(consumerName == null ? "" : consumerName);
+                cell.setCellStyle(style);
                 //联系方式
-                output.write(union.getConsumeRecordPo().getMobile().getBytes(charset));
-                output.write(",".getBytes(charset));
+                String mobile = union.getConsumeRecordPo().getMobile();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(mobile == null ? "" : mobile);
+                cell.setCellStyle(style);
                 //年龄
-                output.write(String.valueOf(union.getConsumeRecordPo().getAge()).getBytes(charset));
-                output.write(",".getBytes(charset));
+                String age = String.valueOf(union.getConsumeRecordPo().getAge());
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(age == null || Objects.equals(age, "null") ? "" : age);
+                cell.setCellStyle(style);
                 //性别
-                output.write(
-                        EnumUtils.getDescByKey(SexEnum.class, union.getConsumeRecordPo().getSex()).getBytes(charset));
-                output.write(",".getBytes(charset));
+                Integer gender = union.getConsumeRecordPo().getSex();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(gender == null ? "" : EnumUtils.getDescByKey(SexEnum.class, gender));
+                cell.setCellStyle(style);
                 //消费金额
-                output.write(String.valueOf(union.getConsumeRecordPo().getCharge()).getBytes(charset));
-                output.write(",".getBytes(charset));
+                BigDecimal charge = union.getConsumeRecordPo().getCharge();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(charge == null ? "" : charge.toString());
+                cell.setCellStyle(style);
                 //支付方式
-                output.write(EnumUtils.getDescByKey(ChargeWayEnum.class, union.getConsumeRecordPo().getChargeWay())
-                        .getBytes(charset));
-                output.write(",".getBytes(charset));
+                Integer chargeWay = union.getConsumeRecordPo().getChargeWay();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(chargeWay == null ? "" : EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay));
+                cell.setCellStyle(style);
                 //来源
-                output.write(union.getConsumeRecordPo().getSource().getBytes(charset));
-                output.write(",".getBytes(charset));
+                String source = union.getConsumeRecordPo().getSource();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(source == null ? "" : source);
+                cell.setCellStyle(style);
                 //消费时间
-                output.write(formatDateTime(union.getConsumeRecordPo().getConsumeTime()).getBytes(charset));
-                output.write(",".getBytes(charset));
-                output.write(DEFAULT_NEXT_LINE.getBytes(charset));
+                Date consumeTime = union.getConsumeRecordPo().getConsumeTime();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(consumeTime == null ? "" : formatDateTime(consumeTime));
+                cell.setCellStyle(style);
                 //备注
-                output.write(union.getConsumeRecordPo().getRemark().getBytes(charset));
-                output.write(",".getBytes(charset));
-                i++;
+                String remark = union.getConsumeRecordPo().getRemark();
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                cell.setCellValue(remark == null ? "" : remark);
+                cell.setCellStyle(style);
             }
-            output.flush();
-            output.close();
-            return output;
-        } catch (Exception e) {
+            return workbook;
+        } catch (
+
+        Exception e) {
             log.error("消费记录导出到文件异常", e);
             return null;
         }
