@@ -4,6 +4,7 @@ import static com.zes.squad.gmh.web.helper.CheckHelper.isValidMobile;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
 
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.util.EnumUtils;
+import com.zes.squad.gmh.common.util.JsonUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
@@ -113,17 +115,32 @@ public class ConsumeController extends BaseController {
     @RequestMapping("/export")
     public ModelAndView doExportToExcel(ConsumeRecordExportParams params, ModelMap map, HttpServletRequest request,
                                         HttpServletResponse response) {
-        checkConsumeRecordExportParams(params);
-        ConsumeRecordQueryCondition condition = CommonConverter.map(params, ConsumeRecordQueryCondition.class);
-        condition.setStoreId(ThreadContext.getStaffStoreId());
-        HSSFWorkbook workbook = consumeService.exportToExcel(condition);
-        ExcelView excelView = new ExcelView();
         try {
-            excelView.buildExcelDocument(null, workbook, request, response);
+            checkConsumeRecordExportParams(params);
+            ConsumeRecordQueryCondition condition = CommonConverter.map(params, ConsumeRecordQueryCondition.class);
+            condition.setStoreId(ThreadContext.getStaffStoreId());
+            HSSFWorkbook workbook = consumeService.exportToExcel(condition);
+            ExcelView excelView = new ExcelView();
+            try {
+                excelView.buildExcelDocument(null, workbook, request, response);
+            } catch (Exception e) {
+                log.error("构建excel文档对象异常", e);
+            }
+            return new ModelAndView(excelView, map);
         } catch (Exception e) {
-            log.error("构建excel文档对象异常", e);
+            log.error("导出消费记录异常", e);
+            try {
+                response.setContentType("application/json;charset=UTF-8");
+                PrintWriter writer = response.getWriter();
+                writer.write(JsonUtils.toJson(
+                        JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION.getCode(), e.getMessage())));
+                writer.flush();
+                writer.close();
+            } catch (Exception exception) {
+                log.error("输出json数据到客户端异常", e);
+            }
         }
-        return new ModelAndView(excelView, map);
+        return null;
     }
 
     private String checkConsumeRecordQueryParams(ConsumeRecordQueryParams params) {
