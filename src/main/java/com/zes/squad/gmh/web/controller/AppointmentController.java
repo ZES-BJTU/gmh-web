@@ -60,7 +60,7 @@ public class AppointmentController {
         List<EmployeeItemVo> vos = appointmentService.listEmployeesByProject(projectId);
         return JsonResult.success(vos);
     }
-    
+
     @RequestMapping("/queryByPhone")
     @ResponseBody
     public JsonResult<List<AppointmentVo>> doQueryByPhone(String phone) {
@@ -102,7 +102,7 @@ public class AppointmentController {
         int i = appointmentService.start(id);
         return JsonResult.success(i);
     }
-    
+
     @RequestMapping("/cancel")
     @ResponseBody
     public JsonResult<Integer> cancel(Long id) {
@@ -116,7 +116,8 @@ public class AppointmentController {
 
     @RequestMapping("/finish")
     @ResponseBody
-    public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay, String source, String remark) {
+    public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay, Long counselorId, String source,
+                                      String remark) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.appointmentNotSelected);
@@ -126,7 +127,7 @@ public class AppointmentController {
         ensureParameterExist(chargeWay, ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay)),
                 ErrorMessage.consumeRecordChargeWayIsError);
-        int i = appointmentService.finish(id, charge, chargeWay, source, remark);
+        int i = appointmentService.finish(id, charge, chargeWay,counselorId, source, remark);
         return JsonResult.success(i);
     }
 

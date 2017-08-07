@@ -178,7 +178,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
     @Override
-    public int finish(Long id, BigDecimal charge, Integer chargeWay, String source, String remark) {
+    public int finish(Long id, BigDecimal charge, Integer chargeWay,Long counselorId, String source, String remark) {
         AppointmentPo po = appointmentMapper.selectById(id);
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
         MemberPo memberPo = memberMapper.selectById(po.getMemberId());
@@ -193,6 +193,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         recordPo.setConsumerName(memberPo.getName());
         recordPo.setCharge(charge);
         recordPo.setChargeWay(chargeWay);
+        recordPo.setCounselor(counselorId);
         recordPo.setSource(source);
         recordPo.setConsumeTime(new Date());
         recordPo.setRemark(remark);
