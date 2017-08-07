@@ -33,7 +33,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             throws Exception {
         try {
             String token = request.getHeader(RequestConsts.X_TOKEN);
-            token = "3bd0268365a940de9a302e9ae8d6df9c";
             if (Strings.isNullOrEmpty(token)) {
                 log.error("获取用户token失败, url is {}, token is {}.", request.getRequestURI(), token);
                 sendJsonResponse(response, JsonResult.fail(ErrorCodeEnum.WEB_EXCEPTION_AUTH_FAIL.getCode(), "请先登录"));
