@@ -117,7 +117,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setWork(DEFAULT_IS_WORK);
         condition.setSearchString(searchString);
-        condition.setJobId(jobId);
+        condition.setJobTypes(Lists.newArrayList(jobId));
         List<Long> ids = employeeJobUnionMapper.selectIdsByCondition(condition);
         if (CollectionUtils.isEmpty(ids)) {
             return PagedLists.newPagedList(pageNum, pageSize);
@@ -147,6 +147,22 @@ public class EmployeeServiceImpl implements EmployeeService {
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    @Override
+    public List<EmployeeDto> listCounselors() {
+        Long storeId = ThreadContext.getStaffStoreId();
+        List<Integer> jobTypes = Lists.newArrayList(JobEnum.COUNSELOR.getKey(), JobEnum.MANAGER.getKey());
+        EmployeeJobQueryCondition condition = new EmployeeJobQueryCondition();
+        condition.setStoreId(storeId);
+        condition.setWork(DEFAULT_IS_WORK);
+        condition.setJobTypes(jobTypes);
+        List<Long> ids = employeeJobUnionMapper.selectIdsByCondition(condition);
+        if(CollectionUtils.isEmpty(ids)) {
+            return Lists.newArrayList();
+        }
+        List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(ids);
+        return buildEmployeeDtosByUnions(unions);
     }
 
 }

@@ -15,7 +15,7 @@
 		<result column="consumer_name" jdbcType="VARCHAR" property="consumerName" />
 		<result column="charge" jdbcType="DECIMAL" property="charge" />
 		<result column="charge_way" jdbcType="INTEGER" property="chargeWay" />
-		<result column="counselor" jdbcType="INTEGER" property="counselor" />
+		<result column="counselor" jdbcType="BIGINT" property="counselor" />
 		<result column="source" jdbcType="VARCHAR" property="source" />
 		<result column="consume_time" jdbcType="TIMESTAMP" property="consumeTime" />
 		<result column="remark" jdbcType="VARCHAR" property="remark" />
@@ -55,7 +55,7 @@
 		#{consumerName,jdbcType=BIGINT},
 		#{charge,jdbcType=DECIMAL},
 		#{chargeWay,jdbcType=INTEGER},
-		#{counselor,jdbcType=INTEGER},
+		#{counselor,jdbcType=BIGINT},
 		#{source,jdbcType=VARCHAR},
 		#{consumeTime,jdbcType=TIMESTAMP},
 		#{remark,jdbcType=VARCHAR}

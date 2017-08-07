@@ -1,5 +1,7 @@
 package com.zes.squad.gmh.web.service;
 
+import java.util.List;
+
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 
@@ -15,6 +17,8 @@ public interface EmployeeService {
     PagedList<EmployeeDto> listByPage(Integer pageNum, Integer pageSize);
 
     EmployeeDto insert(EmployeeDto dto);
+    
+    List<EmployeeDto> listCounselors();
 
     int leave(Long[] id);
 

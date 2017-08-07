@@ -58,6 +58,13 @@
 			<if test="jobId != null">
 				AND ej.job_Type = #{jobId, jdbcType=BIGINT}
 			</if>
+			<if test="jobTypes != null and jobTypes.size() != 0">
+				AND ej.job_Type IN
+				<foreach collection="jobTypes" item="jobType" separator=","
+					open="(" close=")">
+					#{jobType, jdbcType=INTEGER}
+				</foreach>
+			</if>
 			<if test="searchString != null and searchString != ''">
 				<bind name="search" value="'%' + searchString + '%'" />
 				AND CONCAT_WS("",e.`name`,e.phone) LIKE #{search}

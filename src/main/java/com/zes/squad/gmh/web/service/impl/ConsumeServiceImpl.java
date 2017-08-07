@@ -150,6 +150,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         }
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
         po.setConsumeTime(new Date());
+        po.setCounselor(dto.getCounselorId());
         consumeRecordmapper.insert(po);
     }
 
@@ -185,7 +186,9 @@ public class ConsumeServiceImpl implements ConsumeService {
         for (ConsumeRecordUnion union : unions) {
             ConsumeRecordDto dto = CommonConverter.map(union.getConsumeRecordPo(), ConsumeRecordDto.class);
             dto.setCounselorId(union.getEmployeePo().getId());
-            dto.setCounselorName(union.getEmployeePo().getName());
+            if (dto.getCounselorId() != null) {
+                dto.setCounselorName(union.getEmployeePo().getName());
+            }
             dto.setStoreName(union.getShopPo().getName());
             dto.setProjectName(union.getProjectPo().getName());
             dto.setEmployeeName(union.getEmployeePo().getName());
@@ -256,6 +259,10 @@ public class ConsumeServiceImpl implements ConsumeService {
             cell = hssfRow.createCell(column++);
             cell.setCellType(CellType.STRING);
             cell.setCellValue("支付方式");
+            cell.setCellStyle(style);
+            cell = hssfRow.createCell(column++);
+            cell.setCellType(CellType.STRING);
+            cell.setCellValue("咨询师/经理");
             cell.setCellStyle(style);
             cell = hssfRow.createCell(column++);
             cell.setCellType(CellType.STRING);
@@ -339,6 +346,18 @@ public class ConsumeServiceImpl implements ConsumeService {
                 cell = hssfRow.createCell(column++);
                 cell.setCellType(CellType.STRING);
                 cell.setCellValue(chargeWay == null ? "" : EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay));
+                cell.setCellStyle(style);
+                //咨询师/经理
+                cell = hssfRow.createCell(column++);
+                cell.setCellType(CellType.STRING);
+                Long counselorId = union.getConsumeRecordPo().getCounselor();
+                if (counselorId != null) {
+                    EmployeePo po = employeeMapper.selectById(counselorId);
+                    ensureEntityExist(po, ErrorMessage.counselorNotFound);
+                    cell.setCellValue(counselorId == null ? "" : po.getName());
+                } else {
+                    cell.setCellValue("");
+                }
                 cell.setCellStyle(style);
                 //来源
                 String source = union.getConsumeRecordPo().getSource();

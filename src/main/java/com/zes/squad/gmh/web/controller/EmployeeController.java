@@ -7,6 +7,7 @@ import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,6 +87,21 @@ public class EmployeeController {
             vos.add(vo);
         }
         return PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
+    }
+
+    @RequestMapping("listCounselors")
+    @ResponseBody
+    public JsonResult<List<EmployeeVo>> doListCounselors() {
+        List<EmployeeDto> dtos = employeeService.listCounselors();
+        if(CollectionUtils.isEmpty(dtos)){
+            return JsonResult.success(Lists.newArrayList());
+        }
+        List<EmployeeVo> vos = Lists.newArrayList();
+        for(EmployeeDto dto : dtos) {
+            EmployeeVo vo = buildEmployeeVoByDto(dto);
+            vos.add(vo);
+        }
+        return JsonResult.success(vos);
     }
 
     @RequestMapping("/insert")

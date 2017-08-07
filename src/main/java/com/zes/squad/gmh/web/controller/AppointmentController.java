@@ -60,7 +60,7 @@ public class AppointmentController {
         List<EmployeeItemVo> vos = appointmentService.listEmployeesByProject(projectId);
         return JsonResult.success(vos);
     }
-
+    
     @RequestMapping("/queryByPhone")
     @ResponseBody
     public JsonResult<List<AppointmentVo>> doQueryByPhone(String phone) {
