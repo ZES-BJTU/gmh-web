@@ -89,7 +89,7 @@ public class EmployeeController {
         return PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
     }
 
-    @RequestMapping("listCounselors")
+    @RequestMapping("/listCounselors")
     @ResponseBody
     public JsonResult<List<EmployeeVo>> doListCounselors() {
         List<EmployeeDto> dtos = employeeService.listCounselors();
