@@ -618,8 +618,8 @@
           var endTime = $('#endTime').val() == '' ? '' : toTimeStamp($('#endTime').val());
           href = href +'?startTime='+ startTime + '&endTime=' + endTime;
           console.log(href);
-          // $('#export-button').attr('href',href);
-          // $('#export-button').click();
+          $('#export-button').attr('href',href);
+          $('#export-button').click();
         }
       })
 
