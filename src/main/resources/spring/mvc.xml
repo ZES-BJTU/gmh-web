@@ -42,6 +42,7 @@
 			<mvc:exclude-mapping path="/gmh/**" />
 			<mvc:exclude-mapping path="/error/**"/>
 			<mvc:exclude-mapping path="/alive" />
+			<mvc:exclude-mapping path="/favicon.ico" />
 			<bean class="com.zes.squad.gmh.web.interceptor.AuthInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>
