@@ -185,9 +185,12 @@ public class ConsumeServiceImpl implements ConsumeService {
         List<ConsumeRecordDto> dtos = Lists.newArrayList();
         for (ConsumeRecordUnion union : unions) {
             ConsumeRecordDto dto = CommonConverter.map(union.getConsumeRecordPo(), ConsumeRecordDto.class);
-            dto.setCounselorId(union.getEmployeePo().getId());
-            if (dto.getCounselorId() != null) {
-                dto.setCounselorName(union.getEmployeePo().getName());
+            Long counselorId = union.getConsumeRecordPo().getCounselor();
+            dto.setCounselorId(counselorId);
+            if (counselorId != null) {
+                EmployeePo employeePo = employeeMapper.selectById(counselorId);
+                ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+                dto.setCounselorName(employeePo.getName());
             }
             dto.setStoreName(union.getShopPo().getName());
             dto.setProjectName(union.getProjectPo().getName());
