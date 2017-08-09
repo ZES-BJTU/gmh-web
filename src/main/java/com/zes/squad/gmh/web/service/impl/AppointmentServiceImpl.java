@@ -169,7 +169,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public int cancel(Long id) {
         return appointmentMapper.updateForCancel(id, AppointmentStatusEnum.CANCEL.getKey());
     }
-    
+
     @Override
     public int start(Long id) {
         return appointmentMapper.updateForStart(id, AppointmentStatusEnum.IN_PROCESS.getKey());
@@ -178,7 +178,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
     @Override
-    public int finish(Long id, BigDecimal charge, Integer chargeWay,Long counselorId, String source, String remark) {
+    public int finish(Long id, BigDecimal charge, Integer chargeWay, Long counselorId, String source, String remark) {
         AppointmentPo po = appointmentMapper.selectById(id);
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
         MemberPo memberPo = memberMapper.selectById(po.getMemberId());
@@ -319,6 +319,18 @@ public class AppointmentServiceImpl implements AppointmentService {
             return ProjectTypeEnum.BEAUTY.getKey();
         }
         return null;
+    }
+
+    @Override
+    public List<AppointmentVo> listAppointmentsByEmployee(Long employeeId) {
+        EmployeePo po = employeeMapper.selectById(employeeId);
+        ensureEntityExist(po, ErrorMessage.employeeNotFound);
+        AppointmentUnionQueryCondition condition = new AppointmentUnionQueryCondition();
+        condition.setStatus(
+                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
+        condition.setEmployeeId(employeeId);
+        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
+        return buildAppointmentVosByUnions(unions);
     }
 
 }

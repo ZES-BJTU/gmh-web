@@ -186,9 +186,6 @@ public class ConsumeController extends BaseController {
 
     private String checkConsumeRecordExportParams(ConsumeRecordExportParams params) {
         ensureParameterExist(params.getToken(), ErrorMessage.loginAgain);
-        if (params != null && params.getStartTime() == null && params.getEndTime() != null) {
-            ensureParameterValid(params.getEndTime().before(new Date()), ErrorMessage.consumeRecordEndTimeIsError);
-        }
         if (params != null && params.getStartTime() != null && params.getEndTime() == null) {
             ensureParameterValid(params.getStartTime().before(new Date()), ErrorMessage.consumeRecordStartTimeIsError);
         }

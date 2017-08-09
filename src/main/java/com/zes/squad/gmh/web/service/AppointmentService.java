@@ -34,4 +34,6 @@ public interface AppointmentService {
 
     List<EmployeeItemVo> listEmployeesByProject(Long projectId);
 
+    List<AppointmentVo> listAppointmentsByEmployee(Long employeeId);
+    
 }

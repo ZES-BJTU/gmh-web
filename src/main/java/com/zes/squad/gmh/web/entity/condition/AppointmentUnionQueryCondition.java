@@ -11,5 +11,6 @@ public class AppointmentUnionQueryCondition {
     private String        phone;
     private String        searchString;
     private List<Integer> status;
+    private Long          employeeId;
 
 }

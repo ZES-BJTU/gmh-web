@@ -167,4 +167,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         return buildEmployeeDtosByUnions(unions);
     }
 
+    @Override
+    public List<EmployeeDto> listBeauties() {
+        Long storeId = ThreadContext.getStaffStoreId();
+        List<Integer> jobTypes = Lists.newArrayList(JobEnum.BEAUTY_STYLIST.getKey(), JobEnum.BEAUTICIAN.getKey(),
+                JobEnum.NAIL_TECHNICIAN.getKey());
+        EmployeeJobQueryCondition condition = new EmployeeJobQueryCondition();
+        condition.setStoreId(storeId);
+        condition.setWork(DEFAULT_IS_WORK);
+        condition.setJobTypes(jobTypes);
+        List<Long> ids = employeeJobUnionMapper.selectIdsByCondition(condition);
+        if (CollectionUtils.isEmpty(ids)) {
+            return Lists.newArrayList();
+        }
+        List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(ids);
+        return buildEmployeeDtosByUnions(unions);
+    }
+
 }

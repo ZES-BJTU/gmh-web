@@ -77,6 +77,9 @@
 			<if test="phone != null">
 				AND a.phone = #{phone, jdbcType=VARCHAR}
 			</if>
+			<if test="employeeId != null">
+				AND a.`employee_id` = #{employeeId, jdbcType=BIGINT}
+			</if>
 			<if test="status != null and status.size() != 0">
 				AND a.`status` IN
 				<foreach collection="status" item="item" separator="," open="("

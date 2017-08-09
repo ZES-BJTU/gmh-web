@@ -88,6 +88,21 @@ public class EmployeeController {
         }
         return PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
     }
+    
+    @RequestMapping("/listBeauties")
+    @ResponseBody
+    public JsonResult<List<EmployeeVo>> doListBeauties(){
+        List<EmployeeDto> dtos = employeeService.listBeauties();
+        if(CollectionUtils.isEmpty(dtos)){
+            return JsonResult.success(Lists.newArrayList());
+        }
+        List<EmployeeVo> vos = Lists.newArrayList();
+        for(EmployeeDto dto : dtos) {
+            EmployeeVo vo = buildEmployeeVoByDto(dto);
+            vos.add(vo);
+        }
+        return JsonResult.success(vos);
+    }
 
     @RequestMapping("/listCounselors")
     @ResponseBody

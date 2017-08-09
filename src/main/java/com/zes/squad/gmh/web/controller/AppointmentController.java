@@ -60,6 +60,14 @@ public class AppointmentController {
         List<EmployeeItemVo> vos = appointmentService.listEmployeesByProject(projectId);
         return JsonResult.success(vos);
     }
+    
+    @RequestMapping("/listAppointmentsByEmployee")
+    @ResponseBody
+    public JsonResult<List<AppointmentVo>> doListAppointmentsByEmployee(Long employeeId) {
+        ensureParameterExist(employeeId, ErrorMessage.employeeIdIsNull);
+        List<AppointmentVo> vos = appointmentService.listAppointmentsByEmployee(employeeId);
+        return JsonResult.success(vos);
+    }
 
     @RequestMapping("/queryByPhone")
     @ResponseBody
