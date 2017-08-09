@@ -117,7 +117,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setWork(DEFAULT_IS_WORK);
         condition.setSearchString(searchString);
-        condition.setJobTypes(Lists.newArrayList(jobId));
+        if (jobId != null) {
+            condition.setJobTypes(Lists.newArrayList(jobId));
+        }
         List<Long> ids = employeeJobUnionMapper.selectIdsByCondition(condition);
         if (CollectionUtils.isEmpty(ids)) {
             return PagedLists.newPagedList(pageNum, pageSize);
@@ -158,7 +160,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         condition.setWork(DEFAULT_IS_WORK);
         condition.setJobTypes(jobTypes);
         List<Long> ids = employeeJobUnionMapper.selectIdsByCondition(condition);
-        if(CollectionUtils.isEmpty(ids)) {
+        if (CollectionUtils.isEmpty(ids)) {
             return Lists.newArrayList();
         }
         List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(ids);
