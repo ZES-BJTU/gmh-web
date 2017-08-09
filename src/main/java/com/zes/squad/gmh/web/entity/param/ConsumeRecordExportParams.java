@@ -7,7 +7,8 @@ import lombok.Data;
 @Data
 public class ConsumeRecordExportParams {
 
-    private Date startTime;
-    private Date endTime;
+    private String token;
+    private Date   startTime;
+    private Date   endTime;
 
 }

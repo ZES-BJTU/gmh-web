@@ -55,9 +55,6 @@
 			<if test="work != null">
 				AND e.`work` = #{work, jdbcType=TINYINT}
 			</if>
-			<if test="jobId != null">
-				AND ej.job_Type = #{jobId, jdbcType=BIGINT}
-			</if>
 			<if test="jobTypes != null and jobTypes.size() != 0">
 				AND ej.job_Type IN
 				<foreach collection="jobTypes" item="jobType" separator=","

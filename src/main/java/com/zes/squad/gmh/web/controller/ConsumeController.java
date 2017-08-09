@@ -42,6 +42,7 @@ import com.zes.squad.gmh.web.entity.param.ConsumeRecordParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
 import com.zes.squad.gmh.web.service.ConsumeService;
+import com.zes.squad.gmh.web.service.StaffService;
 import com.zes.squad.gmh.web.view.ExcelView;
 
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +57,8 @@ public class ConsumeController extends BaseController {
 
     @Autowired
     private ConsumeService      consumeService;
+    @Autowired
+    private StaffService        staffService;
 
     @RequestMapping("/create")
     @ResponseBody
@@ -117,6 +120,9 @@ public class ConsumeController extends BaseController {
                                         HttpServletResponse response) {
         try {
             checkConsumeRecordExportParams(params);
+            log.info("获取用户token成功, url is {}, token is {}.", request.getRequestURI(), params.getToken());
+            StaffDto staff = staffService.queryStaffByToken(params.getToken());
+            ThreadContext.threadLocal.set(staff);
             ConsumeRecordQueryCondition condition = CommonConverter.map(params, ConsumeRecordQueryCondition.class);
             condition.setStoreId(ThreadContext.getStaffStoreId());
             HSSFWorkbook workbook = consumeService.exportToExcel(condition);
@@ -126,14 +132,20 @@ public class ConsumeController extends BaseController {
             } catch (Exception e) {
                 log.error("构建excel文档对象异常", e);
             }
+            if (ThreadContext.threadLocal != null) {
+                ThreadContext.threadLocal.remove();
+            }
             return new ModelAndView(excelView, map);
         } catch (Exception e) {
             log.error("导出消费记录异常", e);
+            if (ThreadContext.threadLocal != null) {
+                ThreadContext.threadLocal.remove();
+            }
             try {
                 response.setContentType("application/json;charset=UTF-8");
                 PrintWriter writer = response.getWriter();
-                writer.write(JsonUtils.toJson(
-                        JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION.getCode(), e.getMessage())));
+                writer.write(
+                        JsonUtils.toJson(JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION.getCode(), e.getMessage())));
                 writer.flush();
                 writer.close();
             } catch (Exception exception) {
@@ -173,6 +185,7 @@ public class ConsumeController extends BaseController {
     }
 
     private String checkConsumeRecordExportParams(ConsumeRecordExportParams params) {
+        ensureParameterExist(params.getToken(), ErrorMessage.loginAgain);
         if (params != null && params.getStartTime() == null && params.getEndTime() != null) {
             ensureParameterValid(params.getEndTime().before(new Date()), ErrorMessage.consumeRecordEndTimeIsError);
         }
