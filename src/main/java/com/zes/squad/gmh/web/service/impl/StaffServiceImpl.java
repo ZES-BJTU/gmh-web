@@ -194,7 +194,8 @@ public class StaffServiceImpl implements StaffService {
         if (!redisAuthCode.equals(authCode)) {
             throw new GmhException(ErrorCodeEnum.CACHE_EXCEPTION, "验证码错误, 请重新输入验证码");
         }
-        staffMapper.updatePassword(staffPo.getId(), DEFAULT_STAFF_PASSWORD);
+        staffMapper.updatePassword(staffPo.getId(),
+                EncryptUtils.MD5(staffPo.getEmail() + staffPo.getSalt() + DEFAULT_STAFF_PASSWORD));
         MailParams mailParams = new MailParams();
         mailParams.setReceiversTO(new String[] { email });
         mailParams.setSubject("光美焕系统密码重置");
