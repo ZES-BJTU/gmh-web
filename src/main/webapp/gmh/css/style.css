@@ -15,17 +15,30 @@ body {
 .grid.login-grid {
   height: 100%;
   margin: 0;
-  background: url('images/background.jpg') center no-repeat;
+  background: url('images/background.png') center no-repeat;
   background-size: cover;
 }
 .grid.login-grid .login-column {
-  max-width: 400px;
-  margin-right: 100px;
-  background-color: #ffffff;
+  max-width: 350px;
   border-radius: 0.28571429rem;
 }
 .grid.login-grid .login-column .header {
-  color: #7bcad9;
+  color: #ffffff;
+}
+.grid.login-grid .login-column .header .image {
+  width: 5em;
+}
+.grid.login-grid .login-column .header .content {
+  margin-top: 10px;
+}
+.grid.login-grid .login-column .header .content p {
+  margin-bottom: 0;
+  font-size: 1em;
+  font-family: "Microsoft Yahei";
+  font-weight: normal;
+}
+.grid.login-grid .login-column .header .content .second {
+  font-size: 0.73em;
 }
 .grid.login-grid .login-column #login .button {
   color: #ffffff;
@@ -33,6 +46,19 @@ body {
 }
 .grid.login-grid .login-column #login .button:hover {
   background-color: #49bfd6;
+}
+.grid.login-grid .login-column #login .login-link {
+  margin-top: 10px;
+}
+.grid.login-grid .login-column #login .login-link .remember-pwd {
+  float: left;
+}
+.grid.login-grid .login-column #login .login-link .remember-pwd label {
+  color: #ffffff;
+}
+.grid.login-grid .login-column #login .login-link .forget-pwd {
+  float: right;
+  color: #ffffff;
 }
 #left-menu {
   top: 53px;
@@ -68,6 +94,10 @@ body {
   padding: 20px;
   width: calc(100% - 210px);
 }
+.mobile-wrapper {
+  position: relative;
+  top: 75px;
+}
 .ui.form.search button {
   color: #ffffff;
   background-color: #7bcad9;
@@ -87,16 +117,25 @@ body {
 .ui.selection.dropdown {
   min-width: 11em;
 }
-.ui.grid.modify-pwd-grid {
+.ui.selection.dropdown.check-appointment-select {
+  min-width: 100%;
+}
+.ui.grid.modify-pwd-grid,
+.ui.grid.forget-pwd-grid {
   height: 100%;
   margin-top: 100px;
 }
-.ui.grid.modify-pwd-grid .column .form .button {
+.ui.grid.modify-pwd-grid .column .form .button,
+.ui.grid.forget-pwd-grid .column .form .button {
   color: #ffffff;
   background-color: #7bcad9;
 }
-.ui.grid.modify-pwd-grid .column .form .button:hover {
+.ui.grid.modify-pwd-grid .column .form .button:hover,
+.ui.grid.forget-pwd-grid .column .form .button:hover {
   background-color: #49bfd6;
+}
+#forget-pwd-auth {
+  margin-top: 15px;
 }
 .home-item {
   cursor: pointer;

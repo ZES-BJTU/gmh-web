@@ -1,3 +1,4 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 
@@ -30,10 +31,13 @@
 
 <body>
   <div class="ui middle aligned center aligned righted grid login-grid">
-    <div class="right floated column login-column">
+    <div class="column login-column">
       <h2 class="ui image header">
-        <img src="css/images/logo.png" class="image">
-        <div class="content">光美焕科技皮肤护理</div>
+        <img src="css/images/logo-white-2.png" class="image">
+        <div class="content">
+          <p>光美焕-管理系统</p>
+          <p class="second">Management System</p>
+        </div>
       </h2>
       <form id="login" class="ui large form">
         <div class="ui">
@@ -50,6 +54,13 @@
             </div>
           </div>
           <div class="ui fluid large submit button">登录</div>
+          <div class="login-link">
+            <!-- <div class="ui checkbox remember-pwd">
+              <input type="checkbox">
+              <label>记住密码</label>
+            </div> -->
+            <a href="forgetPassword.html" class="forget-pwd">忘记密码</a>
+          </div>
         </div>
 
         <div class="ui error message">

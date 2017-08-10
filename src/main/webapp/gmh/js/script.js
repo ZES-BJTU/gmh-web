@@ -24,9 +24,10 @@ $(document).ready(function () {
         },
         onSuccess: function (response) {
             if (response.error != null) {
-                // $('#login').form('add errors', [response.code,response.error]);
+                alert(response.code + ' : ' + response.error);
             } else {
                 $('#user-name').text(response.data.name);
+                checkAuthority(response.data.staffLevel);
             }
         },
         onFailure: function (response) {
@@ -100,4 +101,13 @@ $(document).ready(function () {
     $(document).on('click','.home-item',function(){
         redirect('home.html');
     })
+    function checkAuthority(staffLevel){
+        if(staffLevel == 1){
+            console.log('前台');
+        }else if(staffLevel == 2){
+            console.log('美容师');
+        }else if(staffLevel == 3){
+            console.log('管理员');
+        }
+    }
 })
