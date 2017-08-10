@@ -64,6 +64,7 @@ body {
   top: 53px;
 }
 #left-menu .item {
+  display: none;
   color: #909090;
 }
 #left-menu .item.active,

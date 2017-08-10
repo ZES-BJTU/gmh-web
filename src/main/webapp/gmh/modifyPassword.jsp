@@ -36,14 +36,6 @@
         <div class="item home-item">
             <img src="css/images/logo.png">光美焕科技皮肤护理
         </div>
-        <div class="ui dropdown right item">
-            <span id="user-name"></span>
-            <i class="dropdown icon"></i>
-            <div class="menu">
-                <a class="item">修改密码</a>
-                <a class="item logout">退出登录</a>
-            </div>
-        </div>
     </div>
     <div class="ui center aligned grid modify-pwd-grid">
         <div class="four wide column">
@@ -110,6 +102,8 @@
                     $('#modify-pwd').form('add errors', [response.code, response.error]);
                 } else {
                     alert('修改成功');
+                    delCookie('token');
+                    redirect('index.jsp');
                 }
             },
             onFailure: function (response) {

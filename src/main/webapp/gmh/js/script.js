@@ -3,10 +3,7 @@ $(document).ready(function () {
     $('.ui.dropdown').dropdown();
     //复选框初始化
     $('.ui.checkbox').checkbox();
-    //菜单按钮点击事件
-    $('#left-menu .item').on('click', function () {
-        $(this).addClass('active').siblings().removeClass('active');
-    })
+
     //判断是否登陆
     $('.fake-button').api({
         action: 'staff info',
@@ -17,7 +14,7 @@ $(document).ready(function () {
             var token = getCookie('token');
             if (token == null || typeof (token) == undefined) {
                 alert('请先登录！');
-                redirect('index.html');
+                redirect('index.jsp');
             }
             xhr.setRequestHeader('X-token', getCookie('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -27,7 +24,7 @@ $(document).ready(function () {
                 alert(response.code + ' : ' + response.error);
             } else {
                 $('#user-name').text(response.data.name);
-                checkAuthority(response.data.staffLevel);
+                hideMenu(response.data.staffLevel);
             }
         },
         onFailure: function (response) {
@@ -69,8 +66,8 @@ $(document).ready(function () {
             if (response.error != null) {
                 $('#login').form('add errors', [response.code, response.error]);
             } else {
-                setCookie('token', response.data.token);
-                redirect('home.html');
+            	setCookie('token', response.data.token);
+            	checkAuthority(response.data.staffLevel);
             }
         },
         onFailure: function (response) {
@@ -90,24 +87,42 @@ $(document).ready(function () {
                 alert(response.code + ' : ' + response.error);
                 if (response.code == 50001) {
                     delCookie('token');
-                    redirect('index.html');
+                    redirect('index.jsp');
                 }
             } else {
                 delCookie('token');
-                redirect('index.html');
+                redirect('index.jsp');
             }
         }
     })
-    $(document).on('click','.home-item',function(){
-        redirect('home.html');
-    })
-    function checkAuthority(staffLevel){
-        if(staffLevel == 1){
-            console.log('前台');
-        }else if(staffLevel == 2){
-            console.log('美容师');
-        }else if(staffLevel == 3){
-            console.log('管理员');
-        }
-    }
 })
+
+function remindAppointment(){
+	$('#user-type').api({
+        action: 'appointment remind',
+        method: 'GET',
+        on:'now',
+        beforeXHR: function (xhr) {
+            getCookie('token')
+            xhr.setRequestHeader('X-token', getCookie('token'));
+        },
+        onSuccess: function (response) {
+            if (response.error != null) {
+                alert(response.code + ' : ' + response.error);
+            } else {
+            	console.log(response);
+                     $('.remind-appointment-modal').modal({
+                        closable: false,
+                        onDeny: function () {
+                          
+                        },
+                        onApprove: function () {
+//                          $('#new-employee').submit();
+                          return false;
+                        }
+                      })
+                      .modal('show');
+            }
+        }
+    })
+}
