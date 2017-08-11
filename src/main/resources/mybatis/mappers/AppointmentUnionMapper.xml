@@ -140,6 +140,10 @@
 		WHERE
 		a.`status` = #{status, jdbcType=INTEGER}
 		AND
+		a.store_id = #{storeId, jdbcType=BIGINT}
+		AND
+		a.end_time <![CDATA[>]]> NOW()
+		AND
 		a.end_time <![CDATA[<]]>
 		DATE_ADD(NOW(), INTERVAL #{minute, jdbcType=INTEGER} MINUTE)
 	</select>

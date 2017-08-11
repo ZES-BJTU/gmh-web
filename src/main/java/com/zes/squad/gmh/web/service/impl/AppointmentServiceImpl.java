@@ -277,7 +277,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<AppointmentVo> remind() {
         List<AppointmentUnion> unions = appointmentUnionMapper.selectByTime(DEFAULT_REMIND_MINUTE,
-                AppointmentStatusEnum.TO_DO.getKey());
+                AppointmentStatusEnum.TO_DO.getKey(), ThreadContext.getStaffStoreId());
         if (CollectionUtils.isEmpty(unions)) {
             return Lists.newArrayList();
         }

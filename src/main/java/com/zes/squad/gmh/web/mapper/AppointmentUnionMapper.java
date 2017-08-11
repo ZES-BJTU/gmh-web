@@ -31,6 +31,7 @@ public interface AppointmentUnionMapper {
      * @param minute
      * @return
      */
-    List<AppointmentUnion> selectByTime(@Param("minute") Integer minute, @Param("status") Integer status);
+    List<AppointmentUnion> selectByTime(@Param("minute") Integer minute, @Param("status") Integer status,
+                                        @Param("storeId") Long storeId);
 
 }
