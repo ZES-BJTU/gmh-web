@@ -30,7 +30,7 @@ $(document).ready(function () {
                 $('#user-name').text(response.data.name);
                 hideMenu(response.data.staffLevel);
                 if($('#user-type').text() == 'shop-admin'){//只有是前台,才会调用预约提醒	
-                	var remindTime = sessionStorage.getItem("remindTime");
+                	var remindTime = Number(sessionStorage.getItem("remindTime"));
                 	if(remindTime == 0){
                 		remindAppointment();
                 	}
