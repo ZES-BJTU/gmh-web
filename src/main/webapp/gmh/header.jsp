@@ -28,18 +28,36 @@
        </div>
    </div>
    
-   <div class="ui mini modal remind-appointment-modal">
-    <div class="header">修改员工</div>
+   <div class="ui large modal remind-appointment-modal">
+    <div class="header">预约提醒</div>
     <div class="content">
-
+	  <div class="ui grid">
+        <div class="one column row">
+          <div class="column">
+            <table class="ui compact table theme">
+              <thead>
+                <tr>
+                  <th>预约人</th>
+                  <th>联系方式</th>
+                  <th>美容项目</th>
+                  <th>操作员</th>
+                  <th>开始时间</th>
+                  <th>结束时间</th>
+                  <th>是否点排</th>
+                  <th>状态</th>
+                  <th>备注</th>
+                </tr>
+              </thead>
+              <tbody id="remind-appointment-list">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="actions">
-      <div class="ui black deny right labeled icon button">
-       	 取消
-        <i class="remove icon"></i>
-      </div>
       <div class="ui positive right labeled icon button">
-       	 提交
+       	 确定
         <i class="checkmark icon"></i>
       </div>
     </div>

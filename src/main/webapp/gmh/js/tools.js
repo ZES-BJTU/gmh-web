@@ -99,13 +99,12 @@ function checkAuthority(staffLevel){
 function hideMenu(staffLevel){
     if(staffLevel == 1){//前台
     	$('#left-menu .shop-admin').css('display','block');
-    	$('#user-type').val('shop-admin');
-    	remindAppointment();
-    	setInterval(remindAppointment,300000);
+    	$('#user-type').text('shop-admin');
+//    	remindAppointment();
     }else if(staffLevel == 2){//美容师
-//    	redirect('checkReserve.jsp');
+    	
     }else if(staffLevel == 3){//管理员
     	$('#left-menu .admin').css('display','block');
-    	$('#user-type').val('admin');
+    	$('#user-type').text('admin');
     }
 }

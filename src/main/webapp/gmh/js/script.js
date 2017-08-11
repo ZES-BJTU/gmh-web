@@ -4,6 +4,10 @@ $(document).ready(function () {
     //复选框初始化
     $('.ui.checkbox').checkbox();
 
+    if(sessionStorage.getItem("remindTime") == null){
+    	sessionStorage.setItem("remindTime", 0);
+    }
+    
     //判断是否登陆
     $('.fake-button').api({
         action: 'staff info',
@@ -25,12 +29,20 @@ $(document).ready(function () {
             } else {
                 $('#user-name').text(response.data.name);
                 hideMenu(response.data.staffLevel);
+                if($('#user-type').text() == 'shop-admin'){//只有是前台,才会调用预约提醒	
+                	var remindTime = sessionStorage.getItem("remindTime");
+                	if(remindTime == 0){
+                		remindAppointment();
+                	}
+                	setInterval(updateRemindTime,30000);
+                }
             }
         },
         onFailure: function (response) {
             $('#login').form('add errors', '服务器暂无响应');
         }
     })
+    
     //登录
     $('#login').form({
         fields: {
@@ -97,6 +109,17 @@ $(document).ready(function () {
     })
 })
 
+function updateRemindTime(){
+	var remindTime = Number(sessionStorage.getItem("remindTime"));
+	if(remindTime < 900000){
+		remindTime += 30000;
+		sessionStorage.setItem("remindTime",remindTime);
+	}else{//达到预约提醒时间,调用提醒方法
+		sessionStorage.setItem("remindTime",30000);
+		remindAppointment();
+	}
+}
+
 function remindAppointment(){
 	$('#user-type').api({
         action: 'appointment remind',
@@ -110,18 +133,55 @@ function remindAppointment(){
             if (response.error != null) {
                 alert(response.code + ' : ' + response.error);
             } else {
-            	console.log(response);
-                     $('.remind-appointment-modal').modal({
-                        closable: false,
-                        onDeny: function () {
-                          
-                        },
-                        onApprove: function () {
-//                          $('#new-employee').submit();
-                          return false;
+            	$('.remind-appointment-modal').modal('hide');
+            	if(response.data.length > 0){
+            		$('#remind-appointment-list').children().remove();
+            		$.each(response.data, function (i, data) {
+                        var $tr = $('<tr></tr>');
+                        var $memberName = $('<td class="memberName">' + data.memberName + '</td>');
+                        var $memberPhone = $('<td class="memberPhone">' + data.phone + '</td>');
+                        var $topTypeName = $('<td class="topTypeName" style="display:none">' + data.topTypeName + '</td>');
+                        var $typeName = $('<td class="typeName" style="display:none">' + data.typeName + '</td>');
+                        var $projectName = $('<td class="projectName">' + data.projectName + '</td>');
+                        var $employeeName = $('<td class="employeeName">' + data.employeeName + '</td>');
+                        var $beginTime = $('<td class="beginTime">' + toDatetimeMin(data.beginTime) + '</td>');
+                        var $endTime = $('<td class="endTime">' + toDatetimeMin(data.endTime) + '</td>');
+                        var $line = $('<td class="line">' + data.line + '</td>');
+                        var $status = $('<td class="status">' + data.status + '</td>');
+                        var remark = (data.remark == null || data.remark == '') ? '无' : String(data.remark);
+                        var afterRemark = '';
+                        if (remark == '无') {
+                          afterRemark = '无'
+                        } else if (remark.length > 6) {
+                          afterRemark = remark.substring(0, 6) + '...';
+                        } else {
+                          afterRemark = remark;
                         }
-                      })
-                      .modal('show');
+                        var $remark = $('<td class="remark" title="' + remark + '">' + afterRemark + '</td>');
+
+                        $tr.append($memberName);
+                        $tr.append($memberPhone);
+                        $tr.append($topTypeName);
+                        $tr.append($typeName);
+                        $tr.append($projectName);
+                        $tr.append($employeeName);
+                        $tr.append($beginTime);
+                        $tr.append($endTime);
+                        $tr.append($line);
+                        $tr.append($status);
+                        $tr.append($remark);
+                        $('#remind-appointment-list').append($tr);
+                    })
+            		$('.remind-appointment-modal').modal({
+     	               closable: false,
+     	               onDeny: function () {
+     	                 
+     	               },
+     	               onApprove: function () {
+     	               }
+     	             })
+     	             .modal('show');
+            	}
             }
         }
     })

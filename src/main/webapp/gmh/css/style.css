@@ -49,16 +49,10 @@ body {
 }
 .grid.login-grid .login-column #login .login-link {
   margin-top: 10px;
-}
-.grid.login-grid .login-column #login .login-link .remember-pwd {
-  float: left;
-}
-.grid.login-grid .login-column #login .login-link .remember-pwd label {
   color: #ffffff;
 }
 .grid.login-grid .login-column #login .login-link .forget-pwd {
-  float: right;
-  color: #ffffff;
+  color: #7bcad9;
 }
 #left-menu {
   top: 53px;
