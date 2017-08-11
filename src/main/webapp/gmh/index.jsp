@@ -55,11 +55,8 @@
           </div>
           <div class="ui fluid large submit button">登录</div>
           <div class="login-link">
-            <!-- <div class="ui checkbox remember-pwd">
-              <input type="checkbox">
-              <label>记住密码</label>
-            </div> -->
-            <a href="forgetPassword.html" class="forget-pwd">忘记密码</a>
+          	忘记密码了？点此
+            <a href="forgetPassword.jsp" class="forget-pwd">重置密码</a>
           </div>
         </div>
 
@@ -73,7 +70,7 @@
     $(document).ready(function(){
       //判断是否登陆
       if(getCookie('token') != null){
-          redirect('home.html');
+          redirect('home.jsp');
       }
     })
   </script>

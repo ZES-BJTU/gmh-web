@@ -31,7 +31,7 @@
 </head>
 
 <body>
-     <button class="ui blue button fake-button" style="display:none;"></button>
+    <button class="ui blue button fake-button" style="display:none;"></button>
     <button class="ui blue button load-appointment-list" style="display:none;"></button>
     <div class="ui top fixed menu">
         <div class="item">

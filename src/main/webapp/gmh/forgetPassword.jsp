@@ -135,7 +135,7 @@
                     $('#forget-pwd').form('add errors', [response.code, response.error]);
                 } else {
                     alert('重置成功，请查收邮件');
-                    redirect('index.html');
+                    redirect('index.jsp');
                 }
             },
             onFailure: function (response) {

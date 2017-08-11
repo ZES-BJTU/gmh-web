@@ -42,7 +42,7 @@ function delCookie(name) {
 function verifyToken() {
     if (getCookie('token') == null) {
         alert('请先登录！');
-        redirect('index.html');
+        redirect('index.jsp');
     }
 }
 
@@ -77,4 +77,34 @@ function toTimeStamp(datetime) {
     datetime = new Date(Date.parse(datetime.replace(/-/g, "/")));
     datetime = datetime.getTime();
     return datetime;
+}
+
+//激活菜单
+function activeMenu(menu){
+	$("#left-menu ." + menu).addClass("active").siblings().removeClass("active");
+}
+
+//检查权限
+function checkAuthority(staffLevel){
+    if(staffLevel == 1){//前台
+    	redirect('home.jsp');
+    }else if(staffLevel == 2){//美容师
+    	redirect('checkReserve.jsp');
+    }else if(staffLevel == 3){//管理员
+    	redirect('staff.jsp');
+    }
+}
+
+//根据账号类型隐藏菜单
+function hideMenu(staffLevel){
+    if(staffLevel == 1){//前台
+    	$('#left-menu .shop-admin').css('display','block');
+    	$('#user-type').text('shop-admin');
+//    	remindAppointment();
+    }else if(staffLevel == 2){//美容师
+    	
+    }else if(staffLevel == 3){//管理员
+    	$('#left-menu .admin').css('display','block');
+    	$('#user-type').text('admin');
+    }
 }

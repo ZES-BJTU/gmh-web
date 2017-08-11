@@ -33,34 +33,7 @@
 <body>
   <button class="ui blue button fake-button" style="display:none;"></button>
   <button class="ui blue button load-staff-list" style="display:none;"></button>
-  <div id="left-menu" class="ui left fixed vertical pointing menu">
-    <a class="item" href="home.html">首页</a>
-    <a class="item" href="reserve.html">预约管理</a>
-    <a class="item" href="record.html">到店美容管理</a>
-    <a class="item" href="project.html">美容项管理</a>
-    <a class="item" href="projectType.html">美容项分类管理</a>
-    <a class="item" href="vip.html">会员管理</a>
-    <a class="item" href="vipLevel.html">会员等级管理</a>
-    <a class="item" href="stock.html">库存管理</a>
-    <a class="item" href="stockType.html">库存分类管理</a>
-    <a class="item" href="employee.html">员工管理</a>
-    <a class="item" href="report.html">报表管理</a>
-    <a class="item active" href="staff.html">用户管理</a>
-    <a class="item" href="shop.html">店铺管理</a>
-  </div>
-  <div class="ui top fixed menu">
-    <div class="item">
-      <img src="css/images/logo.png">光美焕科技皮肤护理
-    </div>
-    <div class="ui dropdown right item">
-      <span id="user-name"></span>
-      <i class="dropdown icon"></i>
-      <div class="menu">
-        <a class="item">修改密码</a>
-        <a class="item logout">退出登录</a>
-      </div>
-    </div>
-  </div>
+  <jsp:include page="header.jsp"/>
   <div class="main-wrapper">
     <div class="ui fluid container">
       <div class="ui grid">
@@ -130,9 +103,8 @@
           <label>角色</label>
           <select name="staffLevel" class="ui fluid dropdown new-staff-level-select">
             <option value="">请选择角色</option>
-            <option value="1">管理员</option>
-            <option value="2">前台</option>
-            <option value="3">美容师</option>
+            <option value="1">前台</option>
+            <option value="2">美容师</option>
           </select>
         </div>
       </form>
@@ -175,9 +147,8 @@
           <label>角色</label>
           <select name="staffLevel" class="ui fluid dropdown mod-staff-level-select" disabled="">
             <option value="">请选择角色</option>
-            <option value="1">管理员</option>
-            <option value="2">前台</option>
-            <option value="3">美容师</option>
+            <option value="1">前台</option>
+            <option value="2">美容师</option>
           </select>
         </div>
       </form>
@@ -212,6 +183,9 @@
     </div>
   </div>
   <script>
+  
+    activeMenu('staff');
+    
     // 存储搜索的信息,用于点击页码时调用
     var searchInfo = '';
     var shopData = [];
@@ -299,11 +273,11 @@
                 var $staffLevel = $('<td class="staffLevel" style="display:none">' + data.staffLevel + '</td>');
                 var staffLevelName;
                 if(data.staffLevel == 1){
-                  staffLevelName = '管理员';
-                }else if(data.staffLevel == 2){
                   staffLevelName = '前台';
-                }else{
+                }else if(data.staffLevel == 2){
                   staffLevelName = '美容师';
+                }else{
+                  staffLevelName = '管理员';
                 }
                 var $staffLevelName = $('<td class="staffLevelName">' + staffLevelName + '</td>');
                 var $operate = $(
