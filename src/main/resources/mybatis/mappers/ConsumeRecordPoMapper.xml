@@ -22,6 +22,12 @@
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
+	<resultMap type="com.zes.squad.gmh.web.entity.count.po.ConsumeCountPo"
+		id="CountResultMap">
+		<result column="month" jdbcType="VARCHAR" property="month" />
+		<result column="times_count" jdbcType="INTEGER" property="timesCount" />
+		<result column="amount_count" jdbcType="DECIMAL" property="amountCount" />
+	</resultMap>
 	<sql id="Base_Column_List">
 		`id`,`store_id`,`project_id`,
 		`employee_id`,`member`,`member_id`,`mobile`,
@@ -61,4 +67,19 @@
 		#{remark,jdbcType=VARCHAR}
 		);
 	</insert>
+	<select id="count" resultMap="CountResultMap">
+		SELECT
+		DATE_FORMAT(`consume_time`,'%Y年%c月') AS `month`,
+		COUNT(*) AS
+		`times_count`,SUM(`charge`) AS `amount_count`
+		FROM consume_record
+		WHERE
+		`store_id` = #{storeId, jdbcType=BIGINT}
+		AND
+		consume_time <![CDATA[>]]>
+		DATE_SUB(NOW(), INTERVAL #{month,
+		jdbcType=INTEGER} MONTH)
+		GROUP BY
+		DATE_FORMAT(`consume_time`, '%Y-%m')
+	</select>
 </mapper>
