@@ -297,7 +297,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('.vip-select select').find('option:not(:first)').remove();
             vipLevelData = response.data;
@@ -358,7 +358,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $('#vip-list').empty();
               $('.paging').empty();
@@ -543,7 +543,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             clearVipSelect();
             $('#new-vip').form('clear');
@@ -696,7 +696,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('#mod-vip-id').text('');
             clearVipSelect();
@@ -739,7 +739,7 @@
                 },
                 onSuccess: function (response) {
                   if (response.error != null) {
-                    alert(response.code + ' : ' + response.error);
+                    alert(response.error);
                   } else {
                     $('#del-vip-id').text('');
                     $('.del-vip-modal').modal('hide');

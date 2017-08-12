@@ -25,7 +25,7 @@ $(document).ready(function () {
         },
         onSuccess: function (response) {
             if (response.error != null) {
-                alert(response.code + ' : ' + response.error);
+                alert(response.error);
             } else {
                 $('#user-name').text(response.data.name);
                 hideMenu(response.data.staffLevel);
@@ -76,7 +76,7 @@ $(document).ready(function () {
         serializeForm: true,
         onSuccess: function (response) {
             if (response.error != null) {
-                $('#login').form('add errors', [response.code, response.error]);
+                $('#login').form('add errors', [response.error]);
             } else {
             	setCookie('token', response.data.token);
             	checkAuthority(response.data.staffLevel);
@@ -96,7 +96,7 @@ $(document).ready(function () {
         },
         onSuccess: function (response) {
             if (response.error != null) {
-                alert(response.code + ' : ' + response.error);
+                alert(response.error);
                 if (response.code == 50001) {
                     delCookie('token');
                     redirect('index.jsp');
@@ -131,7 +131,7 @@ function remindAppointment(){
         },
         onSuccess: function (response) {
             if (response.error != null) {
-                alert(response.code + ' : ' + response.error);
+                alert(response.error);
             } else {
             	$('.remind-appointment-modal').modal('hide');
             	if(response.data.length > 0){

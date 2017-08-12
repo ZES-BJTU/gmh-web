@@ -291,7 +291,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             counselorsData = response.data;
           }
@@ -394,7 +394,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $('#record-list').empty();
               $('.paging').empty();
@@ -585,7 +585,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             clearSelect();
             $('#new-record').form('clear');
@@ -623,7 +623,7 @@
         onSuccess: function (e) {
           //阻止表单的提交
           e.preventDefault();
-          var href = "http://123.207.168.112:10000/consume/export";
+          var href = "http://localhost:8080/consume/export";
           var startTime = $('#startTime').val() == '' ? '' : toTimeStamp($('#startTime').val());
           var endTime = $('#endTime').val() == '' ? '' : toTimeStamp($('#endTime').val());
           verifyToken();
@@ -650,7 +650,7 @@
       //   },
       //   onSuccess: function (response) {
       //     if (response.error != null) {
-      //       alert(response.code + ' : ' + response.error);
+      //       alert(response.error);
       //     } else {
       //       alert(1);
       //     }
@@ -707,7 +707,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $select.find('option:not(:first)').remove();
               $.each(response.data, function (i, data) {
@@ -742,7 +742,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $select.find('option:not(:first)').remove();
               $.each(response.data, function (i, data) {
@@ -776,7 +776,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $select.find('option:not(:first)').remove();
               $.each(response.data, function (i, data) {
@@ -812,7 +812,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $('#projectCharge').val(response.data.retailPrice);
               $('#charge').val(response.data.retailPrice);

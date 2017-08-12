@@ -201,7 +201,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('.project-type-select select').find('option:not(:first)').remove();
             projectTypeData = response.data;
@@ -289,7 +289,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $('#project-type-list').empty();
               $('.paging').empty();
@@ -396,7 +396,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             clearSelect();
             $('#new-project').form('clear');
@@ -503,7 +503,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             clearSelect();
             $('#mod-project-id').text('');
@@ -546,7 +546,7 @@
                 },
                 onSuccess: function (response) {
                   if (response.error != null) {
-                    alert(response.code + ' : ' + response.error);
+                    alert(response.error);
                   } else {
                     $('#del-project-id').text('');
                     $('.del-project-modal').modal('hide');
@@ -579,7 +579,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $select.find('option:not(:first)').remove();
               projectTypeData = response.data;

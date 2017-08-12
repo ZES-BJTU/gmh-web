@@ -184,7 +184,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $('#vip-level-list').empty();
               $('.paging').empty();
@@ -255,7 +255,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('#new-vip-level').form('clear');
             $('.new-vip-level-modal').modal('hide');
@@ -323,7 +323,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('#mod-vip-level-id').text('');
             $('#mod-vip-level').form('clear');
@@ -365,7 +365,7 @@
                 },
                 onSuccess: function (response) {
                   if (response.error != null) {
-                    alert(response.code + ' : ' + response.error);
+                    alert(response.error);
                   } else {
                     $('#del-vip-level-id').text('');
                     $('.del-vip-level-modal').modal('hide');

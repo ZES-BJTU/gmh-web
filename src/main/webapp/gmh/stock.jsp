@@ -189,7 +189,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('.stock-select select').find('option:not(:first)').remove();
             stockTypeData = response.data;
@@ -250,7 +250,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $('#stock-list').empty();
               $('.paging').empty();
@@ -357,7 +357,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             clearStockSelect();
             $('#new-stock').form('clear');
@@ -457,7 +457,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('#mod-stock-id').text('');
             clearStockSelect();
@@ -500,7 +500,7 @@
                 },
                 onSuccess: function (response) {
                   if (response.error != null) {
-                    alert(response.code + ' : ' + response.error);
+                    alert(response.error);
                   } else {
                     $('#del-stock-id').text('');
                     $('.del-stock-modal').modal('hide');

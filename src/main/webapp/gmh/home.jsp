@@ -53,16 +53,11 @@
     var chartData1 = [];
 	var xAxisData2 = [];
  	var chartData2 = [];
-  	
-  	var xAxisData1 = ['一月','二月','三月','四月','5月','6月'];
-  	var chartData1 = ['34','23','523','12','66','821'];
-  	var xAxisData2 = ['一月','二月','三月','四月','5月','6月'];
-  	var chartData2 = ['34','23','523','12','66','821'];
   
   	activeMenu('home');
   	
    	$('.fake-button').api({
-        action: 'staff info',
+        action: 'statistics record',
         method: 'GET',
         on: 'now',
         beforeXHR: function (xhr) {
@@ -77,7 +72,7 @@
         },
         onSuccess: function (response) {
             if (response.error != null) {
-                alert(response.code + ' : ' + response.error);
+                alert(response.error);
             } else {
             	$.each(response.data, function (i, data){
             		xAxisData1.push(data.month);
@@ -139,16 +134,16 @@
   	    };
   	  	var option2 = {
   	      title: {
-  	        text: '消费金额统计'
+  	        text: '消费次数统计'
   	      },
   	      tooltip: {
   	        trigger: 'axis'
   	      },
   	      legend: {
-  	        data: ['近六个月消费金额']
+  	        data: ['近六个月消费次数']
   	      },
   	      grid: {
-  	        left: '3%',
+  	        left: '5%',
   	        right: '4%',
   	        bottom: '3%',
   	        containLabel: true
@@ -159,19 +154,20 @@
   	      },
   	      xAxis: {
   	        type: 'category',
-  	        data: xAxisData1
+  	        data: xAxisData2
   	      },
   	      yAxis: {
   	        type: 'value',
   	      	axisLabel: {
-  	        	formatter: '{value} 元'
-  	        }
+  	        	formatter: '{value} 次'
+  	        },
+  	    	minInterval: 1
   	      },
   	      series: [{
-  	        name: '消费金额',
+  	        name: '消费次数',
   	        type: 'line',
   	        step: 'start',
-  	        data: chartData1
+  	        data: chartData2
   	      }]
   	  	}
 

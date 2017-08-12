@@ -264,7 +264,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             shopData = response.data;
           }
@@ -319,7 +319,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $('#employee-list').empty();
               $('.paging').empty();
@@ -459,7 +459,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('#new-employee').form('clear');
             $('.new-employee-modal').modal('hide');
@@ -580,7 +580,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             $('#mod-employee-id').text('');
             $('#mod-employee').form('clear');
@@ -622,7 +622,7 @@
                 },
                 onSuccess: function (response) {
                   if (response.error != null) {
-                    alert(response.code + ' : ' + response.error);
+                    alert(response.error);
                   } else {
                     $('#del-employee-id').text('');
                     $('.del-employee-modal').modal('hide');

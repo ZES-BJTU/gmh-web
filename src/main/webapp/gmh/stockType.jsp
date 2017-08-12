@@ -184,7 +184,7 @@
                     },
                     onSuccess: function (response) {
                         if (response.error != null) {
-                            alert(response.code + ' : ' + response.error);
+                            alert(response.error);
                         } else {
                             $('#stock-type-list').empty();
                             $('.paging').empty();
@@ -257,7 +257,7 @@
                 },
                 onSuccess: function (response) {
                     if (response.error != null) {
-                        alert(response.code + ' : ' + response.error);
+                        alert(response.error);
                     } else {
                         $('#new-stock-type').form('clear');
                         $('.new-stock-type-modal').modal('hide');
@@ -324,7 +324,7 @@
                 },
                 onSuccess: function (response) {
                     if (response.error != null) {
-                        alert(response.code + ' : ' + response.error);
+                        alert(response.error);
                     } else {
                         $('#mod-stock-type-id').text('');
                         $('#mod-stock-type').form('clear');
@@ -368,7 +368,7 @@
                                 },
                                 onSuccess: function (response) {
                                     if (response.error != null) {
-                                        alert(response.code + ' : ' + response.error);
+                                        alert(response.error);
                                     } else {
                                         $('#del-stock-type-id').text('');
                                         $('.del-stock-type-modal').modal('hide');

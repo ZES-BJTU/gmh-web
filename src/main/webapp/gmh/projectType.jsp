@@ -208,7 +208,7 @@
           },
           onSuccess: function (response) {
             if (response.error != null) {
-              alert(response.code + ' : ' + response.error);
+              alert(response.error);
             } else {
               $('#project-type-list').empty();
               $('.paging').empty();
@@ -292,7 +292,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             clearSelect();
             $('#new-project-type').form('clear');
@@ -372,7 +372,7 @@
         },
         onSuccess: function (response) {
           if (response.error != null) {
-            alert(response.code + ' : ' + response.error);
+            alert(response.error);
           } else {
             clearSelect();
             $('#mod-project-type-id').text('');
@@ -415,7 +415,7 @@
                 },
                 onSuccess: function (response) {
                   if (response.error != null) {
-                    alert(response.code + ' : ' + response.error);
+                    alert(response.error);
                   } else {
                     $('#del-project-type-id').text('');
                     $('.del-project-type-modal').modal('hide');
