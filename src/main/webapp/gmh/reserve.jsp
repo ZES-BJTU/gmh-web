@@ -374,7 +374,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       })
 
@@ -396,7 +396,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       })
 
@@ -567,7 +567,7 @@
                 } else {
                   var $operate = $(
                     '<td><button class="ui tiny teal button start-appointment">开始</button>' +
-                    '<button class="ui tiny green button finish-appointment">完成</button>' +
+                    '<button class="ui tiny green button finish-appointment disabled">完成</button>' +
                     '<button class="ui tiny orange button mod-appointment">修改</button>' +
                     '<button class="ui tiny red button del-appointment">取消</button></td>');
                 }
@@ -597,7 +597,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
@@ -716,7 +716,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         },
       });
 
@@ -888,7 +888,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       });
 
@@ -929,7 +929,7 @@
                   }
                 },
                 onFailure: function (response) {
-                  alert('服务器暂无响应');
+                  alert('服务器开小差了');
                 }
               })
               return false;
@@ -1028,13 +1028,13 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       });
 
       //开始预约信息提交
       $(document).on('click','.start-appointment',function(){
-        $('.start-appointment').api({
+        $('.fake-button').api({
           action: 'appointment start',
           method: 'POST',
           on: 'now',
@@ -1045,7 +1045,6 @@
           },
           beforeSend: function (settings) {
             if ($(this).parent().parent().find('.appointmentId').text() != '') {
-              alert(2);
               settings.data.id = $(this).parent().parent().find('.appointmentId').text();
               return settings;
             } else {
@@ -1061,7 +1060,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       })
@@ -1153,7 +1152,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
@@ -1194,7 +1193,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
@@ -1236,7 +1235,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }

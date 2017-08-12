@@ -68,4 +68,5 @@ $.fn.api.settings.api = {
   'record search' : url+'/consume/search',
   'record create' : url+'/consume/create',
   'record export' : url+'/consume/export',
+  'statistics record' : url+'/statistics/record'
 };

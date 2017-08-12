@@ -309,7 +309,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       })
       //会员管理搜索
@@ -419,7 +419,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
@@ -552,7 +552,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         },
       });
 
@@ -706,7 +706,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       });
 
@@ -747,7 +747,7 @@
                   }
                 },
                 onFailure: function (response) {
-                  alert('服务器暂无响应');
+                  alert('服务器开小差了');
                 }
               })
               return false;

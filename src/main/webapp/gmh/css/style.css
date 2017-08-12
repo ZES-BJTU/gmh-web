@@ -151,3 +151,7 @@ td.remark {
 .ui.record-search input.time-select:focus {
   border-radius: 0;
 }
+#chart1,
+#chart2 {
+  display: inline-block;
+}

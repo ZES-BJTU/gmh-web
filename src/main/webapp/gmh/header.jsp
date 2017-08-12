@@ -2,7 +2,7 @@
   <div id="left-menu" class="ui left fixed vertical pointing menu">
     <a class="item home shop-admin" href="home.jsp">首页</a>
     <a class="item reserve shop-admin" href="reserve.jsp">预约管理</a>
-    <a class="item record shop-admin" href="record.jsp">到店美容管理</a>
+    <a class="item record shop-admin" href="record.jsp">消费记录管理</a>
     <a class="item project shop-admin" href="project.jsp">美容项管理</a>
     <a class="item projectType shop-admin" href="projectType.jsp">美容项分类管理</a>
     <a class="item vip shop-admin" href="vip.jsp">会员管理</a>
