@@ -36,127 +36,152 @@
   <div class="main-wrapper">
     <div class="ui fluid container">
       <div class="ui center aligned grid">
-        <div class="three column row">
-          <div class="column">
-            <div class="ui huge statistic">
-              <div class="value">
-                2,204
-              </div>
-              <div class="label">今日预约</div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="ui huge statistic">
-              <div class="value">
-                2,204
-              </div>
-              <div class="label">会员总数</div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="ui huge statistic">
-              <div class="value">
-                2,204
-              </div>
-              <div class="label">美容师</div>
-            </div>
-          </div>
-        </div>
-        <div class="two column row">
+        <div class="one column row">
           <div class="center aligned column">
-            <div id="chart1" style="width: 600px;height:400px;"></div>
+            <div id="chart1" style="width: 1300px;height:400px;"></div>
           </div>
           <div class="column">
-            <div id="chart2" style="width: 600px;height:400px;"></div>
+            <div id="chart2" style="width: 1300px;height:400px;"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
   <script>
+  	
+ 	var xAxisData1 = [];
+    var chartData1 = [];
+	var xAxisData2 = [];
+ 	var chartData2 = [];
+  	
+  	var xAxisData1 = ['一月','二月','三月','四月','5月','6月'];
+  	var chartData1 = ['34','23','523','12','66','821'];
+  	var xAxisData2 = ['一月','二月','三月','四月','5月','6月'];
+  	var chartData2 = ['34','23','523','12','66','821'];
   
   	activeMenu('home');
   	
-    // 基于准备好的dom，初始化echarts实例
-    var chart1 = echarts.init(document.getElementById('chart1'));
-    var chart2 = echarts.init(document.getElementById('chart2'));
-
-    // 指定图表的配置项和数据
-    var option1 = {
-      title: {
-        text: '预约折线图'
-      },
-      tooltip: {
-        trigger: 'axis'
-      },
-      legend: {
-        data: ['Step Start', 'Step Middle', 'Step End']
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {}
+   	$('.fake-button').api({
+        action: 'staff info',
+        method: 'GET',
+        on: 'now',
+        beforeXHR: function (xhr) {
+            //判断token是否有效
+            var token = getCookie('token');
+            if (token == null || typeof (token) == undefined) {
+                alert('请先登录！');
+                redirect('index.jsp');
+            }
+            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        },
+        onSuccess: function (response) {
+            if (response.error != null) {
+                alert(response.code + ' : ' + response.error);
+            } else {
+            	$.each(response.data, function (i, data){
+            		xAxisData1.push(data.month);
+            		xAxisData2.push(data.month);
+            		chartData1.push(data.amountCount);
+            		chartData2.push(data.timesCount);
+            	})
+            	newChart();
+            	
+            }
+        },
+        onFailure: function (response) {
+            alert('服务器开小差了');
         }
-      },
-      xAxis: {
-        type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [{
-        name: 'Step Start',
-        type: 'line',
-        step: 'start',
-        data: [120, 132, 101, 134, 90, 230, 210]
-      }]
-    };
-    var option2 = {
-      title: {
-        text: '预约折线图'
-      },
-      tooltip: {
-        trigger: 'axis'
-      },
-      legend: {
-        data: ['Step Start', 'Step Middle', 'Step End']
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {}
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [{
-        name: 'Step Start',
-        type: 'line',
-        step: 'start',
-        data: [120, 132, 101, 134, 90, 230, 210]
-      }]
-    };
+    })
+
+    function newChart(){
+  	    // 基于准备好的dom，初始化echarts实例
+  	    var chart1 = echarts.init(document.getElementById('chart1'));
+  	    var chart2 = echarts.init(document.getElementById('chart2'));
+
+  	    // 指定图表的配置项和数据
+  	    var option1 = {
+  	      title: {
+  	        text: '消费金额统计'
+  	      },
+  	      tooltip: {
+  	        trigger: 'axis'
+  	      },
+  	      legend: {
+  	        data: ['近六个月消费次数']
+  	      },
+  	      grid: {
+  	        left: '3%',
+  	        right: '4%',
+  	        bottom: '3%',
+  	        containLabel: true
+  	      },
+  	      toolbox: {
+  	    	trigger: 'item',
+  	        formatter: "{b}<br />{a} : {c}"
+  	      },
+  	      xAxis: {
+  	        type: 'category',
+  	        data: xAxisData1
+  	      },
+  	      yAxis: {
+  	        type: 'value',
+  	        axisLabel: {
+  	        	formatter: '{value} 元'
+  	        }
+  	      },
+  	      series: [{
+  	        name: '消费金额',
+  	        type: 'line',
+  	        step: 'start',
+  	        data: chartData1
+  	      }]
+  	    };
+  	  	var option2 = {
+  	      title: {
+  	        text: '消费金额统计'
+  	      },
+  	      tooltip: {
+  	        trigger: 'axis'
+  	      },
+  	      legend: {
+  	        data: ['近六个月消费金额']
+  	      },
+  	      grid: {
+  	        left: '3%',
+  	        right: '4%',
+  	        bottom: '3%',
+  	        containLabel: true
+  	      },
+  	      toolbox: {
+  	    	trigger: 'item',
+  	        formatter: "{b}<br />{a} : {c}"
+  	      },
+  	      xAxis: {
+  	        type: 'category',
+  	        data: xAxisData1
+  	      },
+  	      yAxis: {
+  	        type: 'value',
+  	      	axisLabel: {
+  	        	formatter: '{value} 元'
+  	        }
+  	      },
+  	      series: [{
+  	        name: '消费金额',
+  	        type: 'line',
+  	        step: 'start',
+  	        data: chartData1
+  	      }]
+  	  	}
 
 
-    // 使用刚指定的配置项和数据显示图表。
-    chart1.setOption(option1);
-    chart2.setOption(option2);
+  	    // 使用刚指定的配置项和数据显示图表。
+  	    chart1.setOption(option1);
+  	    chart2.setOption(option2); 		
+  	}
+  	
+
   </script>
 </body>
 

@@ -98,7 +98,7 @@
                 }
             },
             onFailure: function (response) {
-                alert('服务器暂无响应');
+                alert('服务器开小差了');
             }
         });
         //忘记密码
@@ -139,7 +139,7 @@
                 }
             },
             onFailure: function (response) {
-                alert('服务器暂无响应');
+                alert('服务器开小差了');
             }
         });
     </script>

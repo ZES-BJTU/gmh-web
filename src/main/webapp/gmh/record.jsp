@@ -9,7 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <!-- Site Properties -->
-  <title>光美焕-到店美容管理</title>
+  <title>光美焕-消费记录管理</title>
   <link rel="shortcut icon" type="image/x-icon" href="css/images/favicon.ico">
 
   <!--JQuery-->
@@ -92,7 +92,7 @@
     </div>
   </div>
   <div class="ui mini modal new-record-modal">
-    <div class="header">新建到店美容</div>
+    <div class="header">新建消费记录</div>
     <div class="content">
       <form id="new-record" class="ui form">
         <div class="field">
@@ -183,7 +183,7 @@
     </div>
   </div>
   <div class="ui mini modal export-record-modal">
-    <div class="header">导出到店美容</div>
+    <div class="header">导出消费记录</div>
     <div class="content">
       <form id="export-record" class="ui form">
         <div class="field">
@@ -272,7 +272,8 @@
         todayHighlight: 1,
         startView: 2,
         forceParse: true,
-        showMeridian: 1
+        showMeridian: 1,
+        endDate:new Date()
       }).on('changeDate', function (ev) {
         $('#endTime').focus();
         $('#endTime').blur();
@@ -296,7 +297,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       })
 
@@ -344,7 +345,7 @@
         loadProjectCharge(projectId);
       })
 
-      //到店美容搜索
+      //消费记录搜索
       $('.record-search').form({
         onSuccess: function (e) {
           //阻止表单的提交
@@ -450,12 +451,12 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
 
-      //新建到店美容模态框
+      //新建消费记录模态框
       $('.new-record').on('click', function () {
         loadTopTypeData();
         loadCounselorsData();
@@ -472,7 +473,7 @@
           })
           .modal('show');
       })
-      //新建到店美容信息提交
+      //新建消费记录信息提交
       $('#new-record').form({
         on: 'change',
         inline: true,
@@ -593,11 +594,11 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         },
       });
 
-      //导出到店美容模态框
+      //导出消费记录模态框
       $('.export-record').on('click', function () {
         $('.export-record-modal').modal({
             closable: false,
@@ -612,7 +613,7 @@
           })
           .modal('show');
       })
-      //导出到店美容信息
+      //导出消费记录信息
       // $(document).on('click','#export-record',function(){
       //   $('#export-button').attr('href')
       // })
@@ -720,7 +721,7 @@
             $select.parent().find('.text').text('请选择美容项目分类');
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
@@ -754,7 +755,7 @@
             $select.parent().find('.text').text('请选择美容项目');
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
@@ -790,7 +791,7 @@
             $select.parent().find('.text').text('请选择操作员');
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
@@ -818,7 +819,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }

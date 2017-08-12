@@ -54,15 +54,9 @@ body {
             }
             .login-link{
                 margin-top: 10px;
-                .remember-pwd{
-                    float: left;
-                    & label{
-                        color: @white-color;
-                    }
-                }
+                color: @white-color;
                 .forget-pwd{
-                    float: right;
-                    color: @white-color;
+                    color: @theme-color;
                 }
             }
         }
@@ -171,4 +165,7 @@ td.remark {
     &:focus {
         border-radius: 0;
     }
+}
+#chart1,#chart2{
+    display: inline-block;
 }

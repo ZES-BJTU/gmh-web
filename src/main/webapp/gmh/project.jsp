@@ -213,7 +213,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       })
       //点击顶级分类，切换美容项分类
@@ -323,7 +323,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
@@ -405,7 +405,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         },
       });
 
@@ -513,7 +513,7 @@
           }
         },
         onFailure: function (response) {
-          alert('服务器暂无响应');
+          alert('服务器开小差了');
         }
       });
 
@@ -554,7 +554,7 @@
                   }
                 },
                 onFailure: function (response) {
-                  alert('服务器暂无响应');
+                  alert('服务器开小差了');
                 }
               })
               return false;
@@ -601,7 +601,7 @@
             }
           },
           onFailure: function (response) {
-            alert('服务器暂无响应');
+            alert('服务器开小差了');
           }
         })
       }
