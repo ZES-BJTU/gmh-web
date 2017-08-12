@@ -185,6 +185,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#vip-level-list').empty();
               $('.paging').empty();
@@ -256,6 +257,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('#new-vip-level').form('clear');
             $('.new-vip-level-modal').modal('hide');
@@ -324,6 +326,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('#mod-vip-level-id').text('');
             $('#mod-vip-level').form('clear');
@@ -366,6 +369,7 @@
                 onSuccess: function (response) {
                   if (response.error != null) {
                     alert(response.error);
+                    verifyStatus(response.code);
                   } else {
                     $('#del-vip-level-id').text('');
                     $('.del-vip-level-modal').modal('hide');

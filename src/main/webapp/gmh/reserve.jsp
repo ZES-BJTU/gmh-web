@@ -369,6 +369,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             projectTypeData = response.data;
           }
@@ -391,6 +392,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             counselorsData = response.data;
           }
@@ -518,6 +520,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#appointment-list').empty();
               $('.paging').empty();
@@ -708,6 +711,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearSelect();
             $('#new-appointment').form('clear');
@@ -879,6 +883,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearSelect();
             $('#mod-appointment-id').text('');
@@ -922,6 +927,7 @@
                 onSuccess: function (response) {
                   if (response.error != null) {
                     alert(response.error);
+                    verifyStatus(response.code);
                   } else {
                     $('#del-appointment-id').text('');
                     $('.del-appointment-modal').modal('hide');
@@ -1020,6 +1026,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('#finish-appointment-id').text('');
             $('#finish-appointment').form('clear');
@@ -1055,6 +1062,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               loadSearchAppointmentList(1, 10, 'search');
             }
@@ -1131,6 +1139,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $select.find('option:not(:first)').remove();
               projectTypeData = response.data;
@@ -1174,6 +1183,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $select.find('option:not(:first)').remove();
               projectData = response.data;
@@ -1215,6 +1225,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $select.find('option:not(:first)').remove();
               projectTypeData = response.data;

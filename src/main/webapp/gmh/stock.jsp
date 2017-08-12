@@ -190,6 +190,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('.stock-select select').find('option:not(:first)').remove();
             stockTypeData = response.data;
@@ -251,6 +252,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#stock-list').empty();
               $('.paging').empty();
@@ -358,6 +360,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearStockSelect();
             $('#new-stock').form('clear');
@@ -458,6 +461,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('#mod-stock-id').text('');
             clearStockSelect();
@@ -501,6 +505,7 @@
                 onSuccess: function (response) {
                   if (response.error != null) {
                     alert(response.error);
+                    verifyStatus(response.code);
                   } else {
                     $('#del-stock-id').text('');
                     $('.del-stock-modal').modal('hide');

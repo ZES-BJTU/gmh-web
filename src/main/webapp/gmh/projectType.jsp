@@ -209,6 +209,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#project-type-list').empty();
               $('.paging').empty();
@@ -293,6 +294,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearSelect();
             $('#new-project-type').form('clear');
@@ -373,6 +375,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearSelect();
             $('#mod-project-type-id').text('');
@@ -416,6 +419,7 @@
                 onSuccess: function (response) {
                   if (response.error != null) {
                     alert(response.error);
+                    verifyStatus(response.code);
                   } else {
                     $('#del-project-type-id').text('');
                     $('.del-project-type-modal').modal('hide');

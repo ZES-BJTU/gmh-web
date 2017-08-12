@@ -292,6 +292,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             counselorsData = response.data;
           }
@@ -395,6 +396,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#record-list').empty();
               $('.paging').empty();
@@ -586,6 +588,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearSelect();
             $('#new-record').form('clear');
@@ -631,34 +634,6 @@
           window.location.href = href;
         }
       })
-      // .api({
-      //   action: 'record export',
-      //   method: 'GET',
-      //   // on: 'now',
-      //   serializeForm: true,
-      //   beforeXHR: function (xhr) {
-      //     verifyToken();
-      //     xhr.setRequestHeader('X-token', getCookie('token'));
-      //     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      //   },
-      //   beforeSend: function (settings) {
-      //     var startTime = $('#startTime').val() == '' ? '' : toTimeStamp($('#startTime').val());
-      //     var endTime = $('#endTime').val() == '' ? '' : toTimeStamp($('#endTime').val());
-      //     settings.data.startTime = startTime;
-      //     settings.data.endTime = endTime;
-      //     return settings;
-      //   },
-      //   onSuccess: function (response) {
-      //     if (response.error != null) {
-      //       alert(response.error);
-      //     } else {
-      //       alert(1);
-      //     }
-      //   },
-      //   onFailure: function (response) {
-      //     console.log(response);
-      //   },
-      // });
 
       function loadTopTypeData() {
         var data = [{
@@ -708,6 +683,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $select.find('option:not(:first)').remove();
               $.each(response.data, function (i, data) {
@@ -743,6 +719,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $select.find('option:not(:first)').remove();
               $.each(response.data, function (i, data) {
@@ -777,6 +754,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $select.find('option:not(:first)').remove();
               $.each(response.data, function (i, data) {
@@ -813,6 +791,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#projectCharge').val(response.data.retailPrice);
               $('#charge').val(response.data.retailPrice);

@@ -38,10 +38,10 @@
       <div class="ui center aligned grid">
         <div class="one column row">
           <div class="center aligned column">
-            <div id="chart1" style="width: 1300px;height:400px;"></div>
+            <div id="chart1" style="width: 100%;height:400px;"></div>
           </div>
           <div class="column">
-            <div id="chart2" style="width: 1300px;height:400px;"></div>
+            <div id="chart2" style="width: 100%;height:400px;"></div>
           </div>
         </div>
       </div>
@@ -53,6 +53,10 @@
     var chartData1 = [];
 	var xAxisData2 = [];
  	var chartData2 = [];
+ 	
+ // 基于准备好的dom，初始化echarts实例
+	var chart1 = echarts.init(document.getElementById('chart1'));
+	var chart2 = echarts.init(document.getElementById('chart2'));
   
   	activeMenu('home');
   	
@@ -73,6 +77,7 @@
         onSuccess: function (response) {
             if (response.error != null) {
                 alert(response.error);
+                verifyStatus(response.code);
             } else {
             	$.each(response.data, function (i, data){
             		xAxisData1.push(data.month);
@@ -90,9 +95,6 @@
     })
 
     function newChart(){
-  	    // 基于准备好的dom，初始化echarts实例
-  	    var chart1 = echarts.init(document.getElementById('chart1'));
-  	    var chart2 = echarts.init(document.getElementById('chart2'));
 
   	    // 指定图表的配置项和数据
   	    var option1 = {
@@ -177,7 +179,10 @@
   	    chart2.setOption(option2); 		
   	}
   	
-
+   	$(window).resize(function(){
+   		chart1.resize();
+   		chart2.resize();
+   	})
   </script>
 </body>
 

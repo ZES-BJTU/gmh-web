@@ -185,6 +185,7 @@
                     onSuccess: function (response) {
                         if (response.error != null) {
                             alert(response.error);
+                            verifyStatus(response.code);
                         } else {
                             $('#stock-type-list').empty();
                             $('.paging').empty();
@@ -258,6 +259,7 @@
                 onSuccess: function (response) {
                     if (response.error != null) {
                         alert(response.error);
+                        verifyStatus(response.code);
                     } else {
                         $('#new-stock-type').form('clear');
                         $('.new-stock-type-modal').modal('hide');
@@ -325,6 +327,7 @@
                 onSuccess: function (response) {
                     if (response.error != null) {
                         alert(response.error);
+                        verifyStatus(response.code);
                     } else {
                         $('#mod-stock-type-id').text('');
                         $('#mod-stock-type').form('clear');
@@ -369,6 +372,7 @@
                                 onSuccess: function (response) {
                                     if (response.error != null) {
                                         alert(response.error);
+                                        verifyStatus(response.code);
                                     } else {
                                         $('#del-stock-type-id').text('');
                                         $('.del-stock-type-modal').modal('hide');

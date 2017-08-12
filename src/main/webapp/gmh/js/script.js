@@ -26,6 +26,7 @@ $(document).ready(function () {
         onSuccess: function (response) {
             if (response.error != null) {
                 alert(response.error);
+                verifyStatus(response.code);
             } else {
                 $('#user-name').text(response.data.name);
                 hideMenu(response.data.staffLevel);
@@ -97,10 +98,7 @@ $(document).ready(function () {
         onSuccess: function (response) {
             if (response.error != null) {
                 alert(response.error);
-                if (response.code == 50001) {
-                    delCookie('token');
-                    redirect('index.jsp');
-                }
+                verifyStatus(response.code);
             } else {
                 delCookie('token');
                 redirect('index.jsp');
@@ -132,6 +130,7 @@ function remindAppointment(){
         onSuccess: function (response) {
             if (response.error != null) {
                 alert(response.error);
+                verifyStatus(response.code);
             } else {
             	$('.remind-appointment-modal').modal('hide');
             	if(response.data.length > 0){

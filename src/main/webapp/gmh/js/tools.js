@@ -46,6 +46,13 @@ function verifyToken() {
     }
 }
 
+function verifyStatus(code){
+	if (code == 50001) {
+        delCookie('token');
+        redirect('index.jsp');
+    }
+}
+
 function add0(m) {
     return m < 10 ? '0' + m : m
 }

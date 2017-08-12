@@ -97,6 +97,7 @@
                 onSuccess: function (response) {
                     if (response.error != null) {
                         alert(response.error);
+                        verifyStatus(response.code);
                     } else {
                         $('.check-appointment-select select').find('option').remove();
                         $.each(response.data, function (i, data) {
@@ -128,6 +129,7 @@
                     onSuccess: function (response) {
                         if (response.error != null) {
                             alert(response.error);
+                            verifyStatus(response.code);
                         } else {
                             $('#appointment-list').empty();
                             $.each(response.data, function (i, data) {
@@ -217,6 +219,7 @@
                     onSuccess: function (response) {
                         if (response.error != null) {
                             alert(response.error);
+                            verifyStatus(response.code);
                         } else {
                             // $('#appointment-list').empty();
                             $('.paging').empty();

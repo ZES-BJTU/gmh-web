@@ -203,6 +203,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             shopData = response.data;
           }
@@ -255,6 +256,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#staff-list').empty();
               $('.paging').empty();
@@ -387,6 +389,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearStaffSelect();
             $('#new-staff').form('clear');
@@ -503,6 +506,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearStaffSelect();
             $('#mod-staff-id').text('');
@@ -546,6 +550,7 @@
                 onSuccess: function (response) {
                   if (response.error != null) {
                     alert(response.error);
+                    verifyStatus(response.code);
                   } else {
                     $('#del-staff-id').text('');
                     $('.del-staff-modal').modal('hide');

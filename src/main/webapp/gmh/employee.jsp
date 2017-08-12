@@ -265,6 +265,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             shopData = response.data;
           }
@@ -320,6 +321,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#employee-list').empty();
               $('.paging').empty();
@@ -460,6 +462,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('#new-employee').form('clear');
             $('.new-employee-modal').modal('hide');
@@ -581,6 +584,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('#mod-employee-id').text('');
             $('#mod-employee').form('clear');
@@ -623,6 +627,7 @@
                 onSuccess: function (response) {
                   if (response.error != null) {
                     alert(response.error);
+                    verifyStatus(response.code);
                   } else {
                     $('#del-employee-id').text('');
                     $('.del-employee-modal').modal('hide');

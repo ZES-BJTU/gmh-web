@@ -202,6 +202,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('.project-type-select select').find('option:not(:first)').remove();
             projectTypeData = response.data;
@@ -290,6 +291,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#project-type-list').empty();
               $('.paging').empty();
@@ -397,6 +399,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearSelect();
             $('#new-project').form('clear');
@@ -504,6 +507,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             clearSelect();
             $('#mod-project-id').text('');
@@ -547,6 +551,7 @@
                 onSuccess: function (response) {
                   if (response.error != null) {
                     alert(response.error);
+                    verifyStatus(response.code);
                   } else {
                     $('#del-project-id').text('');
                     $('.del-project-modal').modal('hide');
@@ -580,6 +585,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $select.find('option:not(:first)').remove();
               projectTypeData = response.data;

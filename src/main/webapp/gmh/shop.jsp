@@ -245,6 +245,7 @@
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
+              verifyStatus(response.code);
             } else {
               $('#shop-list').empty();
               $('.paging').empty();
@@ -348,6 +349,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('#new-shop').form('clear');
             $('.new-shop-modal').modal('hide');
@@ -443,6 +445,7 @@
         onSuccess: function (response) {
           if (response.error != null) {
             alert(response.error);
+            verifyStatus(response.code);
           } else {
             $('#mod-shop-id').text('');
             $('#mod-shop').form('clear');
@@ -485,6 +488,7 @@
                 onSuccess: function (response) {
                   if (response.error != null) {
                     alert(response.error);
+                    verifyStatus(response.code);
                   } else {
                     $('#del-shop-id').text('');
                     $('.del-shop-modal').modal('hide');
