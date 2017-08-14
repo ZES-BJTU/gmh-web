@@ -19,6 +19,7 @@ import com.zes.squad.gmh.common.constant.RedisConsts;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
+import com.zes.squad.gmh.common.enums.StaffLevelEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
@@ -82,10 +83,12 @@ public class StaffServiceImpl implements StaffService {
         staffDto.setPassword(null);
         staffDto.setSalt(null);
         staffDto.setToken(token);
-        ShopPo shopPo = queryShopPoByStoreId(staffPo.getStoreId());
-        staffDto.setStoreName(shopPo.getName());
-        staffDto.setPrincipalName(shopPo.getManager());
-        staffDto.setPrincipalMobile(shopPo.getPhone());
+        if (staffDto.getStaffLevel().intValue() != StaffLevelEnum.ADMINISTRATOR.getKey()) {
+            ShopPo shopPo = queryShopPoByStoreId(staffPo.getStoreId());
+            staffDto.setStoreName(shopPo.getName());
+            staffDto.setPrincipalName(shopPo.getManager());
+            staffDto.setPrincipalMobile(shopPo.getPhone());
+        }
         return staffDto;
     }
 
