@@ -154,7 +154,10 @@ public class StaffServiceImpl implements StaffService {
         String token = staffTokenPo.getToken();
         //清除redis
         String cacheKey = String.format(CACHE_KEY_TOKEN_PREFIX, token);
-        redisComponent.delete(cacheKey);
+        boolean isCacheValid = redisComponent.isValid();
+        if (isCacheValid) {
+            redisComponent.delete(cacheKey);
+        }
         //清除数据库token
         staffTokenMapper.deleteByToken(token);
     }
@@ -231,10 +234,12 @@ public class StaffServiceImpl implements StaffService {
         staffDto.setPassword(null);
         staffDto.setSalt(null);
         staffDto.setToken(token);
-        ShopPo shopPo = queryShopPoByStoreId(staffPo.getStoreId());
-        staffDto.setStoreName(shopPo.getName());
-        staffDto.setPrincipalName(shopPo.getManager());
-        staffDto.setPrincipalMobile(shopPo.getPhone());
+        if (staffDto.getStaffLevel().intValue() != StaffLevelEnum.ADMINISTRATOR.getKey()) {
+            ShopPo shopPo = queryShopPoByStoreId(staffPo.getStoreId());
+            staffDto.setStoreName(shopPo.getName());
+            staffDto.setPrincipalName(shopPo.getManager());
+            staffDto.setPrincipalMobile(shopPo.getPhone());
+        }
         return staffDto;
     }
 
@@ -273,9 +278,11 @@ public class StaffServiceImpl implements StaffService {
         List<StaffVo> vos = Lists.newArrayList();
         for (StaffShopUnion union : unions) {
             StaffVo vo = CommonConverter.map(union.getStaffPo(), StaffVo.class);
-            vo.setStoreName(union.getShopPo().getName());
-            vo.setPrincipalName(union.getShopPo().getManager());
-            vo.setPrincipalMobile(union.getShopPo().getPhone());
+            if (union.getStaffPo().getStaffLevel() != StaffLevelEnum.ADMINISTRATOR.getKey()) {
+                vo.setStoreName(union.getShopPo().getName());
+                vo.setPrincipalName(union.getShopPo().getManager());
+                vo.setPrincipalMobile(union.getShopPo().getPhone());
+            }
             vos.add(vo);
         }
         return vos;
