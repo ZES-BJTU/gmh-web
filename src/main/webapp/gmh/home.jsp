@@ -66,12 +66,12 @@
         on: 'now',
         beforeXHR: function (xhr) {
             //判断token是否有效
-            var token = getCookie('token');
+            var token = getSessionStorage('token');
             if (token == null || typeof (token) == undefined) {
                 alert('请先登录！');
                 redirect('index.jsp');
             }
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         onSuccess: function (response) {

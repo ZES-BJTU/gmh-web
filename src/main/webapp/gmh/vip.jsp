@@ -292,7 +292,7 @@
         on: 'now',
         beforeXHR: function (xhr) {
           verifyToken();
-          xhr.setRequestHeader('X-token', getCookie('token'));
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         onSuccess: function (response) {
@@ -343,7 +343,7 @@
           },
           beforeXHR: function (xhr) {
             verifyToken();
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
           beforeSend: function (settings) {
@@ -528,7 +528,7 @@
         serializeForm: true,
         beforeXHR: function (xhr) {
           verifyToken();
-          xhr.setRequestHeader('X-token', getCookie('token'));
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         beforeSend: function (settings) {
@@ -676,7 +676,7 @@
         serializeForm: true,
         beforeXHR: function (xhr) {
           verifyToken();
-          xhr.setRequestHeader('X-token', getCookie('token'));
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         beforeSend: function (settings) {
@@ -729,7 +729,7 @@
                 on: 'now',
                 beforeXHR: function (xhr) {
                   verifyToken();
-                  xhr.setRequestHeader('X-token', getCookie('token'));
+                  xhr.setRequestHeader('X-token', getSessionStorage('token'));
                   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 },
                 beforeSend: function (settings) {

@@ -29,18 +29,29 @@ function getCookie(name) {
     }
 }
 
+//写session
+function setSessionStorage(name, value) {
+    sessionStorage.setItem(name,value);
+}
+
+//读取session
+function getSessionStorage(name) {
+    return sessionStorage.getItem(name);
+    
+}
+
 //删除cookies
 function delCookie(name) {
     var exp = new Date();
     exp.setTime(exp.getTime() - 1);
-    var cval = getCookie(name);
+    var cval = getSessionStorage(name);
     if (cval != null)
         document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
 }
 
 //判断token是否有效
 function verifyToken() {
-    if (getCookie('token') == null) {
+    if (getSessionStorage('token') == null) {
         alert('请先登录！');
         redirect('index.jsp');
     }
@@ -48,7 +59,7 @@ function verifyToken() {
 
 function verifyStatus(code){
 	if (code == 50001) {
-        delCookie('token');
+        sessionStorage.removeItem('token');
         redirect('index.jsp');
     }
 }

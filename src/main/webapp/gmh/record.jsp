@@ -286,7 +286,7 @@
         on: 'now',
         beforeXHR: function (xhr) {
           verifyToken();
-          xhr.setRequestHeader('X-token', getCookie('token'));
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         onSuccess: function (response) {
@@ -377,7 +377,7 @@
           },
           beforeXHR: function (xhr) {
             verifyToken();
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
           beforeSend: function (settings) {
@@ -578,7 +578,7 @@
         serializeForm: true,
         beforeXHR: function (xhr) {
           verifyToken();
-          xhr.setRequestHeader('X-token', getCookie('token'));
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         beforeSend: function (settings) {
@@ -630,7 +630,7 @@
           var startTime = $('#startTime').val() == '' ? '' : toTimeStamp($('#startTime').val());
           var endTime = $('#endTime').val() == '' ? '' : toTimeStamp($('#endTime').val());
           verifyToken();
-          href = href +'?startTime='+ startTime + '&endTime=' + endTime + '&token=' + getCookie('token');
+          href = href +'?startTime='+ startTime + '&endTime=' + endTime + '&token=' + getSessionStorage('token');
           window.location.href = href;
         }
       })
@@ -673,7 +673,7 @@
           on: 'now',
           beforeXHR: function (xhr) {
             verifyToken();
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
           beforeSend: function (settings) {
@@ -709,7 +709,7 @@
           on: 'now',
           beforeXHR: function (xhr) {
             verifyToken();
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
           beforeSend: function (settings) {
@@ -744,7 +744,7 @@
           on: 'now',
           beforeXHR: function (xhr) {
             verifyToken();
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
           beforeSend: function (settings) {
@@ -781,7 +781,7 @@
           on: 'now',
           beforeXHR: function (xhr) {
             verifyToken();
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
           beforeSend: function (settings) {

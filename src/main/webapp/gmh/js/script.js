@@ -14,13 +14,12 @@ $(document).ready(function () {
         method: 'GET',
         on: 'now',
         beforeXHR: function (xhr) {
-            //判断token是否有效
-            var token = getCookie('token');
-            if (token == null || typeof (token) == undefined) {
+            if(getSessionStorage('token') == null){
+            	console.log(getSessionStorage('token'));
                 alert('请先登录！');
                 redirect('index.jsp');
             }
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         onSuccess: function (response) {
@@ -79,7 +78,7 @@ $(document).ready(function () {
             if (response.error != null) {
                 $('#login').form('add errors', [response.error]);
             } else {
-            	setCookie('token', response.data.token);
+            	setSessionStorage('token', response.data.token);
             	checkAuthority(response.data.staffLevel);
             }
         },
@@ -92,15 +91,15 @@ $(document).ready(function () {
         action: 'staff logout',
         method: 'GET',
         beforeXHR: function (xhr) {
-            getCookie('token')
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            getSessionStorage('token')
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
         },
         onSuccess: function (response) {
             if (response.error != null) {
                 alert(response.error);
                 verifyStatus(response.code);
             } else {
-                delCookie('token');
+                sessionStorage.removeItem('token');
                 redirect('index.jsp');
             }
         }
@@ -124,8 +123,8 @@ function remindAppointment(){
         method: 'GET',
         on:'now',
         beforeXHR: function (xhr) {
-            getCookie('token')
-            xhr.setRequestHeader('X-token', getCookie('token'));
+            getSessionStorage('token')
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
         },
         onSuccess: function (response) {
             if (response.error != null) {

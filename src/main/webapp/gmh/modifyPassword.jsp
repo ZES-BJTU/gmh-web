@@ -94,7 +94,7 @@
             serializeForm: true,
             beforeXHR: function (xhr) {
                 verifyToken();
-                xhr.setRequestHeader('X-token', getCookie('token'));
+                xhr.setRequestHeader('X-token', getSessionStorage('token'));
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             },
             onSuccess: function (response) {
@@ -102,7 +102,7 @@
                     $('#modify-pwd').form('add errors', [response.code, response.error]);
                 } else {
                     alert('修改成功');
-                    delCookie('token');
+                    sessionStorage.removeItem('token');
                     redirect('index.jsp');
                 }
             },

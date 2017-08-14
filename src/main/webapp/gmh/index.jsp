@@ -66,14 +66,6 @@
       </form>
     </div>
   </div>
-  <script>
-    $(document).ready(function(){
-      //判断是否登陆
-      if(getCookie('token') != null){
-          redirect('home.jsp');
-      }
-    })
-  </script>
 </body>
 
 </html>
