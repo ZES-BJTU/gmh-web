@@ -19,6 +19,15 @@
 		<include refid="Base_Column_List" />
 		FROM staff_token WHERE staff_id = #{staffId, jdbcType=BIGINT}
 	</select>
+	<select id="selectByStaffIds" parameterType="long[]" resultType="string">
+		SELECT
+		token
+		FROM staff_token WHERE staff_id IN
+		<foreach collection="array" item="staffId" separator="," open="("
+			close=")">
+			#{staffId, jdbcType=BIGINT}
+		</foreach>
+	</select>
 	<select id="selectByToken" parameterType="string" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />

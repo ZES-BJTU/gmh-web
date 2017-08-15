@@ -1,6 +1,7 @@
 package com.zes.squad.gmh.web.mapper;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -15,6 +16,14 @@ public interface StaffTokenMapper {
      * @return
      */
     StaffTokenPo selectByStaffId(Long staffId);
+
+    /**
+     * 查询token列表
+     * 
+     * @param staffIds
+     * @return
+     */
+    List<String> selectByStaffIds(Long[] staffIds);
 
     /**
      * 根据token查询用户信息

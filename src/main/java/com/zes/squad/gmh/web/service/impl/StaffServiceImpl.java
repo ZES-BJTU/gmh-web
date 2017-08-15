@@ -25,6 +25,7 @@ import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EncryptUtils;
 import com.zes.squad.gmh.web.cache.RedisComponent;
+import com.zes.squad.gmh.web.constant.Consts;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.po.ShopPo;
 import com.zes.squad.gmh.web.entity.po.StaffPo;
@@ -43,7 +44,6 @@ import com.zes.squad.gmh.web.service.StaffService;
 public class StaffServiceImpl implements StaffService {
 
     private static final String  DEFAULT_STAFF_PASSWORD     = "111111";
-    private static final String  CACHE_KEY_TOKEN_PREFIX     = "_cache_key_token_prefix_%s";
     private static final String  CACHE_KEY_AUTH_CODE_PREFIX = "_cache_key_auth_code_prefix_%s";
 
     @Autowired
@@ -73,7 +73,7 @@ public class StaffServiceImpl implements StaffService {
         if (isCacheValid) {
             StaffTokenPo staffTokenPo = staffTokenMapper.selectByStaffId(staffPo.getId());
             if (staffTokenPo != null) {
-                String cacheKey = String.format(CACHE_KEY_TOKEN_PREFIX, staffTokenPo.getToken());
+                String cacheKey = String.format(Consts.CACHE_KEY_TOKEN_PREFIX, staffTokenPo.getToken());
                 redisComponent.delete(cacheKey);
             }
         }
@@ -120,7 +120,7 @@ public class StaffServiceImpl implements StaffService {
             staff = queryStaffWithToken(token);
             return staff;
         }
-        String cacheKey = String.format(CACHE_KEY_TOKEN_PREFIX, token);
+        String cacheKey = String.format(Consts.CACHE_KEY_TOKEN_PREFIX, token);
         staff = redisComponent.get(cacheKey, StaffDto.class);
         if (staff != null) {
             return staff;
@@ -153,7 +153,7 @@ public class StaffServiceImpl implements StaffService {
         }
         String token = staffTokenPo.getToken();
         //清除redis
-        String cacheKey = String.format(CACHE_KEY_TOKEN_PREFIX, token);
+        String cacheKey = String.format(Consts.CACHE_KEY_TOKEN_PREFIX, token);
         boolean isCacheValid = redisComponent.isValid();
         if (isCacheValid) {
             redisComponent.delete(cacheKey);
@@ -206,7 +206,7 @@ public class StaffServiceImpl implements StaffService {
         mailParams.setReceiversTO(new String[] { email });
         mailParams.setSubject("光美焕系统密码重置");
         mailParams.setContentType("text/plain; charset=utf-8");
-        mailParams.setContent("尊敬的用户:\r\n您好! 您的系统密码已经重置为: " + DEFAULT_STAFF_PASSWORD + ", 请登录系统后随时修改密码");
+        mailParams.setContent("尊敬的用户:\r\n您好! 您的系统密码已经重置为: " + DEFAULT_STAFF_PASSWORD + ", 请登录系统后及时修改密码");
         MailHelper.sendTextEmail(mailParams);
         redisComponent.delete(cacheKey);
     }
@@ -259,10 +259,6 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public int update(StaffDto dto) {
-        ShopPo po = shopMapper.selectById(dto.getStoreId());
-        if (po == null) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ENTITY_NOT_FOUND, ErrorMessage.storeNotFound);
-        }
         StaffPo staffPo = CommonConverter.map(dto, StaffPo.class);
         return staffMapper.updateSelective(staffPo);
     }
@@ -270,6 +266,19 @@ public class StaffServiceImpl implements StaffService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public int deleteByIds(Long[] ids) {
+        //删除redis里面token
+        boolean isCacheValid = redisComponent.isValid();
+        if (isCacheValid) {
+            List<String> tokens = staffTokenMapper.selectByStaffIds(ids);
+            if (CollectionUtils.isNotEmpty(tokens)) {
+                List<String> cacheKeys = Lists.newArrayList();
+                for (String token : tokens) {
+                    String cacheKey = String.format(Consts.CACHE_KEY_TOKEN_PREFIX, token);
+                    cacheKeys.add(cacheKey);
+                }
+                redisComponent.batchDelete(cacheKeys);
+            }
+        }
         staffTokenMapper.batchDeleteByStaffIds(ids);
         return staffMapper.batchDeleteByIds(ids);
     }
@@ -282,6 +291,10 @@ public class StaffServiceImpl implements StaffService {
                 vo.setStoreName(union.getShopPo().getName());
                 vo.setPrincipalName(union.getShopPo().getManager());
                 vo.setPrincipalMobile(union.getShopPo().getPhone());
+            } else {
+                vo.setStoreName("");
+                vo.setPrincipalName("");
+                vo.setPrincipalMobile("");
             }
             vos.add(vo);
         }

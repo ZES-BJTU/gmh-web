@@ -1,5 +1,7 @@
 package com.zes.squad.gmh.web.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.zes.squad.gmh.web.entity.po.StaffPo;
@@ -20,6 +22,14 @@ public interface StaffMapper {
      * @return
      */
     StaffPo selectByEmail(String email);
+
+    /**
+     * 根据门店查询
+     * 
+     * @param ids
+     * @return
+     */
+    List<Long> selectByStoreIds(Long[] ids);
 
     /**
      * @param po

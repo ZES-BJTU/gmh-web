@@ -15,17 +15,27 @@ import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
+import com.zes.squad.gmh.web.cache.RedisComponent;
+import com.zes.squad.gmh.web.constant.Consts;
 import com.zes.squad.gmh.web.entity.dto.ShopDto;
 import com.zes.squad.gmh.web.entity.po.ShopPo;
 import com.zes.squad.gmh.web.entity.vo.ShopVo;
 import com.zes.squad.gmh.web.mapper.ShopMapper;
+import com.zes.squad.gmh.web.mapper.StaffMapper;
+import com.zes.squad.gmh.web.mapper.StaffTokenMapper;
 import com.zes.squad.gmh.web.service.ShopService;
 
 @Service("shopService")
 public class ShopServiceImpl implements ShopService {
 
     @Autowired
-    private ShopMapper shopMapper;
+    private ShopMapper       shopMapper;
+    @Autowired
+    private StaffMapper      staffMapper;
+    @Autowired
+    private StaffTokenMapper staffTokenMapper;
+    @Autowired
+    private RedisComponent   redisComponent;
 
     public int insert(ShopDto dto) {
         ShopPo po = CommonConverter.map(dto, ShopPo.class);
@@ -61,6 +71,24 @@ public class ShopServiceImpl implements ShopService {
     }
 
     public int deleteByIds(Long[] id) {
+        List<Long> ids = staffMapper.selectByStoreIds(id);
+        if (CollectionUtils.isNotEmpty(ids)) {
+            staffMapper.batchDeleteByIds(ids.toArray(new Long[ids.size()]));
+            staffTokenMapper.batchDeleteByStaffIds(ids.toArray(new Long[ids.size()]));
+            //删除redis里面token
+            boolean isCacheValid = redisComponent.isValid();
+            if (isCacheValid) {
+                List<String> tokens = staffTokenMapper.selectByStaffIds(id);
+                if (CollectionUtils.isNotEmpty(tokens)) {
+                    List<String> cacheKeys = Lists.newArrayList();
+                    for (String token : tokens) {
+                        String cacheKey = String.format(Consts.CACHE_KEY_TOKEN_PREFIX, token);
+                        cacheKeys.add(cacheKey);
+                    }
+                    redisComponent.batchDelete(cacheKeys);
+                }
+            }
+        }
         return shopMapper.batchDelete(id);
     }
 

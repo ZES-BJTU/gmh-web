@@ -28,6 +28,15 @@
 		<include refid="Base_Column_List" />
 		FROM staff WHERE email = #{email, jdbcType=VARCHAR}
 	</select>
+	<select id="selectByStoreIds" parameterType="long[]" resultType="long">
+		SELECT
+		`id`
+		FROM staff WHERE `store_id` IN
+		<foreach collection="array" item="id" separator="," open="("
+			close=")">
+			#{id, jdbcType=BIGINT}
+		</foreach>
+	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.StaffPo">
 		insert into
 		staff(email,`password`,salt,store_id,staff_level,`name`,`mobile`)
@@ -51,10 +60,10 @@
 				store_id = #{storeId, jdbcType=BIGINT},
 			</if>
 			<if test="staffLevel != null">
-				staff_level = #{staffLevel, jdbcType=INTEGER}
+				staff_level = #{staffLevel, jdbcType=INTEGER},
 			</if>
 			<if test="name != null">
-				name = #{name, jdbcType=VARCHAR}
+				name = #{name, jdbcType=VARCHAR},
 			</if>
 			<if test="mobile != null">
 				mobile = #{mobile, jdbcType=VARCHAR}
