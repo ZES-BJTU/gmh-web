@@ -118,8 +118,12 @@ public class ConsumeServiceImpl implements ConsumeService {
         memberCondition.setPhone(dto.getMobile());
         List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(memberCondition);
         if (!CollectionUtils.isEmpty(unions)) {
+            MemberPo member = unions.get(0).getMemberPo();
             dto.setMember(true);
-            dto.setMemberId(unions.get(0).getMemberPo().getId());
+            dto.setMemberId(member.getId());
+            dto.setAge(member.getAge());
+            dto.setConsumerName(member.getName());
+            dto.setSex(Integer.valueOf(String.valueOf(member.getSex())));
             //处理会员消费
             MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
             dto.setAge(CalculateHelper.calculateAgeByBirthday(memberPo.getBirthday()));
