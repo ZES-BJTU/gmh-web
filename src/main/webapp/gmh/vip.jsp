@@ -481,6 +481,13 @@
               prompt: '出生日期不能为空'
             }]
           },
+          newVipJoinDate: {
+              identifier: 'vipJoinDate',
+              rules: [{
+                type: 'empty',
+                prompt: '发卡日期不能为空'
+              }]
+          },
           newVipValidDate: {
             identifier: 'vipValidDate',
             rules: [{
@@ -510,11 +517,11 @@
             }]
           },
           newVipValidDate: {
-            identifier: 'vipValidDate',
-            rules: [{
-              type: 'empty',
-              prompt: '有效期不能为空'
-            }]
+              identifier: 'vipValidDate',
+              rules: [{
+                type: 'empty',
+                prompt: '有效期不能为空'
+              }]
           }
 
         },
