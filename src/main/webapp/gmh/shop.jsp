@@ -178,7 +178,7 @@
   </div>
   <div class="ui basic tiny modal del-shop-modal">
     <div class="ui icon header">
-      <i class="trash icon"></i>确认删除？
+      <i class="trash icon"></i>将删除该店铺所有相关联的信息！<br />确认删除？
     </div>
     <div class="content">
       <span id="del-shop-id" style="display:none"></span>
@@ -296,7 +296,7 @@
       })
       //新建店铺信息提交
       $('#new-shop').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newShopName: {
@@ -383,7 +383,7 @@
       })
       //修改店铺信息提交
       $('#mod-shop').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modShopName: {

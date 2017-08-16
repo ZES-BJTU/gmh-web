@@ -307,7 +307,7 @@
       })
       //新建库存信息提交
       $('#new-stock').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newStockName: {
@@ -399,7 +399,7 @@
       })
       //修改库存信息提交
       $('#mod-stock').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modStockName: {

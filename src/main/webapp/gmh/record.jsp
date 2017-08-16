@@ -477,7 +477,7 @@
       })
       //新建消费记录信息提交
       $('#new-record').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newConsumerName: {
@@ -621,7 +621,7 @@
       //   $('#export-button').attr('href')
       // })
       $('#export-record').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         onSuccess: function (e) {
           //阻止表单的提交

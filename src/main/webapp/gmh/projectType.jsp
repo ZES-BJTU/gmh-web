@@ -260,7 +260,7 @@
       })
       //新建美容项目分类信息提交
       $('#new-project-type').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newTypeName: {
@@ -332,7 +332,7 @@
       })
       //修改库存信息提交
       $('#mod-project-type').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modTypeName: {

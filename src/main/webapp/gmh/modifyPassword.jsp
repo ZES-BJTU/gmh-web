@@ -66,7 +66,7 @@
         </div>
     </div>
     <script>
-        //登录
+        //修改密码
         $('#modify-pwd').form({
             fields: {
                 originalPassword: {
@@ -99,7 +99,7 @@
             },
             onSuccess: function (response) {
                 if (response.error != null) {
-                    $('#modify-pwd').form('add errors', [response.code, response.error]);
+                    $('#modify-pwd').form('add errors', [response.error]);
                 } else {
                     alert('修改成功');
                     sessionStorage.removeItem('token');
@@ -107,7 +107,7 @@
                 }
             },
             onFailure: function (response) {
-                alert('服务器开小差了');
+            	$('#modify-pwd').form('add errors', ['服务器开小差了']);
             }
         });
     </script>

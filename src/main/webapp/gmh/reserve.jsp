@@ -624,7 +624,7 @@
       })
       //新建预约信息提交
       $('#new-appointment').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newPhone: {
@@ -790,7 +790,7 @@
       })
       //修改预约信息提交
       $('#mod-appointment').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modPhone: {
@@ -946,6 +946,7 @@
 
       //完成预约模态框
       $(document).on('click', '.finish-appointment', function () {
+    	loadCounselorsData();
         $('#finish-appointment-id').text($(this).parent().parent().find('.appointmentId').text());
         $('#finish-appointment').find('input[name="operator"]').val($(this).parent().parent().find(
           '.employeeName').text());
@@ -971,7 +972,7 @@
 
       //完成预约信息提交
       $('#finish-appointment').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           chargeWay: {
@@ -1118,7 +1119,7 @@
       function loadCounselorsData() {
         $.each(counselorsData, function (i, data) {
           var $option = $('<option value="' + data.id + '">' + data.emName + '</option>');
-          $('.new-record-counselor-select select').append($option);
+          $('.new-appointment-counselor-select select').append($option);
         })
       }
 

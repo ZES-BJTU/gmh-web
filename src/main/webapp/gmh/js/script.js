@@ -83,7 +83,7 @@ $(document).ready(function () {
             }
         },
         onFailure: function (response) {
-            $('#login').form('add errors', '服务器开小差了');
+            $('#login').form('add errors', ['服务器开小差了']);
         }
     });
     //退出登录

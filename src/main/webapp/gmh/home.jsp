@@ -145,7 +145,7 @@
   	        data: ['近六个月消费次数']
   	      },
   	      grid: {
-  	        left: '5%',
+  	        left: '3%',
   	        right: '4%',
   	        bottom: '3%',
   	        containLabel: true

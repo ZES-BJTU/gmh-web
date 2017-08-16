@@ -323,7 +323,7 @@
       })
       //新建店铺信息提交
       $('#new-staff').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newEmail: {
@@ -431,7 +431,7 @@
       })
       //修改店铺信息提交
       $('#mod-staff').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modEmail: {

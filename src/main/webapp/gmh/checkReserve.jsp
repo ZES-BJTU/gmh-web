@@ -41,7 +41,7 @@
             <span id="user-name"></span>
             <i class="dropdown icon"></i>
             <div class="menu">
-                <a class="item">修改密码</a>
+                <a class="item" href="modifyPassword.jsp">修改密码</a>
                 <a class="item logout">退出登录</a>
             </div>
         </div>

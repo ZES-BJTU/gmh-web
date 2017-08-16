@@ -388,7 +388,7 @@
       })
       //新建库存信息提交
       $('#new-employee').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newEmName: {
@@ -503,7 +503,7 @@
       })
       //修改库存信息提交
       $('#mod-employee').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modEmName: {
@@ -565,7 +565,6 @@
         beforeSend: function (settings) {
           if ($('#mod-employee-id').text() != '') {
             settings.data.id = $('#mod-employee-id').text();
-            return settings;
           } else {
             alert('ID为空');
             return false;
@@ -589,7 +588,7 @@
             $('#mod-employee-id').text('');
             $('#mod-employee').form('clear');
             $('.mod-employee-modal').modal('hide');
-            loadSearchStockList(1, 10, 'search');
+            loadSearchEmployeeList(1, 10, 'search');
           }
         },
         onFailure: function (response) {

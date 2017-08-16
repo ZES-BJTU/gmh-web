@@ -47,7 +47,7 @@
                     <div class="field">
                         <div class="ui action input">
                             <input type="text" placeholder="请输入邮箱" name="email" id="email">
-                            <button class="ui button" id="sendAuthCode">请输入邮箱</button>
+                            <button class="ui button" id="sendAuthCode">获取验证码</button>
                         </div>
                     </div>
                 </div>
@@ -92,13 +92,13 @@
             },
             onSuccess: function (response) {
                 if (response.error != null) {
-                    $('#forget-pwd-auth').form('add errors', [response.code, response.error]);
+                    $('#forget-pwd-auth').form('add errors', [response.error]);
                 } else {
                     alert('验证码已发送到您的邮箱，请及时查收');
                 }
             },
             onFailure: function (response) {
-                alert('服务器开小差了');
+            	$('#forget-pwd-auth').form('add errors', ['服务器开小差了']);
             }
         });
         //忘记密码
@@ -139,7 +139,7 @@
                 }
             },
             onFailure: function (response) {
-                alert('服务器开小差了');
+            	$('#forget-pwd').form('add errors', ['服务器开小差了']);
             }
         });
     </script>

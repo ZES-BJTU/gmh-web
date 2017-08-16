@@ -76,7 +76,7 @@
   <div class="ui mini modal new-vip-level-modal">
     <div class="header">新建会员等级</div>
     <div class="content">
-      <form id="new-vip-level" class="ui form">
+      <form onkeydown="if(event.keyCode==13)return false;" id="new-vip-level" class="ui form">
         <div class="field">
           <label>会员等级</label>
           <input type="text" name="levelName" placeholder="请输入会员等级">
@@ -98,7 +98,7 @@
     <div class="header">修改会员等级</div>
     <div class="content">
       <span id="mod-vip-level-id" style="display:none"></span>
-      <form id="mod-vip-level" class="ui form">
+      <form onkeydown="if(event.keyCode==13)return false;" id="mod-vip-level" class="ui form">
         <div class="field">
           <label>会员等级</label>
           <input type="text" name="levelName" placeholder="请输入会员等级">
@@ -230,7 +230,7 @@
       })
       //新建会员等级信息提交
       $('#new-vip-level').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newLevelName: {
@@ -290,7 +290,7 @@
       })
       //修改会员等级信息提交
       $('#mod-vip-level').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modLevelName: {

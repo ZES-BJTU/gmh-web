@@ -76,7 +76,7 @@
     <div class="ui mini modal new-stock-type-modal">
         <div class="header">新建库存分类</div>
         <div class="content">
-            <form id="new-stock-type" class="ui form">
+            <form onkeydown="if(event.keyCode==13)return false;" id="new-stock-type" class="ui form">
                 <div class="field">
                     <label>库存分类名</label>
                     <input type="text" name="typeName" placeholder="请输入库存分类名">
@@ -98,7 +98,7 @@
         <div class="header">修改库存分类</div>
         <div class="content">
             <span id="mod-stock-type-id" style="display:none"></span>
-            <form id="mod-stock-type" class="ui form">
+            <form onkeydown="if(event.keyCode==13)return false;" id="mod-stock-type" class="ui form">
                 <div class="field">
                     <label>库存分类名</label>
                     <input type="text" name="typeName" placeholder="请输入库存分类名">
@@ -232,7 +232,7 @@
             })
             //新建店铺信息提交
             $('#new-stock-type').form({
-                on: 'change',
+                on: 'submit',
                 inline: true,
                 fields: {
                     newTypeName: {
@@ -271,7 +271,7 @@
                 },
             });
 
-            //修改店铺模态框
+            //修改库存分类模态框
             $(document).on('click', '.mod-stock-type', function () {
                 $('#mod-stock-type-id').text($(this).parent().parent().find('.stockTypeId').text())
                 $('#mod-stock-type').find('input[name="typeName"]').val($(this).parent().parent().find(
@@ -291,7 +291,7 @@
             })
             //修改库存分类信息提交
             $('#mod-stock-type').form({
-                on: 'change',
+                on: 'submit',
                 inline: true,
                 fields: {
                     modTypeName: {

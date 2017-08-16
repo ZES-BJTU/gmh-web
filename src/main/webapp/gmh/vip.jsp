@@ -444,7 +444,7 @@
       })
       //新建会员信息提交
       $('#new-vip').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newVipMobile: {
@@ -593,7 +593,7 @@
       })
       //修改会员信息提交
       $('#mod-vip').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modVipMobile: {

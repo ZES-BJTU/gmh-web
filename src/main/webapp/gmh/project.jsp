@@ -348,7 +348,7 @@
       })
       //新建美容项目信息提交
       $('#new-project').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           newProjectName: {
@@ -447,7 +447,7 @@
       })
       //修改美容项目信息提交
       $('#mod-project').form({
-        on: 'change',
+        on: 'submit',
         inline: true,
         fields: {
           modProjectName: {
