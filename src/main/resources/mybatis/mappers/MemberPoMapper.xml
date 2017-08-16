@@ -126,11 +126,11 @@
 	</update>
 	<update id="updateNailMoney">
 		UPDATE member SET nail_money = #{nailMoney,
-		jdbcType=DECIMAL}
+		jdbcType=DECIMAL} WHERE id = #{id ,jdbcType=BIGINT}
 	</update>
 	<update id="updateBeautyMoney">
 		UPDATE member SET beauty_money=#{beautyMoney,
-		jdbcType=DECIMAL}
+		jdbcType=DECIMAL} WHERE id = #{id ,jdbcType=BIGINT}
 	</update>
 	<delete id="batchDelete" parameterType="long[]">
 		DELETE FROM member WHERE id IN
