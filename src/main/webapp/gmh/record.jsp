@@ -36,7 +36,7 @@
 <body>
   <button class="ui blue button fake-button" style="display:none;"></button>
   <button class="ui blue button load-record-list" style="display:none;"></button>
-  <a id="export-button" href="http://123.207.168.112:10000/consume/export" style="display:none"></a>
+  <a id="export-button" href="http://47.94.97.188:8080/consume/export" style="display:none"></a>
   <jsp:include page="header.jsp"/>
   <div class="main-wrapper">
     <div class="ui fluid container">
@@ -626,7 +626,7 @@
         onSuccess: function (e) {
           //阻止表单的提交
           e.preventDefault();
-          var href = "http://123.207.168.112:8080/consume/export";
+          var href = "http:// 47.94.97.188:8080/consume/export";
           var startTime = $('#startTime').val() == '' ? '' : toTimeStamp($('#startTime').val());
           var endTime = $('#endTime').val() == '' ? '' : toTimeStamp($('#endTime').val());
           verifyToken();
