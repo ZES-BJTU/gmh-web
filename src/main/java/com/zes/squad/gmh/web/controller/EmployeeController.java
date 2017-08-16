@@ -122,7 +122,7 @@ public class EmployeeController {
     @RequestMapping("/insert")
     @ResponseBody
     public JsonResult<EmployeeVo> insert(EmployeeParams params, Integer[] jobId) {
-        String error = checkEmployeeParam(params);
+        String error = checkCreateEmployeeParam(params);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
@@ -170,7 +170,7 @@ public class EmployeeController {
     @RequestMapping("/update")
     @ResponseBody
     public JsonResult<Integer> update(EmployeeParams params, Integer[] jobId) {
-        String error = checkEmployeeParam(params);
+        String error = checkModifyEmployeeParam(params);
         if (!Strings.isNullOrEmpty(error)) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), error);
         }
@@ -180,9 +180,6 @@ public class EmployeeController {
         }
         if (params.getId() == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工标识不能为空");
-        }
-        if (params.getEntryDate() == null) {
-            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "员工入职日期不能为空");
         }
         EmployeeDto dto = CommonConverter.map(params, EmployeeDto.class);
         List<JobDto> dtos = Lists.newArrayList();
@@ -215,7 +212,7 @@ public class EmployeeController {
 
     }
 
-    private String checkEmployeeParam(EmployeeParams param) {
+    private String checkCreateEmployeeParam(EmployeeParams param) {
         if (param == null) {
             return "员工信息不能为空";
         }
@@ -231,6 +228,22 @@ public class EmployeeController {
             if (Strings.isNullOrEmpty(desc)) {
                 return "员工性别错误";
             }
+        }
+        if (Strings.isNullOrEmpty(param.getPhone())) {
+            return "员工手机号不能为空";
+        }
+        if (!CheckHelper.isValidMobile(param.getPhone())) {
+            return "手机号格式错误";
+        }
+        return null;
+    }
+    
+    private String checkModifyEmployeeParam(EmployeeParams param) {
+        if (param == null) {
+            return "员工信息不能为空";
+        }
+        if (Strings.isNullOrEmpty(param.getEmName())) {
+            return "员工姓名不能为空";
         }
         if (Strings.isNullOrEmpty(param.getPhone())) {
             return "员工手机号不能为空";

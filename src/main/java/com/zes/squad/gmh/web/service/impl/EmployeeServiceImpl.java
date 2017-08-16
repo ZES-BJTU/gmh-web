@@ -91,7 +91,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional(propagation = Propagation.REQUIRED)
     public int update(EmployeeDto dto) {
         EmployeePo po = CommonConverter.map(dto, EmployeePo.class);
-        po.setEntryDate(new Date());
         po.setName(dto.getEmName());
         po.setWork(dto.getIsWork());
         int i = employeeMapper.updateSelective(po);
