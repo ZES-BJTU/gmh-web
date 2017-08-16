@@ -36,11 +36,13 @@
 		cr.source,
 		cr.consume_time,
 		cr.remark,
-		s.`id` AS s_id,
+		s.`id`
+		AS s_id,
 		s.name AS s_name,
 		p.`id` AS p_id,
 		p.name AS p_name,
-		e.`id` AS e_id,
+		e.`id` AS
+		e_id,
 		e.name AS e_name
 		FROM consume_record cr
 		LEFT JOIN shop s
@@ -49,7 +51,8 @@
 		s.`id`
 		LEFT JOIN project p
 		ON cr.project_id = p.`id`
-		LEFT JOIN
+		LEFT
+		JOIN
 		employee e
 		ON cr.employee_id = e.`id`
 		<where>
@@ -65,8 +68,6 @@
 			<if test="startTime != null and endTime == null">
 				AND cr.consume_time <![CDATA[>]]>
 				#{startTime, jdbcType=TIMESTAMP}
-			</if>
-			<if test="startTime == null and endTime != null">
 				AND cr.consume_time <![CDATA[<]]>
 				#{endTime, jdbcType=TIMESTAMP}
 			</if>
