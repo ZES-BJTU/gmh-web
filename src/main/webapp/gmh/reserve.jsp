@@ -1042,6 +1042,7 @@
 
       //开始预约信息提交
       $(document).on('click','.start-appointment',function(){
+    	var appointmentId=$(this).parent().parent().find('.appointmentId').text();
         $('.fake-button').api({
           action: 'appointment start',
           method: 'POST',
@@ -1052,8 +1053,8 @@
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
           beforeSend: function (settings) {
-            if ($(this).parent().parent().find('.appointmentId').text() != '') {
-              settings.data.id = $(this).parent().parent().find('.appointmentId').text();
+            if (appointmentId != '') {
+              settings.data.id = appointmentId;
               return settings;
             } else {
               alert('ID为空');
