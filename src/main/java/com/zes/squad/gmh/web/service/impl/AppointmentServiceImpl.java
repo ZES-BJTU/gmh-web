@@ -323,9 +323,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentVo> listAppointmentsByEmployee(Long employeeId) {
-        EmployeePo po = employeeMapper.selectById(employeeId);
-        ensureEntityExist(po, ErrorMessage.employeeNotFound);
+        if (employeeId.longValue() == 0L) {
+            employeeId = null;
+            EmployeePo po = employeeMapper.selectById(employeeId);
+            ensureEntityExist(po, ErrorMessage.employeeNotFound);
+        }
         AppointmentUnionQueryCondition condition = new AppointmentUnionQueryCondition();
+        condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setStatus(
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
         condition.setEmployeeId(employeeId);
