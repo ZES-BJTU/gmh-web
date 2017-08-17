@@ -202,12 +202,12 @@ public class StaffServiceImpl implements StaffService {
         }
         staffMapper.updatePassword(staffPo.getId(),
                 EncryptUtils.MD5(staffPo.getEmail() + staffPo.getSalt() + DEFAULT_STAFF_PASSWORD));
-        MailParams mailParams = new MailParams();
-        mailParams.setReceiversTO(new String[] { email });
-        mailParams.setSubject("光美焕系统密码重置");
-        mailParams.setContentType("text/plain; charset=utf-8");
-        mailParams.setContent("尊敬的用户:\r\n您好! 您的系统密码已经重置为: " + DEFAULT_STAFF_PASSWORD + ", 请登录系统后及时修改密码");
-        MailHelper.sendTextEmail(mailParams);
+        //        MailParams mailParams = new MailParams();
+        //        mailParams.setReceiversTO(new String[] { email });
+        //        mailParams.setSubject("光美焕系统密码重置");
+        //        mailParams.setContentType("text/plain; charset=utf-8");
+        //        mailParams.setContent("尊敬的用户:\r\n您好! 您的系统密码已经重置为: " + DEFAULT_STAFF_PASSWORD + ", 请登录系统后及时修改密码");
+        //        MailHelper.sendTextEmail(mailParams);
         redisComponent.delete(cacheKey);
     }
 
