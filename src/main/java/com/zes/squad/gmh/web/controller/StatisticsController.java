@@ -12,13 +12,13 @@ import com.zes.squad.gmh.web.service.StatisticsService;
 
 @RequestMapping("/statistics")
 @RestController
-public class StatisticsController extends BaseController{
-    
+public class StatisticsController extends BaseController {
+
     @Autowired
     private StatisticsService statisticsService;
-    
+
     @RequestMapping("/record")
-    public JsonResult<List<StatisticsVo>> doListAll(){
+    public JsonResult<List<StatisticsVo>> doListAll() {
         List<StatisticsVo> vos = statisticsService.countConsumeRecord();
         return JsonResult.success(vos);
     }

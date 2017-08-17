@@ -60,7 +60,7 @@ public class AppointmentController {
         List<EmployeeItemVo> vos = appointmentService.listEmployeesByProject(projectId);
         return JsonResult.success(vos);
     }
-    
+
     @RequestMapping("/listAppointmentsByEmployee")
     @ResponseBody
     public JsonResult<List<AppointmentVo>> doListAppointmentsByEmployee(Long employeeId) {
@@ -135,7 +135,7 @@ public class AppointmentController {
         ensureParameterExist(chargeWay, ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay)),
                 ErrorMessage.consumeRecordChargeWayIsError);
-        int i = appointmentService.finish(id, charge, chargeWay,counselorId, source, remark);
+        int i = appointmentService.finish(id, charge, chargeWay, counselorId, source, remark);
         return JsonResult.success(i);
     }
 

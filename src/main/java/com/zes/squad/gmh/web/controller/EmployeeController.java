@@ -88,16 +88,16 @@ public class EmployeeController {
         }
         return PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
     }
-    
+
     @RequestMapping("/listBeauties")
     @ResponseBody
-    public JsonResult<List<EmployeeVo>> doListBeauties(){
+    public JsonResult<List<EmployeeVo>> doListBeauties() {
         List<EmployeeDto> dtos = employeeService.listBeauties();
-        if(CollectionUtils.isEmpty(dtos)){
+        if (CollectionUtils.isEmpty(dtos)) {
             return JsonResult.success(Lists.newArrayList());
         }
         List<EmployeeVo> vos = Lists.newArrayList();
-        for(EmployeeDto dto : dtos) {
+        for (EmployeeDto dto : dtos) {
             EmployeeVo vo = buildEmployeeVoByDto(dto);
             vos.add(vo);
         }
@@ -108,11 +108,11 @@ public class EmployeeController {
     @ResponseBody
     public JsonResult<List<EmployeeVo>> doListCounselors() {
         List<EmployeeDto> dtos = employeeService.listCounselors();
-        if(CollectionUtils.isEmpty(dtos)){
+        if (CollectionUtils.isEmpty(dtos)) {
             return JsonResult.success(Lists.newArrayList());
         }
         List<EmployeeVo> vos = Lists.newArrayList();
-        for(EmployeeDto dto : dtos) {
+        for (EmployeeDto dto : dtos) {
             EmployeeVo vo = buildEmployeeVoByDto(dto);
             vos.add(vo);
         }
@@ -237,7 +237,7 @@ public class EmployeeController {
         }
         return null;
     }
-    
+
     private String checkModifyEmployeeParam(EmployeeParams param) {
         if (param == null) {
             return "员工信息不能为空";

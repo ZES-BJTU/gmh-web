@@ -325,6 +325,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<AppointmentVo> listAppointmentsByEmployee(Long employeeId) {
         if (employeeId.longValue() == 0L) {
             employeeId = null;
+        }
+        if (employeeId != null) {
             EmployeePo po = employeeMapper.selectById(employeeId);
             ensureEntityExist(po, ErrorMessage.employeeNotFound);
         }

@@ -21,8 +21,7 @@ public interface StaffService {
      * @param dto
      * @return
      */
-	int insert(StaffDto dto);
-    
+    int insert(StaffDto dto);
 
     /**
      * 根据token查询用户信息
@@ -64,8 +63,8 @@ public interface StaffService {
     void validateAuthCode(String email, String authCode);
 
     PagedList<StaffVo> search(Integer pageNum, Integer pageSize, String searchString);
-    
+
     int update(StaffDto dto);
-    
+
     int deleteByIds(Long[] ids);
 }

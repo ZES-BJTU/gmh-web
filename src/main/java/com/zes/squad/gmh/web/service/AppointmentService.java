@@ -25,15 +25,15 @@ public interface AppointmentService {
     int update(AppointmentDto dto);
 
     int cancel(Long id);
-    
+
     int start(Long id);
 
-    int finish(Long id, BigDecimal charge, Integer chargeWay,Long counselorId, String source, String remark);
+    int finish(Long id, BigDecimal charge, Integer chargeWay, Long counselorId, String source, String remark);
 
     List<AppointmentVo> remind();
 
     List<EmployeeItemVo> listEmployeesByProject(Long projectId);
 
     List<AppointmentVo> listAppointmentsByEmployee(Long employeeId);
-    
+
 }

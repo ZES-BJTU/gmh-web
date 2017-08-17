@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class EmployeeJobDto {
-	private Long id;
-	private Long emId;
-	private Long jobId;
+    private Long id;
+    private Long emId;
+    private Long jobId;
 }

@@ -22,7 +22,8 @@ public class CrossDomainFilter implements Filter {
             throws IOException, ServletException {
         HttpServletResponse hResponse = (HttpServletResponse) response;
         hResponse.addHeader("Access-Control-Allow-Origin", "*");
-        hResponse.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept,X-Requested-With,X-token");
+        hResponse.addHeader("Access-Control-Allow-Headers",
+                "Content-Type, Authorization, Accept,X-Requested-With,X-token");
         chain.doFilter(request, hResponse);
     }
 

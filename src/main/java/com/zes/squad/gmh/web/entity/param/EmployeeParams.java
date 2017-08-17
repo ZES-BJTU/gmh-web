@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 public class EmployeeParams {
 
-    private Long    id;
-    private String  emName;
-    private Byte    sex;
-    private String  phone;
-    private Date    entryDate;
+    private Long   id;
+    private String emName;
+    private Byte   sex;
+    private String phone;
+    private Date   entryDate;
 }

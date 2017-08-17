@@ -17,9 +17,9 @@ public interface EmployeeService {
     PagedList<EmployeeDto> listByPage(Integer pageNum, Integer pageSize);
 
     EmployeeDto insert(EmployeeDto dto);
-    
+
     List<EmployeeDto> listBeauties();
-    
+
     List<EmployeeDto> listCounselors();
 
     int leave(Long[] id);

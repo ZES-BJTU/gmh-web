@@ -104,7 +104,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public PagedList<MemberVo> search(Integer pageNum, Integer pageSize, Long memberLevelId, String searchString) {
-        if (memberLevelId !=null && memberLevelId == 0) {
+        if (memberLevelId != null && memberLevelId == 0) {
             memberLevelId = null;
         }
         PageHelper.startPage(pageNum, pageSize);

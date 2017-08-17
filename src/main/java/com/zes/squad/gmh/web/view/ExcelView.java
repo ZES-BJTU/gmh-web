@@ -15,7 +15,7 @@ public class ExcelView extends AbstractXlsxStreamingView {
 
     @Override
     public void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request,
-                                      HttpServletResponse response)
+                                   HttpServletResponse response)
             throws Exception {
         String fileName = "record.xls";
         response.setContentType("application/vnd.ms-excel");

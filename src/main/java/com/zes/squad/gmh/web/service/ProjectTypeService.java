@@ -18,5 +18,6 @@ public interface ProjectTypeService {
 
     int deleteByIds(Long[] Id);
 
-    PagedList<ProjectTypeDto> searchPagedProjectTypes(Integer pageNum, Integer pageSize, Integer topType, String searchString);
+    PagedList<ProjectTypeDto> searchPagedProjectTypes(Integer pageNum, Integer pageSize, Integer topType,
+                                                      String searchString);
 }

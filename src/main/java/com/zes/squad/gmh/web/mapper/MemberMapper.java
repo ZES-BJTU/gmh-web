@@ -11,8 +11,8 @@ import com.zes.squad.gmh.web.entity.po.MemberPo;
 public interface MemberMapper {
 
     MemberPo selectById(Long id);
-    
-    List<MemberPo> selectByIds(@Param("ids")Long[] ids);
+
+    List<MemberPo> selectByIds(@Param("ids") Long[] ids);
 
     MemberPo selectByCondition(MemberQueryCondition condition);
 
