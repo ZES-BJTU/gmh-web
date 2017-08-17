@@ -60,10 +60,10 @@
 				AND cr.store_id = #{storeId, jdbcType=BIGINT}
 			</if>
 			<if test="startTime != null and endTime != null">
-				AND cr.consume_time <![CDATA[>]]>
+				AND cr.consume_time BETWEEN
 				#{startTime,
-				jdbcType=TIMESTAMP} AND cr.consume_time <![CDATA[<]]>
-				#{endTime, jdbcType=TIMESTAMP}
+				jdbcType=TIMESTAMP} AND
+				DATE_ADD(#{endTime, jdbcType=TIMESTAMP}, INTERVAL 1 DAY)
 			</if>
 			<if test="startTime != null and endTime == null">
 				AND cr.consume_time <![CDATA[>]]>
