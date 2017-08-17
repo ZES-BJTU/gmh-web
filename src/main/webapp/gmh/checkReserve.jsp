@@ -53,7 +53,7 @@
                     <div class="column">
                         <form id="" class="ui form search check-appointment-search">
                             <select class="ui selection dropdown check-appointment-select">
-                                <option value="">请选择美容师</option>
+                                <option value="0">全部美容师</option>
                             </select>
                         </form>
                     </div>
@@ -99,19 +99,33 @@
                         alert(response.error);
                         verifyStatus(response.code);
                     } else {
-                        $('.check-appointment-select select').find('option').remove();
+                        $('.check-appointment-select select').find('option:not(:first)').remove();
                         $.each(response.data, function (i, data) {
                             var $option = $('<option value="' + data.id + '">' + data.emName + '</option>');
                             $('.check-appointment-select select').append($option);
                         })
+                        $('.check-appointment-search').form('submit');
                     }
                 },
                 onFailure: function (response) {
                     alert('服务器开小差了');
                 }
             })
-            $(document).on('change', '.check-appointment-select select', function () {
-                var employeeId = $('.check-appointment-select select').val();
+            $(document).on('change', '.check-appointment-select', function () {
+            	loadSearchAppointmentList();
+            })
+            //预约搜索
+            $('.check-appointment-search').form({
+                onSuccess: function (e) {
+                    //阻止表单的提交
+                    e.preventDefault();
+                    loadSearchAppointmentList();
+                }
+            })
+
+
+            function loadSearchAppointmentList() {
+            	var employeeId = $('.check-appointment-select select').val();
                 $('.fake-button').api({
                     action: 'appointment listAppointmentsByEmployee',
                     method: 'POST',
@@ -168,162 +182,6 @@
                                 $tr.append($remark);
                                 $('#appointment-list').append($tr);
                             })
-                        }
-                    },
-                    onFailure: function (response) {
-                        alert('服务器开小差了');
-                    }
-                })
-            })
-            //预约搜索
-            $('.appointment-search').form({
-                onSuccess: function (e) {
-                    //阻止表单的提交
-                    e.preventDefault();
-                    searchInfo = $('.search-input').val();
-                    loadSearchAppointmentList(1, 10, 'search');
-                }
-            })
-
-            $('.appointment-search').form('submit');
-
-            //分页按钮点击事件
-            $(document).on('click', '.paging .item', function () {
-                loadSearchAppointmentList($(this).text(), 10, 'paging');
-            })
-
-            function loadSearchAppointmentList(pagenum, pagesize, type) {
-                $('.load-appointment-list').api({
-                    action: 'appointment search',
-                    method: 'POST',
-                    serializeForm: true,
-                    on: 'now',
-                    data: {
-                        pageNum: pagenum,
-                        pageSize: pagesize
-                    },
-                    beforeXHR: function (xhr) {
-                        verifyToken();
-                        xhr.setRequestHeader('X-token', getSessionStorage('token'));
-                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    },
-                    beforeSend: function (settings) {
-                        if (type == 'search') {
-                            settings.data.searchString = $('.search-input').val();
-                            return settings;
-                        } else {
-                            settings.data.searchString = searchInfo;
-                            return settings;
-                        }
-                    },
-                    onSuccess: function (response) {
-                        if (response.error != null) {
-                            alert(response.error);
-                            verifyStatus(response.code);
-                        } else {
-                            // $('#appointment-list').empty();
-                            $('.paging').empty();
-                            for (var i = 0; i < response.data.totalPages; i++) {
-                                var $item = $('<a class="item">' + (i + 1) + '</a>');
-                                $('.paging').append($item);
-                            }
-                            $.each(response.data.data, function (i, data) {
-                                var $tr = $('<tr></tr>');
-                                var $id = $(
-                                    '<td class="appointmentId" style="display:none">' +
-                                    data.id + '</td>');
-                                var $memberId = $(
-                                    '<td class="memberId" style="display:none">' + data
-                                    .memberId + '</td>');
-                                var $memberName = $('<td class="memberName">' + data.memberName +
-                                    '</td>');
-                                var $memberPhone = $('<td class="memberPhone">' + data.phone +
-                                    '</td>');
-                                var $topTypeId = $(
-                                    '<td class="topTypeId" style="display:none">' +
-                                    data.topType + '</td>');
-                                var $topTypeName = $(
-                                    '<td class="topTypeName" style="display:none">' +
-                                    data.topTypeName +
-                                    '</td>');
-                                var $typeId = $('<td class="typeId" style="display:none">' +
-                                    data.typeId + '</td>');
-                                var $typeName = $(
-                                    '<td class="typeName" style="display:none">' + data
-                                    .typeName + '</td>');
-                                var $projectId = $(
-                                    '<td class="projectId" style="display:none">' +
-                                    data.projectId +
-                                    '</td>');
-                                var $projectName = $('<td class="projectName">' + data.projectName +
-                                    '</td>');
-                                var $employeeId = $(
-                                    '<td class="employeeId" style="display:none">' +
-                                    data.employeeId +
-                                    '</td>');
-                                var $employeeName = $('<td class="employeeName">' + data.employeeName +
-                                    '</td>');
-                                var $beginTime = $('<td class="beginTime">' + toDatetimeMin(
-                                    data.beginTime) + '</td>');
-                                var $endTime = $('<td class="endTime">' + toDatetimeMin(
-                                    data.endTime) + '</td>');
-                                var $line = $('<td class="line">' + data.line + '</td>');
-                                var $status = $('<td class="status">' + data.status +
-                                    '</td>');
-                                var remark = (data.remark == null || data.remark == '') ?
-                                    '无' : String(data.remark);
-                                var afterRemark = '';
-                                if (remark == '无') {
-                                    afterRemark = '无'
-                                } else if (remark.length > 6) {
-                                    afterRemark = remark.substring(0, 6) + '...';
-                                } else {
-                                    afterRemark = remark;
-                                }
-                                var $remark = $('<td class="remark" title="' + remark +
-                                    '">' + afterRemark + '</td>');
-                                var $projectCharge = $(
-                                    '<td class="projectCharge" style="display:none">' +
-                                    data.projectCharge +
-                                    '</td>');
-                                if (data.status == '进行中') {
-                                    var $operate = $(
-                                        '<td><button class="ui tiny teal button start-appointment disabled">开始</button>' +
-                                        '<button class="ui tiny green button finish-appointment">完成</button>' +
-                                        '<button class="ui tiny orange button mod-appointment disabled">修改</button>' +
-                                        '<button class="ui tiny red button del-appointment disabled">取消</button></td>'
-                                    );
-                                } else {
-                                    var $operate = $(
-                                        '<td><button class="ui tiny teal button start-appointment">开始</button>' +
-                                        '<button class="ui tiny green button finish-appointment">完成</button>' +
-                                        '<button class="ui tiny orange button mod-appointment">修改</button>' +
-                                        '<button class="ui tiny red button del-appointment">取消</button></td>'
-                                    );
-                                }
-
-                                $tr.append($id);
-                                $tr.append($memberId);
-                                $tr.append($memberName);
-                                $tr.append($memberPhone);
-                                $tr.append($topTypeId);
-                                $tr.append($topTypeName);
-                                $tr.append($typeId);
-                                $tr.append($typeName);
-                                $tr.append($projectId);
-                                $tr.append($projectName);
-                                $tr.append($employeeId);
-                                $tr.append($employeeName);
-                                $tr.append($beginTime);
-                                $tr.append($endTime);
-                                $tr.append($line);
-                                $tr.append($status);
-                                $tr.append($remark);
-                                $tr.append($projectCharge);
-                                $tr.append($operate);
-                                $('#appointment-list').append($tr);
-                            })
-                            $('.paging').children().eq(pagenum - 1).addClass('active');
                         }
                     },
                     onFailure: function (response) {
