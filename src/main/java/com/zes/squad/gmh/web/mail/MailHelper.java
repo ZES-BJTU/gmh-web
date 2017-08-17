@@ -66,6 +66,10 @@ public class MailHelper {
     private static Session getEmailSession(Map<String, Object> props) {
         Properties properties = System.getProperties();
         properties.put(HOST, MailProperties.get(HOST));
+//        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.socketFactory.port", 465);
+        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        properties.put("mail.smtp.socketFactory.fallback", "false");
         properties.put(AUTH, "true");
         if (!MapUtils.isEmpty(props)) {
             for (Map.Entry<String, Object> prop : props.entrySet()) {
@@ -79,6 +83,7 @@ public class MailHelper {
                 return new PasswordAuthentication(MailProperties.get(SENDER), MailProperties.get(PASSWORD));
             }
         });
+        session.setDebug(true);
         return session;
     }
 
