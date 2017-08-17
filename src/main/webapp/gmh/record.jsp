@@ -388,8 +388,8 @@
               return settings;
             } else {
               settings.data.searchString = searchInfo;
-              settings.data.startTime = toTimeStamp(searchStartTime);
-              settings.data.endTime = toTimeStamp(searchEndTime);
+              settings.data.startTime = searchStartTime;
+              settings.data.endTime = searchEndTime;
               return settings;
             }
           },

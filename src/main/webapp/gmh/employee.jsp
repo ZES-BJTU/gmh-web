@@ -456,7 +456,7 @@
             }
           })
           settings.data.jobId = checkData;
-          settings.data.entryDate = toTimeStamp($('#entryDate').val());
+          settings.data.entryDate = $('#entryDate').val() == '' ? '' : toTimeStamp($('#entryDate').val());
           return settings;
         },
         onSuccess: function (response) {
@@ -577,7 +577,7 @@
             }
           })
           settings.data.jobId = checkData;
-          settings.data.entryDate = toTimeStamp($('#modEntryDate').val());
+          settings.data.entryDate = $('#modEntryDate').val() == '' ? '' : toTimeStamp($('#modEntryDate').val());
           return settings;
         },
         onSuccess: function (response) {
