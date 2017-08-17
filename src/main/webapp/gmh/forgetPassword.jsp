@@ -134,7 +134,7 @@
                 if (response.error != null) {
                     $('#forget-pwd').form('add errors', [response.code, response.error]);
                 } else {
-                    alert('重置成功，请查收邮件');
+                    alert('您的密码已重置为初始密码，请登录后进行修改');
                     redirect('index.jsp');
                 }
             },
