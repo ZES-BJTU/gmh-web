@@ -6,6 +6,7 @@ import lombok.Data;
 public class StockDto {
     private Long    id;
     private Long    typeId;
+    private String  stockNumber;
     private String  stockName;
     private String  unit;
     private Integer amount;

@@ -71,6 +71,7 @@ public class StockServiceImpl implements StockService {
         StockPo po = CommonConverter.map(dto, StockPo.class);
         po.setStockTypeId(dto.getTypeId());
         po.setName(dto.getStockName());
+        po.setStockNumber(dto.getStockNumber());
         return stockMapper.insert(po);
     }
 
@@ -84,6 +85,7 @@ public class StockServiceImpl implements StockService {
         StockPo po = CommonConverter.map(dto, StockPo.class);
         po.setStockTypeId(dto.getTypeId());
         po.setName(dto.getStockName());
+        po.setStockNumber(dto.getStockNumber());
         return stockMapper.update(po);
     }
 

@@ -12,6 +12,7 @@ public class StockPo extends Po {
     private static final long serialVersionUID = 1L;
 
     private Long              stockTypeId;
+    private String            stockNumber;
     private String            name;
     private String            unit;
     private Integer           amount;
