@@ -7,6 +7,7 @@ public class StockVo {
     private Long    id;
     private Long    storeId;
     private Long    typeId;
+    private String  stockNumber;
     private String  typeName;
     private String  stockName;
     private String  unit;

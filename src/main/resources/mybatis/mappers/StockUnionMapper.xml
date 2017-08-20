@@ -16,6 +16,7 @@
 		s.`id`,
 		s.stock_type_id,
 		s.`name`,
+		s.`stock_number`,
 		s.`unit`,
 		s.`amount`,
 		s.created_time,
@@ -43,7 +44,7 @@
 			</if>
 			<if test="searchString != null and searchString != ''">
 				<bind name="search" value="'%' + searchString + '%'" />
-				AND CONCAT_WS("", s.`name`, s.`unit`, s.`amount`) LIKE #{search}
+				AND CONCAT_WS("", s.`name`,s.`stock_number`, s.`unit`, s.`amount`) LIKE #{search}
 			</if>
 		</where>
 	</select>

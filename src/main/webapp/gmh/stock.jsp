@@ -59,6 +59,7 @@
               <thead>
                 <tr>
                   <th>库存名</th>
+                  <th>库存编号</th>
                   <th>库存分类</th>
                   <th>单位</th>
                   <th>数量</th>
@@ -86,6 +87,10 @@
         <div class="field">
           <label>库存名</label>
           <input type="text" name="stockName" placeholder="请输入库存名">
+        </div>
+        <div class="field">
+          <label>库存编号</label>
+          <input type="text" name="stockNumber" placeholder="请输入库存编号">
         </div>
         <div class="field">
           <label>库存分类</label>
@@ -122,6 +127,10 @@
         <div class="field">
           <label>库存名</label>
           <input type="text" name="stockName" placeholder="请输入库存名">
+        </div>
+         <div class="field">
+          <label>库存编号</label>
+          <input type="text" name="stockNumber" placeholder="请输入编号">
         </div>
         <div class="field">
           <label>库存分类</label>
@@ -265,6 +274,7 @@
                 var $id = $('<td class="stockId" style="display:none">' + data.id + '</td>');
                 var $typeId = $('<td class="typeId" style="display:none">' + data.typeId + '</td>');
                 var $stockName = $('<td class="stockName">' + data.stockName + '</td>');
+                var $stockNumber = $('<td class="stockNumber">' + data.stockNumber + '</td>');
                 var $typeName = $('<td class="typeName">' + data.typeName + '</td>');
                 var $unit = $('<td class="unit">' + data.unit + '</td>');
                 var $amount = $('<td class="amount">' + data.amount + '</td>');
@@ -274,6 +284,7 @@
                 $tr.append($id);
                 $tr.append($typeId);
                 $tr.append($stockName);
+                $tr.append($stockNumber);
                 $tr.append($typeName);
                 $tr.append($unit);
                 $tr.append($amount);
@@ -317,6 +328,13 @@
               prompt: '库存名不能为空'
             }]
           },
+          newStockNumber: {
+              identifier: 'stockNumber',
+              rules: [{
+                type: 'empty',
+                prompt: '库存编号不能为空'
+              }]
+            },
           newTypeId: {
             identifier: 'typeId',
             rules: [{
@@ -378,6 +396,7 @@
         loadStockTypeData();
         $('#mod-stock-id').text($(this).parent().parent().find('.stockId').text());
         $('#mod-stock').find('input[name="stockName"]').val($(this).parent().parent().find('.stockName').text());
+        $('#mod-stock').find('input[name="stockNumber"]').val($(this).parent().parent().find('.stockNumber').text());
         $('.mod-stock-select select').val($(this).parent().parent().find('.typeId').text());
         $('.mod-stock-select .text').removeClass('default');
         $('.mod-stock-select .text').text($(this).parent().parent().find('.typeName').text());
@@ -409,6 +428,13 @@
               prompt: '库存名不能为空'
             }]
           },
+          modStockNumber: {
+              identifier: 'stockNumber',
+              rules: [{
+                type: 'empty',
+                prompt: '库存编号不能为空'
+              }]
+            },
           modTypeId: {
             identifier: 'typeId',
             rules: [{
