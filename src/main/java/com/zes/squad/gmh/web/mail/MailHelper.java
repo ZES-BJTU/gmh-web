@@ -66,7 +66,7 @@ public class MailHelper {
     private static Session getEmailSession(Map<String, Object> props) {
         Properties properties = System.getProperties();
         properties.put(HOST, MailProperties.get(HOST));
-//        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.port", 465);
         properties.put("mail.smtp.socketFactory.port", 465);
         properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         properties.put("mail.smtp.socketFactory.fallback", "false");
