@@ -1,11 +1,14 @@
 package com.zes.squad.gmh.web.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -13,6 +16,7 @@ import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
+import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
@@ -21,12 +25,14 @@ import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
+import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
 import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
 import com.zes.squad.gmh.web.helper.CalculateHelper;
 import com.zes.squad.gmh.web.helper.LogicHelper;
+import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
 import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
@@ -36,11 +42,13 @@ import com.zes.squad.gmh.web.service.MemberService;
 public class MemberServiceImpl implements MemberService {
 
     @Autowired
-    private MemberMapper      memberMapper;
+    private MemberMapper        memberMapper;
     @Autowired
-    private MemberLevelMapper memberLevelMapper;
+    private MemberLevelMapper   memberLevelMapper;
     @Autowired
-    private MemberUnionMapper memberUnionMapper;
+    private MemberUnionMapper   memberUnionMapper;
+    @Autowired
+    private ConsumeRecordMapper consumeRecordMapper;
 
     public List<MemberVo> listMembers() {
         MemberQueryCondition condition = new MemberQueryCondition();
@@ -132,6 +140,53 @@ public class MemberServiceImpl implements MemberService {
             vos.add(vo);
         }
         return vos;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void recharge(Long id, BigDecimal nailMoney, BigDecimal beautyMoney) {
+        MemberPo memberPo = memberMapper.selectById(id);
+        LogicHelper.ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
+        if (nailMoney != null) {
+            memberMapper.updateNailMoney(id, nailMoney);
+            ConsumeRecordPo po = new ConsumeRecordPo();
+            po.setStoreId(ThreadContext.getStaffStoreId());
+            po.setProjectId(1L);
+            po.setEmployeeId(null);
+            po.setMember(true);
+            po.setMemberId(memberPo.getId());
+            po.setMobile(memberPo.getPhone());
+            po.setAge(memberPo.getAge());
+            po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
+            po.setConsumerName(memberPo.getName());
+            po.setCharge(nailMoney);
+            po.setChargeWay(ChargeWayEnum.CARD.getKey());
+            po.setCounselor(null);
+            po.setSource(null);
+            po.setConsumeTime(new Date());
+            po.setRemark(null);
+            consumeRecordMapper.insert(po);
+        }
+        if (beautyMoney != null) {
+            memberMapper.updateBeautyMoney(id, beautyMoney);
+            ConsumeRecordPo po = new ConsumeRecordPo();
+            po.setStoreId(ThreadContext.getStaffStoreId());
+            po.setProjectId(2L);
+            po.setEmployeeId(null);
+            po.setMember(true);
+            po.setMemberId(memberPo.getId());
+            po.setMobile(memberPo.getPhone());
+            po.setAge(memberPo.getAge());
+            po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
+            po.setConsumerName(memberPo.getName());
+            po.setCharge(beautyMoney);
+            po.setChargeWay(ChargeWayEnum.CARD.getKey());
+            po.setCounselor(null);
+            po.setSource(null);
+            po.setConsumeTime(new Date());
+            po.setRemark(null);
+            consumeRecordMapper.insert(po);
+        }
     }
 
 }

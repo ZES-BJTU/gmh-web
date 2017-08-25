@@ -28,7 +28,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                 DEFAULT_MONTH);
         List<ConsumeCountPo> countOtherPos = consumeRecordMapper.sumOtherCharge(ThreadContext.getStaffStoreId(),
                 DEFAULT_MONTH);
-        DateTime dateTime = DateTime.now();
+        DateTime dateTime = DateTime.now().minusMonths(DEFAULT_MONTH - 1);
         List<ConsumeCountPo> countPos = Lists.newArrayList();
         for (int i = 0; i < DEFAULT_MONTH; i++) {
             ConsumeCountPo countPo = new ConsumeCountPo();
@@ -45,14 +45,9 @@ public class StatisticsServiceImpl implements StatisticsService {
                 }
             }
             countPos.add(countPo);
-            dateTime = dateTime.minusMonths(1);
+            dateTime = dateTime.plusMonths(1);
         }
         return CommonConverter.mapList(countPos, StatisticsVo.class);
-    }
-
-    public static void main(String[] args) {
-        DateTime dateTime = DateTime.now();
-        System.out.println(dateTime.toString("yyyy年M月"));
     }
 
 }

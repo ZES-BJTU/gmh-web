@@ -80,6 +80,23 @@ public class MemberController {
         return JsonResult.success(i);
     }
 
+    @RequestMapping("/recharge")
+    @ResponseBody
+    public JsonResult<Void> doRecharge(Long id, BigDecimal nailMoney, BigDecimal beautyMoney) {
+        ensureParameterExist(id, ErrorMessage.memberIdIsNull);
+        if (nailMoney == null && beautyMoney == null) {
+            return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "美甲美睫和美容储值不能同时为空");
+        }
+        if (nailMoney != null) {
+            ensureParameterValid(nailMoney.compareTo(BigDecimal.ZERO) == 1, "美甲美睫储值输入错误");
+        }
+        if (beautyMoney != null) {
+            ensureParameterValid(beautyMoney.compareTo(BigDecimal.ZERO) == 1, "美容储值输入错误");
+        }
+        memberService.recharge(id, nailMoney, beautyMoney);
+        return JsonResult.success();
+    }
+
     @RequestMapping("/queryByPhone")
     @ResponseBody
     public JsonResult<MemberVo> doQueryByPhone(String phone) {
@@ -103,10 +120,10 @@ public class MemberController {
             ensureParameterValid(dto.getJoinDate().before(dto.getValidDate()),
                     ErrorMessage.memberCardOpenDateAfterValidDate);
         }
-        ensureParameterValid(dto.getNailMoney() != null && dto.getNailMoney().compareTo(BigDecimal.ZERO) != -1,
-                ErrorMessage.memberNailMoneyIsError);
-        ensureParameterValid(dto.getBeautyMoney() != null && dto.getBeautyMoney().compareTo(BigDecimal.ZERO) != -1,
-                ErrorMessage.memberBeautyMoneyIsError);
+        //        ensureParameterValid(dto.getNailMoney() != null && dto.getNailMoney().compareTo(BigDecimal.ZERO) != -1,
+        //                ErrorMessage.memberNailMoneyIsError);
+        //        ensureParameterValid(dto.getBeautyMoney() != null && dto.getBeautyMoney().compareTo(BigDecimal.ZERO) != -1,
+        //                ErrorMessage.memberBeautyMoneyIsError);
     }
 
 }
