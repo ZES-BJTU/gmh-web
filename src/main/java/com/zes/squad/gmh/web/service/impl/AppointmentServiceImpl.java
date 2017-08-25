@@ -47,6 +47,7 @@ import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
+import com.zes.squad.gmh.web.entity.vo.TimeVo;
 import com.zes.squad.gmh.web.mapper.AppointmentMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
@@ -200,6 +201,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         MemberPo memberPo = null;
         if (po.getMemberId() != null) {
             memberPo = memberMapper.selectById(po.getMemberId());
+        } else {
+            if (chargeWay == ChargeWayEnum.CARD.getKey()) {
+                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "非会员不能使用会员卡消费");
+            }
         }
         ConsumeRecordPo recordPo = new ConsumeRecordPo();
         recordPo.setStoreId(po.getStoreId());
@@ -361,6 +366,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         condition.setEmployeeId(employeeId);
         List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
         return buildAppointmentVosByUnions(unions);
+    }
+
+    @Override
+    public List<TimeVo> queryTime(Date time, Long employeeId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

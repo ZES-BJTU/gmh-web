@@ -29,6 +29,7 @@ import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.param.AppointmentQueryParams;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
+import com.zes.squad.gmh.web.entity.vo.TimeVo;
 import com.zes.squad.gmh.web.service.AppointmentService;
 
 @RequestMapping("/appointment")
@@ -36,6 +37,13 @@ import com.zes.squad.gmh.web.service.AppointmentService;
 public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
+
+    @RequestMapping("/queryTime")
+    @ResponseBody
+    public JsonResult<List<TimeVo>> doQueryTime(Date time, Long employeeId) {
+        List<TimeVo> vos = appointmentService.queryTime(time, employeeId);
+        return JsonResult.success(vos);
+    }
 
     @RequestMapping("/listAll")
     @ResponseBody

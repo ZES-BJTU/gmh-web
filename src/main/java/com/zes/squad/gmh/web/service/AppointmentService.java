@@ -1,6 +1,7 @@
 package com.zes.squad.gmh.web.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.zes.squad.gmh.common.entity.PagedList;
@@ -9,8 +10,11 @@ import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
 import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
+import com.zes.squad.gmh.web.entity.vo.TimeVo;
 
 public interface AppointmentService {
+
+    List<TimeVo> queryTime(Date time, Long employeeId);
 
     List<AppointmentVo> listAllAppointments();
 
