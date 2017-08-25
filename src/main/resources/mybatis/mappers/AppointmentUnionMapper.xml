@@ -24,6 +24,8 @@
 		a.`store_id`,
 		a.`member_id`,
 		a.`phone`,
+		a.`name`,
+		a.`sex`,
 		a.`project_id`,
 		a.`employee_id`,
 		a.`begin_time`,
