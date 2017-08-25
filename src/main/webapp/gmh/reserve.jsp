@@ -95,6 +95,18 @@
           <input type="text" name="phone" placeholder="请输入预约人手机号">
         </div>
         <div class="field">
+          <label>预约人姓名</label>
+          <input type="text" name="name" placeholder="请输入预约人姓名">
+        </div>
+        <div class="field">
+          <label>预约人性别</label>
+          <select name="sex" class="ui fluid dropdown new-reserve-sex-select">
+            <option value="">请选择性别</option>
+            <option value="0">女</option>
+            <option value="1">男</option>
+          </select>
+        </div>
+        <div class="field">
           <label>顶级分类</label>
           <select name="topTypeId" class="ui fluid dropdown new-appointment-top-type-select">
             <option value="">请选择顶级分类</option>
@@ -156,7 +168,19 @@
       <form id="mod-appointment" class="ui form">
         <div class="field">
           <label>预约人手机号</label>
-          <input type="text" name="phone" placeholder="请输入预约人手机号" disabled="">
+          <input type="text" name="phone" placeholder="请输入预约人手机号">
+        </div>
+        <div class="field">
+          <label>预约人姓名</label>
+          <input type="text" name="name" placeholder="请输入预约人姓名">
+        </div>
+        <div class="field">
+          <label>预约人性别</label>
+          <select name="sex" class="ui fluid dropdown mod-appointment-sex-select">
+            <option value="">请选择性别</option>
+            <option value="0">女</option>
+            <option value="1">男</option>
+          </select>
         </div>
         <div class="field">
           <label>顶级分类</label>
@@ -534,6 +558,8 @@
                 var $memberId = $('<td class="memberId" style="display:none">' + data.memberId + '</td>');
                 var $memberName = $('<td class="memberName">' + data.memberName + '</td>');
                 var $memberPhone = $('<td class="memberPhone">' + data.phone + '</td>');
+                var $sexId = $('<td class="sexId" style="display:none">' + (data.sex == '男' ? 1 : 0) + '</td>');
+                var $sex = $('<td class="sex" style="display:none">' + data.sex + '</td>');
                 var $topTypeId = $('<td class="topTypeId" style="display:none">' + data.topType + '</td>');
                 var $topTypeName = $('<td class="topTypeName" style="display:none">' + data.topTypeName +
                   '</td>');
@@ -579,6 +605,7 @@
                 $tr.append($memberId);
                 $tr.append($memberName);
                 $tr.append($memberPhone);
+                $tr.append($sex);
                 $tr.append($topTypeId);
                 $tr.append($topTypeName);
                 $tr.append($typeId);
@@ -638,6 +665,20 @@
             }, {
               type: 'exactLength[11]',
               prompt: '请输入11位手机号'
+            }]
+          },
+          newName: {
+            identifier: 'name',
+            rules: [{
+              type: 'empty',
+              prompt: '预约人姓名不能为空'
+            }]
+          },
+          newSex: {
+            identifier: 'name',
+            rules: [{
+              type: 'empty',
+              prompt: '预约人性别不能为空'
             }]
           },
           newTopTypeId: {
@@ -730,6 +771,10 @@
         loadLineData();
         $('#mod-appointment-id').text($(this).parent().parent().find('.appointmentId').text());
         $('#mod-appointment').find('input[name="phone"]').val($(this).parent().parent().find('.memberPhone').text());
+        $('#mod-appointment').find('input[name="name"]').val($(this).parent().parent().find('.memberName').text());
+        $('.mod-appointment-sex-select select').val($(this).parent().parent().find('.sexId').text());
+        $('.mod-appointment-sex-select .text').removeClass('default');
+        $('.mod-appointment-sex-select .text').text($(this).parent().parent().find('.sex').text());
         var topType = $(this).parent().parent().find('.topTypeId').text();
         $('.mod-appointment-top-type-select select').val(topType);
         $('.mod-appointment-top-type-select .text').removeClass('default');
@@ -804,6 +849,20 @@
             }, {
               type: 'exactLength[11]',
               prompt: '请输入11位手机号'
+            }]
+          },
+          modName: {
+            identifier: 'name',
+            rules: [{
+              type: 'empty',
+              prompt: '预约人姓名不能为空'
+            }]
+          },
+          modSex: {
+            identifier: 'name',
+            rules: [{
+              type: 'empty',
+              prompt: '预约人性别不能为空'
             }]
           },
           modTopTypeId: {
