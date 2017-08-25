@@ -33,38 +33,43 @@
   <div class="ui middle aligned center aligned righted grid login-grid">
     <div class="column login-column">
       <h2 class="ui image header">
-        <img src="css/images/logo-white-2.png" class="image">
-        <div class="content">
+        <img src="css/images/logo-blue-2.png" class="image">
+        <!-- <div class="content">
           <p>光美焕-管理系统</p>
           <p class="second">Management System</p>
-        </div>
+        </div> -->
       </h2>
       <form id="login" class="ui large form">
         <div class="ui">
           <div class="field">
-            <div class="ui left icon input">
-              <i class="user icon"></i>
-              <input type="text" name="account" placeholder="请输入邮箱">
+            <div class="ui left input">
+              <!-- <i class="user icon"></i> -->
+              <input type="text" name="account" class="login-input" placeholder="EMAIL">
             </div>
           </div>
           <div class="field">
-            <div class="ui left icon input">
-              <i class="lock icon"></i>
-              <input type="password" name="password" placeholder="请输入密码">
+            <div class="ui left input">
+              <!-- <i class="lock icon"></i> -->
+              <input type="password" name="password" class="login-input" placeholder="PASSWORD">
             </div>
           </div>
-          <div class="ui fluid large submit button">登录</div>
+          <div class="ui large submit button login-btn">GO</div>
           <div class="login-link">
           	忘记密码了？点此
             <a href="forgetPassword.jsp" class="forget-pwd">重置密码</a>
           </div>
         </div>
 
-        <div class="ui error message">
+        <div class="ui error message login-message">
         </div>
 
       </form>
     </div>
+  </div>
+
+  <div class="login-footer">
+    <div>管理系统版权归北京光美焕科技有限责任公司所有</div>
+    <div><a target="_blank" href="http://www.brandnew-gmh.com">www.brandnew-gmh.com</a></div>
   </div>
 </body>
 

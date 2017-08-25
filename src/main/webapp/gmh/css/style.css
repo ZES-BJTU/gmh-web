@@ -15,8 +15,6 @@ body {
 .grid.login-grid {
   height: 100%;
   margin: 0;
-  background: url('images/background.png') center no-repeat;
-  background-size: cover;
 }
 .grid.login-grid .login-column {
   max-width: 350px;
@@ -26,7 +24,7 @@ body {
   color: #ffffff;
 }
 .grid.login-grid .login-column .header .image {
-  width: 5em;
+  width: 7em;
 }
 .grid.login-grid .login-column .header .content {
   margin-top: 10px;
@@ -41,15 +39,14 @@ body {
   font-size: 0.73em;
 }
 .grid.login-grid .login-column #login .button {
-  color: #ffffff;
-  background-color: #7bcad9;
-}
-.grid.login-grid .login-column #login .button:hover {
-  background-color: #49bfd6;
+  border-radius: 25px;
+  width: 120px;
+  color: #7bcad9;
+  background-color: #f2f2f2;
+  box-shadow: 0px 1px 2px #888888;
 }
 .grid.login-grid .login-column #login .login-link {
   margin-top: 10px;
-  color: #ffffff;
 }
 .grid.login-grid .login-column #login .login-link .forget-pwd {
   color: #7bcad9;
@@ -154,4 +151,30 @@ td.remark {
 #chart1,
 #chart2 {
   display: inline-block;
+}
+.ui.form input[type="text"].login-input {
+  border: 1px;
+  border-radius: 25px;
+  background-color: #f8f8f8;
+  box-shadow: 0px 1px 1px #888888 inset;
+}
+.ui.form input[type="password"].login-input {
+  border: 1px;
+  border-radius: 25px;
+  background-color: #f8f8f8;
+  box-shadow: 0px 1px 1px #888888 inset;
+}
+.ui.message.login-message {
+  border-radius: 25px;
+}
+.login-footer {
+  position: absolute;
+  width: 100%;
+  bottom: 30px;
+  text-align: center;
+  color: #909090;
+}
+.login-footer a {
+  text-decoration: underline;
+  color: #5d5d5d;
 }
