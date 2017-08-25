@@ -159,7 +159,7 @@
         </div>
         <div class="field">
           <label>支付金额</label>
-          <input type="text" name="charge" id="charge" placeholder="" disabled="">
+          <input type="text" name="charge" id="charge" placeholder="">
         </div>
         <div class="field">
           <label>来源</label>

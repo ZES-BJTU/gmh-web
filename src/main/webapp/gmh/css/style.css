@@ -178,3 +178,8 @@ td.remark {
   text-decoration: underline;
   color: #5d5d5d;
 }
+.reserve-time {
+  background-color: #7bcad9;
+  height: calc(100% - 130px);
+  margin-top: 20px;
+}

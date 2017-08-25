@@ -120,14 +120,6 @@
           <input type="text" name="validDate" id="vipValidDate" placeholder="请选择">
         </div>
         <div class="field">
-          <label>美容储值</label>
-          <input type="text" name="beautyMoney" placeholder="请选择">
-        </div>
-        <div class="field">
-          <label>美甲美睫储值</label>
-          <input type="text" name="nailMoney" placeholder="请选择">
-        </div>
-        <div class="field">
           <label>等级</label>
           <select name="memberLevelId" class="ui fluid dropdown new-vip-select">
             <option value="">请选择会员等级</option>
@@ -183,14 +175,6 @@
           <input type="text" name="validDate" placeholder="请选择">
         </div>
         <div class="field">
-          <label>美容储值</label>
-          <input type="text" name="beautyMoney" placeholder="请选择">
-        </div>
-        <div class="field">
-          <label>美甲美睫储值</label>
-          <input type="text" name="nailMoney" placeholder="请选择">
-        </div>
-        <div class="field">
           <label>等级</label>
           <select name="memberLevelId" class="ui fluid dropdown mod-vip-select">
             <option value="">请选择会员等级</option>
@@ -199,6 +183,32 @@
         <div class="field">
           <label>备注</label>
           <textarea name="remark" rows='3'></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui black deny right labeled icon button">
+        取消
+        <i class="remove icon"></i>
+      </div>
+      <div class="ui positive right labeled icon button">
+        提交
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="ui mini modal charge-vip-modal">
+    <div class="header">充值</div>
+    <div class="content">
+      <span id="charge-vip-id" style="display:none"></span>
+      <form id="charge-vip" class="ui form">
+        <div class="field">
+          <label>美甲美睫</label>
+          <input type="text" name="nailMoney" placeholder="请输入充值金额">
+        </div>
+        <div class="field">
+          <label>美容</label>
+          <input type="text" name="beautyMoney" placeholder="请输入充值金额">
         </div>
       </form>
     </div>
@@ -398,7 +408,7 @@
                 var $remark = $('<td class="remark" title="' + remark + '">' + afterRemark + '</td>');
                 //  var $remark = $('<td class="remark">' + data.remark + '</td>');
                 var $operate = $(
-                  '<td><button class="ui tiny orange button mod-vip">修改</button><button class="ui tiny red button del-vip">删除</button></td>'
+                  '<td><button class="ui tiny green button charge-vip">充值</button><button class="ui tiny orange button mod-vip">修改</button><button class="ui tiny red button del-vip">删除</button></td>'
                 )
                 $tr.append($id);
                 $tr.append($vipName);
@@ -500,20 +510,6 @@
             rules: [{
               type: 'empty',
               prompt: '会员等级不能为空'
-            }]
-          },
-          newBeautyMoney: {
-            identifier: 'beautyMoney',
-            rules: [{
-              type: 'decimal',
-              prompt: '请输入数字'
-            }]
-          },
-          newNailMoney: {
-            identifier: 'nailMoney',
-            rules: [{
-              type: 'decimal',
-              prompt: '请输入数字'
             }]
           },
           newVipValidDate: {
@@ -651,20 +647,6 @@
               prompt: '会员等级不能为空'
             }]
           },
-          modBeautyMoney: {
-            identifier: 'beautyMoney',
-            rules: [{
-              type: 'decimal',
-              prompt: '请输入数字'
-            }]
-          },
-          modNailMoney: {
-            identifier: 'nailMoney',
-            rules: [{
-              type: 'decimal',
-              prompt: '请输入数字'
-            }]
-          },
           modVipValidDate: {
             identifier: 'vipValidDate',
             rules: [{
@@ -767,6 +749,78 @@
           })
           .modal('show');
       })
+
+      //充值模态框
+      $(document).on('click', '.charge-vip', function () {
+        $('#charge-vip-id').text($(this).parent().parent().find('.vipId').text());
+        $('.charge-vip-modal').modal({
+            closable: false,
+            onDeny: function () {
+              $('#charge-vip').form('clear');
+              $('#charge-vip-id').text('');
+            },
+            onApprove: function () {
+              $('#charge-vip').submit();
+              return false;
+            }
+          })
+          .modal('show');
+      })
+
+      //充值信息提交
+      $('#charge-vip').form({
+        on: 'submit',
+        inline: true,
+        fields: {
+          newNailMoney: {
+            identifier: 'nailMoney',
+            rules: [{
+              type: 'decimal',
+              prompt: '美甲美睫储值格式错误'
+            }]
+          },
+          newBeautyMoney: {
+            identifier: 'beautyMoney',
+            rules: [{
+              type: 'decimal',
+              prompt: '美容储值格式错误'
+            }]
+          }
+        },
+        onSuccess: function (e) {
+          //阻止表单的提交
+          e.preventDefault();
+        }
+      }).api({
+        action: 'vip charge',
+        method: 'POST',
+        serializeForm: true,
+        beforeXHR: function (xhr) {
+          verifyToken();
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        },
+        beforeSend: function (settings) {
+          if ($('#charge-vip-id').text() == ''){
+            alert('ID为空');
+            return false;
+          }
+        },
+        onSuccess: function (response) {
+          if (response.error != null) {
+            alert(response.error);
+            verifyStatus(response.code);
+          } else {
+            $('#charge-vip-id').text('');
+            $('#charge-vip').form('clear');
+            $('.charge-vip-modal').modal('hide');
+            loadSearchVipList(1, 10, 'search');
+          }
+        },
+        onFailure: function (response) {
+          alert('服务器开小差了');
+        }
+      });
 
       function loadVipLevelData() {
         $.each(vipLevelData, function (i, data) {

@@ -86,69 +86,83 @@
       </div>
     </div>
   </div>
-  <div class="ui mini modal new-appointment-modal">
+  <div class="ui tiny modal new-appointment-modal">
     <div class="header">新建预约</div>
     <div class="content">
-      <form id="new-appointment" class="ui form">
-        <div class="field">
-          <label>预约人手机号</label>
-          <input type="text" name="phone" placeholder="请输入预约人手机号">
+      <div class="ui grid">
+        <div class="ten wide column">
+          <form id="new-appointment" class="ui form">
+            <div class="field">
+              <label>预约人手机号</label>
+              <input type="text" name="phone" placeholder="请输入预约人手机号">
+            </div>
+            <div class="field">
+              <label>预约人姓名</label>
+              <input type="text" name="name" placeholder="请输入预约人姓名">
+            </div>
+            <div class="field">
+              <label>预约人性别</label>
+              <select name="sex" class="ui fluid dropdown new-reserve-sex-select">
+                <option value="">请选择性别</option>
+                <option value="0">女</option>
+                <option value="1">男</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>顶级分类</label>
+              <select name="topTypeId" class="ui fluid dropdown new-appointment-top-type-select">
+                <option value="">请选择顶级分类</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>美容项目分类</label>
+              <select name="projectTypeId" class="ui fluid dropdown new-appointment-type-select">
+                <option value="">请选择美容项目分类</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>美容项目</label>
+              <select name="projectId" class="ui fluid dropdown new-appointment-project-select">
+                <option value="">请选择美容项目</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>操作员</label>
+              <select name="employeeId" class="ui fluid dropdown new-appointment-employee-select">
+                <option value="">请选择操作员</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>开始时间</label>
+              <input type="text" name="beginTime" value="" id="beginTime" placeholder="请输入开始时间">
+            </div>
+            <div class="field">
+              <label>结束时间</label>
+              <input type="text" name="endTime" value="" id="endTime" placeholder="请输入结束时间">
+            </div>
+            <div class="field">
+              <label>是否点排</label>
+              <select name="line" class="ui fluid dropdown new-appointment-line-select">
+                <option value="">请选择是否点排</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>备注</label>
+              <textarea name="remark" rows="3"></textarea>
+            </div>
+          </form>
         </div>
-        <div class="field">
-          <label>预约人姓名</label>
-          <input type="text" name="name" placeholder="请输入预约人姓名">
+        <div class="six wide column">
+          <form id="check-reserve-time" class="ui form">
+            <div class="field">
+              <label>查询美容师时间</label>
+              <input type="text" name="reserveTime" value="" id="reserveTime" placeholder="请输入日期">
+            </div>
+            <div class="ui fluid submit button">查询</div>
+          </form>
+          <div class="reserve-time"></div>
         </div>
-        <div class="field">
-          <label>预约人性别</label>
-          <select name="sex" class="ui fluid dropdown new-reserve-sex-select">
-            <option value="">请选择性别</option>
-            <option value="0">女</option>
-            <option value="1">男</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>顶级分类</label>
-          <select name="topTypeId" class="ui fluid dropdown new-appointment-top-type-select">
-            <option value="">请选择顶级分类</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>美容项目分类</label>
-          <select name="projectTypeId" class="ui fluid dropdown new-appointment-type-select">
-            <option value="">请选择美容项目分类</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>美容项目</label>
-          <select name="projectId" class="ui fluid dropdown new-appointment-project-select">
-            <option value="">请选择美容项目</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>操作员</label>
-          <select name="employeeId" class="ui fluid dropdown new-appointment-employee-select">
-            <option value="">请选择操作员</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>开始时间</label>
-          <input type="text" name="beginTime" value="" id="beginTime" placeholder="请输入开始时间">
-        </div>
-        <div class="field">
-          <label>结束时间</label>
-          <input type="text" name="endTime" value="" id="endTime" placeholder="请输入结束时间">
-        </div>
-        <div class="field">
-          <label>是否点排</label>
-          <select name="line" class="ui fluid dropdown new-appointment-line-select">
-            <option value="">请选择是否点排</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>备注</label>
-          <textarea name="remark" rows="3"></textarea>
-        </div>
-      </form>
+      </div>
     </div>
     <div class="actions">
       <div class="ui black deny right labeled icon button">
@@ -161,7 +175,7 @@
       </div>
     </div>
   </div>
-  <div class="ui mini modal mod-appointment-modal">
+  <div class="ui tiny modal mod-appointment-modal">
     <div class="header">修改预约</div>
     <div class="content">
       <span id="mod-appointment-id" style="display:none"></span>
@@ -379,6 +393,19 @@
       }).on('changeDate', function (ev) {
         $('#endTime').focus();
         $('#endTime').blur();
+      });
+      $('#reserveTime').datetimepicker({
+        language: 'zh-CN',
+        weekStart: 1,
+        todayBtn: 1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        forceParse: true,
+        showMeridian: 1
+      }).on('changeDate', function (ev) {
+        $('#reserveTime').focus();
+        $('#reserveTime').blur();
       });
       //加载全部美容项目分类
       $('.fake-button').api({
