@@ -24,6 +24,15 @@ public interface ConsumeRecordMapper {
      * @param month
      * @return
      */
-    List<ConsumeCountPo> count(@Param("storeId") Long storeId, @Param("month") Integer month);
+    List<ConsumeCountPo> sumCardCharge(@Param("storeId") Long storeId, @Param("month") Integer month);
+
+    /**
+     * 统计消费记录
+     * 
+     * @param storeId
+     * @param month
+     * @return
+     */
+    List<ConsumeCountPo> sumOtherCharge(@Param("storeId") Long storeId, @Param("month") Integer month);
 
 }

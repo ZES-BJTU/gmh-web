@@ -11,7 +11,7 @@ public class ConsumeCountPo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String            month;
-    private Integer           timesCount;
-    private BigDecimal        amountCount;
+    private BigDecimal        cardAmountCount;
+    private BigDecimal        otherAmountCount;
 
 }

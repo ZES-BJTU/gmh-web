@@ -8,7 +8,7 @@ import lombok.Data;
 public class StatisticsVo {
 
     private String     month;
-    private Integer    timesCount;
-    private BigDecimal amountCount;
+    private BigDecimal cardAmountCount;
+    private BigDecimal otherAmountCount;
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.count.po.ConsumeCountPo;
@@ -22,7 +23,17 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public List<StatisticsVo> countConsumeRecord() {
-        List<ConsumeCountPo> countPos = consumeRecordMapper.count(ThreadContext.getStaffStoreId(), DEFAULT_MONTH);
+        List<ConsumeCountPo> countCardPos = consumeRecordMapper.sumCardCharge(ThreadContext.getStaffStoreId(),
+                DEFAULT_MONTH);
+        List<ConsumeCountPo> countOtherPos = consumeRecordMapper.sumOtherCharge(ThreadContext.getStaffStoreId(),
+                DEFAULT_MONTH);
+        List<ConsumeCountPo> countPos = Lists.newArrayList();
+        for (int i = 0; i < countCardPos.size(); i++) {
+            ConsumeCountPo countPo = new ConsumeCountPo();
+            countPo.setMonth(countCardPos.get(i).getMonth());
+            countPo.setCardAmountCount(countCardPos.get(i).getCardAmountCount());
+            countPo.setOtherAmountCount(countOtherPos.get(i).getOtherAmountCount());
+        }
         return CommonConverter.mapList(countPos, StatisticsVo.class);
     }
 

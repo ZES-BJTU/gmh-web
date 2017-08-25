@@ -25,8 +25,9 @@
 	<resultMap type="com.zes.squad.gmh.web.entity.count.po.ConsumeCountPo"
 		id="CountResultMap">
 		<result column="month" jdbcType="VARCHAR" property="month" />
-		<result column="times_count" jdbcType="INTEGER" property="timesCount" />
-		<result column="amount_count" jdbcType="DECIMAL" property="amountCount" />
+		<result column="card_amount_count" jdbcType="DECIMAL" property="cardAmountCount" />
+		<result column="other_amount_count" jdbcType="DECIMAL"
+			property="otherAmountCount" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		`id`,`store_id`,`project_id`,
@@ -67,14 +68,35 @@
 		#{remark,jdbcType=VARCHAR}
 		);
 	</insert>
-	<select id="count" resultMap="CountResultMap">
+	<select id="sumCardCharge" resultMap="CountResultMap">
 		SELECT
 		DATE_FORMAT(`consume_time`,'%Y年%c月') AS `month`,
-		COUNT(*) AS
-		`times_count`,SUM(`charge`) AS `amount_count`
+		SUM(`charge`) AS
+		`card_amount_count`
 		FROM consume_record
 		WHERE
-		`store_id` = #{storeId, jdbcType=BIGINT}
+		`store_id` = #{storeId,
+		jdbcType=BIGINT}
+		AND
+		charge_way = 1
+		AND
+		consume_time <![CDATA[>]]>
+		DATE_SUB(NOW(), INTERVAL #{month,
+		jdbcType=INTEGER} MONTH)
+		GROUP BY
+		DATE_FORMAT(`consume_time`, '%Y-%m')
+	</select>
+	<select id="sumOtherCharge" resultMap="CountResultMap">
+		SELECT
+		DATE_FORMAT(`consume_time`,'%Y年%c月') AS `month`,
+		SUM(`charge`) AS
+		`other_amount_count`
+		FROM consume_record
+		WHERE
+		`store_id` = #{storeId,
+		jdbcType=BIGINT}
+		AND
+        charge_way = 1
 		AND
 		consume_time <![CDATA[>]]>
 		DATE_SUB(NOW(), INTERVAL #{month,
