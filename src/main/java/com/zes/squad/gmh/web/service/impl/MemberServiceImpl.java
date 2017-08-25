@@ -147,7 +147,7 @@ public class MemberServiceImpl implements MemberService {
     public void recharge(Long id, BigDecimal nailMoney, BigDecimal beautyMoney) {
         MemberPo memberPo = memberMapper.selectById(id);
         LogicHelper.ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
-        if (nailMoney != null) {
+        if (nailMoney != null && nailMoney.equals(BigDecimal.ZERO)) {
             memberMapper.updateNailMoney(id, nailMoney.add(memberPo.getNailMoney()));
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
@@ -167,7 +167,7 @@ public class MemberServiceImpl implements MemberService {
             po.setRemark(null);
             consumeRecordMapper.insert(po);
         }
-        if (beautyMoney != null) {
+        if (beautyMoney != null && beautyMoney.equals(BigDecimal.ZERO)) {
             memberMapper.updateBeautyMoney(id, beautyMoney.add(memberPo.getBeautyMoney()));
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());

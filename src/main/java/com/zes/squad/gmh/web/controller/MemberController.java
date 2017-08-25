@@ -88,10 +88,10 @@ public class MemberController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "美甲美睫和美容储值不能同时为空");
         }
         if (nailMoney != null) {
-            ensureParameterValid(nailMoney.compareTo(BigDecimal.ZERO) == 1, "美甲美睫储值输入错误");
+            ensureParameterValid(nailMoney.compareTo(BigDecimal.ZERO) != -1, "美甲美睫储值输入错误");
         }
         if (beautyMoney != null) {
-            ensureParameterValid(beautyMoney.compareTo(BigDecimal.ZERO) == 1, "美容储值输入错误");
+            ensureParameterValid(beautyMoney.compareTo(BigDecimal.ZERO) != -1, "美容储值输入错误");
         }
         memberService.recharge(id, nailMoney, beautyMoney);
         return JsonResult.success();

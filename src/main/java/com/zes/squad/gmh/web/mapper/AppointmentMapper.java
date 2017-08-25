@@ -26,7 +26,7 @@ public interface AppointmentMapper {
     AppointmentPo selectById(Long id);
 
     int deleteById(Long id);
-    
-//    AppointmentPo selectByEmployeeAnd
+
+    List<AppointmentPo> selectByEmployeeAndTime(@Param("time") Date time, @Param("employeeId") Long employeeId);
 
 }

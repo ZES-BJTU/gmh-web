@@ -27,6 +27,9 @@
 		`created_time`,
 		`modified_time`
 	</sql>
+	<select id="selectByEmployeeAndTime" resultMap="BaseResultMap">
+	SELECT <include refid="Base_Column_List"></include>
+	</select>
 	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
