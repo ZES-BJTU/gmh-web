@@ -160,7 +160,7 @@
             </div>
             <div class="ui fluid submit button new-check-reserve-btn">查询</div>
           </form>
-          <div class="reserve-time"></div>
+          <div id="new-reserve-time" class="reserve-time"></div>
         </div>
       </div>
     </div>
@@ -1199,12 +1199,28 @@
             xhr.setRequestHeader('X-token', getSessionStorage('token'));
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
+          beforeSend: function (settings) {
+            settings.data.time = time;
+            settings.data.employeeTd = employeeTd;
+            return settings;
+          },
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
               verifyStatus(response.code);
             } else {
-              
+              $('#new-reserve-time').empty();
+              $.each(response.data, function (i, data) {
+                var $item = $('<div class="reserve-time-item"></div>');
+                $item.text(data.time);
+                $item.css('height',percent);
+                if(data.type == '空闲'){
+                  $item.addClass('free');
+                }else{
+                  $item.addClass('not-free');
+                }
+                $('#new-reserve-time').append($item);
+              })
             }
           },
           onFailure: function (response) {

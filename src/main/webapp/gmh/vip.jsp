@@ -415,7 +415,7 @@
                 $tr.append($vipMobile);
                 $tr.append($sexId);
                 $tr.append($vipSex);
-                //  $tr.append($levelId);
+                $tr.append($levelId);
                 $tr.append($age);
                 $tr.append($vipBirth);
                 $tr.append($levelName);
