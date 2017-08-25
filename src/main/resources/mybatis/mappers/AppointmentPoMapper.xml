@@ -6,6 +6,8 @@
 		<result column="store_id" jdbcType="BIGINT" property="storeId" />
 		<result column="member_id" jdbcType="BIGINT" property="memberId" />
 		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="sex" jdbcType="TINYINT" property="sex" />
 		<result column="project_id" jdbcType="BIGINT" property="projectId" />
 		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
 		<result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
@@ -17,7 +19,11 @@
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		`id`,`store_id`,`member_id`,`phone`,`project_id`,`employee_id`,`begin_time`,`end_time`,`status`,`line`,`remark`,
+		`id`,`store_id`,`member_id`,
+		`phone`,`name`,`sex`,
+		`project_id`,`employee_id`,
+		`begin_time`,`end_time`,
+		`status`,`line`,`remark`,
 		`created_time`,
 		`modified_time`
 	</sql>
@@ -37,23 +43,27 @@
 		FROM
 		appointment
 		WHERE
-		store_id = #{storeId, jdbcType=BIGINT}
+		store_id = #{storeId,
+		jdbcType=BIGINT}
 		AND `status` = #{status, jdbcType=INTEGER}
 		<if test="employeeId != null">
 			AND employee_id = #{employeeId, jdbcType=BIGINT}
 		</if>
-		<if test="memberId != null">
-			AND member_id = #{memberId, jdbcType=BIGINT}
+		<if test="phone != null and phone != ''">
+			AND phone = #{phone, jdbcType=VARCHAR}
 		</if>
 		AND
-		((begin_time BETWEEN #{beginTime, jdbcType=TIMESTAMP} AND #{endTime,
+		((begin_time BETWEEN #{beginTime, jdbcType=TIMESTAMP} AND
+		#{endTime,
 		jdbcType=TIMESTAMP})
 		OR
-		(end_time BETWEEN #{beginTime, jdbcType=TIMESTAMP} AND #{endTime,
+		(end_time BETWEEN #{beginTime,
+		jdbcType=TIMESTAMP} AND #{endTime,
 		jdbcType=TIMESTAMP}
 		)
 		OR
-		(#{beginTime, jdbcType=TIMESTAMP} <![CDATA[<]]>
+		(#{beginTime,
+		jdbcType=TIMESTAMP} <![CDATA[<]]>
 		begin_time AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[>]]>
 		end_time))
 	</select>
@@ -66,18 +76,21 @@
 		INSERT INTO
 		appointment(
 		store_id,member_id,
-		phone,project_id,employee_id,
+		phone,`name`,`sex`,project_id,employee_id,
 		begin_time,end_time,
 		`status`,line,remark)
 		VALUES
-		(#{storeId, jdbcType=BIGINT},#{memberId,
+		(#{storeId,
+		jdbcType=BIGINT},#{memberId,
 		jdbcType=BIGINT},#{phone,
-		jdbcType=VARCHAR},#{projectId,
-		jdbcType=BIGINT},#{employeeId,
+		jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},
+		#{sex, jdbcType=TINYINT},
+		#{projectId,jdbcType=BIGINT},#{employeeId,
 		jdbcType=BIGINT},#{beginTime,
 		jdbcType=TIMESTAMP},#{endTime,
 		jdbcType=TIMESTAMP},#{status,
-		jdbcType=INTEGER},#{line, jdbcType=TINYINT},#{remark,
+		jdbcType=INTEGER},#{line,
+		jdbcType=TINYINT},#{remark,
 		jdbcType=VARCHAR})
 	</insert>
 	<update id="updateSelective" parameterType="com.zes.squad.gmh.web.entity.po.AppointmentPo">
@@ -88,6 +101,12 @@
 			</if>
 			<if test="phone != null">
 				phone = #{phone, jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				name = #{name, jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex, jdbcType=TINYINT},
 			</if>
 			<if test="projectId != null">
 				project_id = #{projectId, jdbcType=BIGINT},
@@ -132,7 +151,8 @@
 		jdbcType=BIGINT}
 	</update>
 	<delete id="deleteById" parameterType="long">
-		DELETE FROM appointment WHERE
+		DELETE FROM appointment
+		WHERE
 		id=#{id, jdbcType=BIGINT}
 	</delete>
 </mapper>

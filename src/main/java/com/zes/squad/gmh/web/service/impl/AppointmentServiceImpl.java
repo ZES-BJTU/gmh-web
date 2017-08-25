@@ -117,12 +117,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         MemberQueryCondition memberQueryCondition = new MemberQueryCondition();
         memberQueryCondition.setPhone(dto.getPhone());
         MemberPo memberPo = memberMapper.selectByCondition(memberQueryCondition);
-        ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
         ProjectPo projectPo = projectMapper.selectById(dto.getProjectId());
         ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
         EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
         ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), memberPo.getId(), null,
+        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
                 dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
@@ -131,9 +130,14 @@ public class AppointmentServiceImpl implements AppointmentService {
                 dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
         dto.setStoreId(ThreadContext.getStaffStoreId());
-        dto.setMemberId(memberPo.getId());
+        dto.setMemberId(memberPo != null ? memberPo.getId() : null);
         dto.setStatus(AppointmentStatusEnum.TO_DO.getKey());
         AppointmentPo po = CommonConverter.map(dto, AppointmentPo.class);
+        if (memberPo != null) {
+            po.setMemberId(memberPo.getId());
+            po.setName(memberPo.getName());
+            po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
+        }
         return appointmentMapper.insert(po);
     }
 
@@ -148,7 +152,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
         appointmentMapper.deleteById(dto.getId());
         //判断是否时间上冲突
-        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), po.getMemberId(), null,
+        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
                 dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
@@ -156,12 +160,23 @@ public class AppointmentServiceImpl implements AppointmentService {
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
                 dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
+        po.setPhone(dto.getPhone());
+        po.setName(dto.getName());
+        po.setSex(dto.getSex());
         po.setProjectId(dto.getProjectId());
         po.setEmployeeId(dto.getEmployeeId());
         po.setBeginTime(dto.getBeginTime());
         po.setEndTime(dto.getEndTime());
         po.setLine(dto.getLine());
         po.setRemark(dto.getRemark());
+        MemberQueryCondition memberQueryCondition = new MemberQueryCondition();
+        memberQueryCondition.setPhone(dto.getPhone());
+        MemberPo memberPo = memberMapper.selectByCondition(memberQueryCondition);
+        if (memberPo != null) {
+            po.setMemberId(memberPo.getId());
+            po.setName(memberPo.getName());
+            po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
+        }
         return appointmentMapper.insert(po);
     }
 
@@ -181,16 +196,23 @@ public class AppointmentServiceImpl implements AppointmentService {
     public int finish(Long id, BigDecimal charge, Integer chargeWay, Long counselorId, String source, String remark) {
         AppointmentPo po = appointmentMapper.selectById(id);
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
-        MemberPo memberPo = memberMapper.selectById(po.getMemberId());
+        MemberPo memberPo = null;
+        if (po.getMemberId() != null) {
+            memberPo = memberMapper.selectById(po.getMemberId());
+        }
         ConsumeRecordPo recordPo = new ConsumeRecordPo();
         recordPo.setStoreId(po.getStoreId());
         recordPo.setProjectId(po.getProjectId());
         recordPo.setEmployeeId(po.getEmployeeId());
-        recordPo.setMember(true);
-        recordPo.setMemberId(po.getMemberId());
+        if (po.getMemberId() != null) {
+            recordPo.setMember(true);
+            recordPo.setMemberId(po.getMemberId());
+        } else {
+            recordPo.setMember(false);
+        }
         recordPo.setMobile(po.getPhone());
-        recordPo.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
-        recordPo.setConsumerName(memberPo.getName());
+        recordPo.setSex(po.getSex());
+        recordPo.setConsumerName(po.getName());
         recordPo.setCharge(charge);
         recordPo.setChargeWay(chargeWay);
         recordPo.setCounselor(counselorId);
@@ -198,27 +220,29 @@ public class AppointmentServiceImpl implements AppointmentService {
         recordPo.setConsumeTime(new Date());
         recordPo.setRemark(remark);
         consumeRecordMapper.insert(recordPo);
-        // 扣除会员卡储值
-        if (chargeWay == ChargeWayEnum.CARD.getKey()) {
-            ProjectQueryCondition condition = new ProjectQueryCondition();
-            condition.setProjectId(po.getProjectId());
-            ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
-            ensureEntityExist(union, ErrorMessage.appointmentNotFound);
-            BigDecimal nailMoney = memberPo.getNailMoney();
-            BigDecimal beautyMoney = memberPo.getBeautyMoney();
-            Integer projectType = union.getProjectTypePo().getTopType();
-            if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
-                ensureConditionSatisfied(nailMoney.compareTo(charge) != -1, ErrorMessage.nailMoneyNotEnough);
-                //扣除美甲美睫储值
-                memberMapper.updateNailMoney(po.getMemberId(), nailMoney.subtract(charge));
-            } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
-                    || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
-                ensureConditionSatisfied(beautyMoney.compareTo(charge) != -1, ErrorMessage.beautyMoneyNotEnough);
-                //扣除美容储值
-                memberMapper.updateBeautyMoney(po.getMemberId(), beautyMoney.subtract(charge));
-            } else {
-                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS,
-                        ErrorMessage.projectTopTypeIsError);
+        if (memberPo != null) {
+            // 扣除会员卡储值
+            if (chargeWay == ChargeWayEnum.CARD.getKey()) {
+                ProjectQueryCondition condition = new ProjectQueryCondition();
+                condition.setProjectId(po.getProjectId());
+                ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
+                ensureEntityExist(union, ErrorMessage.appointmentNotFound);
+                BigDecimal nailMoney = memberPo.getNailMoney();
+                BigDecimal beautyMoney = memberPo.getBeautyMoney();
+                Integer projectType = union.getProjectTypePo().getTopType();
+                if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
+                    ensureConditionSatisfied(nailMoney.compareTo(charge) != -1, ErrorMessage.nailMoneyNotEnough);
+                    //扣除美甲美睫储值
+                    memberMapper.updateNailMoney(po.getMemberId(), nailMoney.subtract(charge));
+                } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
+                        || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
+                    ensureConditionSatisfied(beautyMoney.compareTo(charge) != -1, ErrorMessage.beautyMoneyNotEnough);
+                    //扣除美容储值
+                    memberMapper.updateBeautyMoney(po.getMemberId(), beautyMoney.subtract(charge));
+                } else {
+                    throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS,
+                            ErrorMessage.projectTopTypeIsError);
+                }
             }
         }
         return appointmentMapper.updateForFinish(id, AppointmentStatusEnum.DONE.getKey());

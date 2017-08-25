@@ -19,7 +19,7 @@ public interface AppointmentMapper {
 
     int updateForFinish(@Param("id") Long id, @Param("status") Integer status);
 
-    int selectByCondition(@Param("storeId") Long storeId, @Param("memberId") Long memberId,
+    int selectByCondition(@Param("storeId") Long storeId, @Param("phone") String phone,
                           @Param("employeeId") Long employeeId, @Param("status") List<Integer> status,
                           @Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 

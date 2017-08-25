@@ -92,6 +92,9 @@ public class AppointmentController {
     public JsonResult<Integer> update(AppointmentDto dto) {
         ensureParameterExist(dto, ErrorMessage.paramIsNull);
         ensureParameterExist(dto.getId(), ErrorMessage.appointmentIdIsNull);
+        ensureParameterExist(dto.getName(), "预约人姓名为空");
+        ensureParameterExist(dto.getPhone(), "预约人手机号为空");
+        ensureParameterExist(dto.getSex(), "预约人性别为空");
         ensureParameterExist(dto.getProjectId(), ErrorMessage.appointmentProjectIdIsNull);
         ensureParameterExist(dto.getEmployeeId(), ErrorMessage.appointmentEmployeeIdIsNull);
         ensureParameterExist(dto.getBeginTime(), ErrorMessage.appointmentBeginingTimeIsNull);
@@ -154,7 +157,9 @@ public class AppointmentController {
 
     private void checkAppointmentDto(AppointmentDto dto) {
         ensureEntityExist(dto, ErrorMessage.paramIsNull);
-        ensureParameterExist(dto.getPhone(), ErrorMessage.memberMobileIsNull);
+        ensureParameterExist(dto.getName(), "预约人姓名为空");
+        ensureParameterExist(dto.getPhone(), "预约人手机号为空");
+        ensureParameterExist(dto.getSex(), "预约人性别为空");
         ensureParameterValid(isValidMobile(dto.getPhone()), ErrorMessage.memberMobileIsError);
         ensureParameterExist(dto.getProjectId(), ErrorMessage.projectIdIsNull);
         ensureParameterExist(dto.getEmployeeId(), ErrorMessage.employeeNotSelected);
