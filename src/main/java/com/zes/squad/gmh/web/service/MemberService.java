@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.zes.squad.gmh.common.entity.PagedList;
@@ -19,5 +20,7 @@ public interface MemberService {
     int deleteByIds(Long[] Id);
 
     MemberVo queryByPhone(String phone);
+    
+    void recharge(Long id, BigDecimal nailMoney, BigDecimal beautyMoney);
 
 }
