@@ -26,5 +26,7 @@ public interface AppointmentMapper {
     AppointmentPo selectById(Long id);
 
     int deleteById(Long id);
+    
+//    AppointmentPo selectByEmployeeAnd
 
 }

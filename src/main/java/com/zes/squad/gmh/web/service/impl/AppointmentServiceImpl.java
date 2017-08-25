@@ -48,6 +48,7 @@ import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.entity.vo.TimeVo;
+import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.AppointmentMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
@@ -370,7 +371,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<TimeVo> queryTime(Date time, Long employeeId) {
-        // TODO Auto-generated method stub
+        EmployeePo po = employeeMapper.selectById(employeeId);
+        LogicHelper.ensureEntityExist(po, ErrorMessage.employeeNotFound);
+//        appointmentMapper.
         return null;
     }
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
@@ -41,6 +42,8 @@ public class AppointmentController {
     @RequestMapping("/queryTime")
     @ResponseBody
     public JsonResult<List<TimeVo>> doQueryTime(Date time, Long employeeId) {
+        Preconditions.checkArgument(time != null, "查询时间不能为空");
+        Preconditions.checkArgument(employeeId != null, "操作员标识不能为空");
         List<TimeVo> vos = appointmentService.queryTime(time, employeeId);
         return JsonResult.success(vos);
     }

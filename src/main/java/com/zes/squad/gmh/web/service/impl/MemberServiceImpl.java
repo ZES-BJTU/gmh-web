@@ -180,7 +180,7 @@ public class MemberServiceImpl implements MemberService {
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
             po.setConsumerName(memberPo.getName());
             po.setCharge(beautyMoney);
-            po.setChargeWay(ChargeWayEnum.CARD.getKey());
+            po.setChargeWay(ChargeWayEnum.CASH.getKey());
             po.setCounselor(null);
             po.setSource(null);
             po.setConsumeTime(new Date());
