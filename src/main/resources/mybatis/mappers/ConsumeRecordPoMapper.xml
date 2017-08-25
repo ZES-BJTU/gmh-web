@@ -96,7 +96,7 @@
 		`store_id` = #{storeId,
 		jdbcType=BIGINT}
 		AND
-        charge_way = 1
+        charge_way = 2
 		AND
 		consume_time <![CDATA[>]]>
 		DATE_SUB(NOW(), INTERVAL #{month,
