@@ -28,7 +28,15 @@
 		`modified_time`
 	</sql>
 	<select id="selectByEmployeeAndTime" resultMap="BaseResultMap">
-	SELECT <include refid="Base_Column_List"></include>
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM appointment WHERE employee_id = #{employeeId, jdbcType=BIGINT}
+		AND
+		DATE_FORMAT(created_time,'%Y-%m-%d') = DATE_FORMAT(#{time, jdbcType=TIMESTAMP},'%Y-%m-%d')
+		GROUP BY
+		begin_time
+		ORDER BY
+		begin_time
 	</select>
 	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
 		select

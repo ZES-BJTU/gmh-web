@@ -5,10 +5,13 @@ import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -66,6 +69,11 @@ import lombok.Synchronized;
 public class AppointmentServiceImpl implements AppointmentService {
 
     private static final int       DEFAULT_REMIND_MINUTE = 30;
+
+    private static final int       DEFAULT_START_HOUR    = 8;
+    private static final int       DEFAULT_END_HOUR      = 22;
+
+    private static final int       TOTAL_MINUTE          = (DEFAULT_END_HOUR - DEFAULT_START_HOUR) * 60;
 
     @Autowired
     private AppointmentMapper      appointmentMapper;
@@ -371,10 +379,83 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<TimeVo> queryTime(Date time, Long employeeId) {
-        EmployeePo po = employeeMapper.selectById(employeeId);
-        LogicHelper.ensureEntityExist(po, ErrorMessage.employeeNotFound);
-//        appointmentMapper.
-        return null;
+        EmployeePo employeePo = employeeMapper.selectById(employeeId);
+        LogicHelper.ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+        List<AppointmentPo> pos = appointmentMapper.selectByEmployeeAndTime(time, employeeId);
+        if (CollectionUtils.isEmpty(pos)) {
+            TimeVo vo = new TimeVo();
+            vo.setTime("8:00-22:00");
+            vo.setType("空闲");
+            vo.setPercent("100%");
+            return Lists.newArrayList(vo);
+        }
+        List<AppointmentPo> appointmentPos = Lists.newArrayList();
+        AppointmentPo firstAppointmentPo = new AppointmentPo();
+        firstAppointmentPo.setBeginTime(getDefaultBeginTime(time));
+        firstAppointmentPo.setEndTime(pos.get(0).getBeginTime());
+        appointmentPos.add(firstAppointmentPo);
+        for (int i = 0; i < pos.size(); i++) {
+            AppointmentPo busyAppointmentPo = new AppointmentPo();
+            busyAppointmentPo.setBeginTime(pos.get(i).getBeginTime());
+            busyAppointmentPo.setEndTime(pos.get(i).getEndTime());
+            appointmentPos.add(busyAppointmentPo);
+            if (i < pos.size() - 1) {
+                AppointmentPo freeAppointmentPo = new AppointmentPo();
+                freeAppointmentPo.setBeginTime(pos.get(i).getEndTime());
+                freeAppointmentPo.setEndTime(pos.get(i + 1).getBeginTime());
+                appointmentPos.add(freeAppointmentPo);
+            } else {
+                AppointmentPo freeAppointmentPo = new AppointmentPo();
+                freeAppointmentPo.setBeginTime(pos.get(i).getEndTime());
+                freeAppointmentPo.setEndTime(getDefaultEndTime(time));
+                appointmentPos.add(freeAppointmentPo);
+            }
+        }
+        List<TimeVo> vos = Lists.newArrayList();
+        for (int i = 0; i < appointmentPos.size(); i++) {
+            TimeVo vo = new TimeVo();
+            if (i % 2 == 0) {
+                vo.setType("空闲");
+            } else {
+                vo.setType("占用");
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            vo.setTime(sdf.format(appointmentPos.get(i).getBeginTime()) + "-"
+                    + sdf.format(appointmentPos.get(i).getEndTime()));
+
+            vo.setPercent(
+                    getMinutesBetweenDates(appointmentPos.get(i).getBeginTime(), appointmentPos.get(i).getEndTime())
+                            / TOTAL_MINUTE * 100 + "%");
+            vos.add(vo);
+        }
+        List<TimeVo> timeVos = Lists.newArrayList();
+        for (TimeVo vo : vos) {
+            if (!"0%".equals(vo.getPercent())) {
+                TimeVo timeVo = CommonConverter.map(vo, TimeVo.class);
+                timeVos.add(timeVo);
+            }
+        }
+        return vos;
+    }
+
+    private int getMinutesBetweenDates(Date startDate, Date endDate) {
+        DateTime startDateTime = new DateTime(startDate.getTime());
+        DateTime endDateTime = new DateTime(endDate.getTime());
+        return Minutes.minutesBetween(startDateTime, endDateTime).getMinutes();
+    }
+
+    private Date getDefaultBeginTime(Date date) {
+        DateTime dateTime = new DateTime(date.getTime());
+        DateTime defaultDateTime = new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(),
+                DEFAULT_START_HOUR, 0);
+        return defaultDateTime.toDate();
+    }
+
+    private Date getDefaultEndTime(Date date) {
+        DateTime dateTime = new DateTime(date.getTime());
+        DateTime defaultDateTime = new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(),
+                DEFAULT_END_HOUR, 0);
+        return defaultDateTime.toDate();
     }
 
 }
