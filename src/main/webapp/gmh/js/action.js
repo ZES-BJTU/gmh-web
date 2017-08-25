@@ -51,7 +51,7 @@ $.fn.api.settings.api = {
   'vip update' : url+'/member/update',
   'vip delete' : url+'/member/delete',
   'vip search' : url+'/member/search',
-  'vip charge' : url+'/member/charge',
+  'vip charge' : url+'/member/recharge',
   'project search' : url+'/project/search',
   'project insert' : url+'/project/insert',
   'project update' : url+'/project/update',
