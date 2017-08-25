@@ -33,6 +33,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             countPo.setMonth(countCardPos.get(i).getMonth());
             countPo.setCardAmountCount(countCardPos.get(i).getCardAmountCount());
             countPo.setOtherAmountCount(countOtherPos.get(i).getOtherAmountCount());
+            countPos.add(countPo);
         }
         return CommonConverter.mapList(countPos, StatisticsVo.class);
     }
