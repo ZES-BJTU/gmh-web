@@ -137,6 +137,10 @@ public class MemberServiceImpl implements MemberService {
             vo.setMemberLevelName(union.getMemberLevelPo().getName());
             vo.setSex(EnumUtils.getDescByKey(SexEnum.class,
                     Integer.valueOf(String.valueOf(union.getMemberPo().getSex()))));
+            vo.setNailMoney(
+                    union.getMemberPo().getNailMoney() == null ? BigDecimal.ZERO : union.getMemberPo().getNailMoney());
+            vo.setBeautyMoney(union.getMemberPo().getBeautyMoney() == null ? BigDecimal.ZERO
+                    : union.getMemberPo().getBeautyMoney());
             vos.add(vo);
         }
         return vos;
