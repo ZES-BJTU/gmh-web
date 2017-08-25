@@ -156,9 +156,9 @@
           <form id="check-reserve-time" class="ui form">
             <div class="field">
               <label>查询美容师时间</label>
-              <input type="text" name="reserveTime" value="" id="reserveTime" placeholder="请输入日期">
+              <input type="text" name="reserveTime" value="" id="newReserveTime" placeholder="请输入日期">
             </div>
-            <div class="ui fluid submit button">查询</div>
+            <div class="ui fluid submit button new-check-reserve-btn">查询</div>
           </form>
           <div class="reserve-time"></div>
         </div>
@@ -394,18 +394,35 @@
         $('#endTime').focus();
         $('#endTime').blur();
       });
-      $('#reserveTime').datetimepicker({
+      $('#newReserveTime').datetimepicker({
         language: 'zh-CN',
+        format: 'yyyy-mm-dd',
         weekStart: 1,
         todayBtn: 1,
         autoclose: 1,
+        minView: 2,
         todayHighlight: 1,
         startView: 2,
         forceParse: true,
         showMeridian: 1
       }).on('changeDate', function (ev) {
-        $('#reserveTime').focus();
-        $('#reserveTime').blur();
+        $('#newReserveTime').focus();
+        $('#newReserveTime').blur();
+      });
+      $('#modReserveTime').datetimepicker({
+        language: 'zh-CN',
+        format: 'yyyy-mm-dd',
+        weekStart: 1,
+        todayBtn: 1,
+        autoclose: 1,
+        minView: 2,
+        todayHighlight: 1,
+        startView: 2,
+        forceParse: true,
+        showMeridian: 1
+      }).on('changeDate', function (ev) {
+        $('#modReserveTime').focus();
+        $('#modReserveTime').blur();
       });
       //加载全部美容项目分类
       $('.fake-button').api({
@@ -1153,6 +1170,41 @@
               verifyStatus(response.code);
             } else {
               loadSearchAppointmentList(1, 10, 'search');
+            }
+          },
+          onFailure: function (response) {
+            alert('服务器开小差了');
+          }
+        })
+      })
+
+      //新增预约时查询操作员时间
+      $(document).on('click','.new-check-reserve-btn',function(){
+        var time=$('#newReserveTime').val() == '' ? '' : toTimeStamp($('#newReserveTime').val());
+        var employeeTd = $('.new-appointment-employee-select').val();
+        if(time == ''){
+          alert('请选择时间!');
+          return;
+        }
+        if(employeeId == ''){
+          alert('请选择操作员!');
+          return;
+        }
+        $('.fake-button').api({
+          action: 'appointment start',
+          method: 'POST',
+          on: 'now',
+          beforeXHR: function (xhr) {
+            verifyToken();
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          },
+          onSuccess: function (response) {
+            if (response.error != null) {
+              alert(response.error);
+              verifyStatus(response.code);
+            } else {
+              
             }
           },
           onFailure: function (response) {
