@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
@@ -205,6 +206,8 @@ public class ConsumeServiceImpl implements ConsumeService {
             } else {
                 dto.setMember(false);
             }
+            dto.setSource(Strings.isNullOrEmpty(union.getConsumeRecordPo().getSource()) ? ""
+                    : union.getConsumeRecordPo().getSource());
             dtos.add(dto);
         }
         return dtos;
