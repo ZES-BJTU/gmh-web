@@ -148,7 +148,7 @@ public class MemberServiceImpl implements MemberService {
         MemberPo memberPo = memberMapper.selectById(id);
         LogicHelper.ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
         if (nailMoney != null) {
-            memberMapper.updateNailMoney(id, nailMoney);
+            memberMapper.updateNailMoney(id, nailMoney.add(memberPo.getNailMoney()));
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
             po.setProjectId(1L);
@@ -168,7 +168,7 @@ public class MemberServiceImpl implements MemberService {
             consumeRecordMapper.insert(po);
         }
         if (beautyMoney != null) {
-            memberMapper.updateBeautyMoney(id, beautyMoney);
+            memberMapper.updateBeautyMoney(id, beautyMoney.add(memberPo.getBeautyMoney()));
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
             po.setProjectId(2L);
