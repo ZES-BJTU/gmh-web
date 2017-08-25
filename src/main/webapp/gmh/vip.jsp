@@ -803,6 +803,7 @@
         beforeSend: function (settings) {
           if ($('#charge-vip-id').text() != ''){
             settings.data.id = $('#charge-vip-id').text();
+            return settings;
           }else{
             alert('ID为空');
             return false;
