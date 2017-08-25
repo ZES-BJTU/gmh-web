@@ -50,7 +50,7 @@
   <script>
   	
  	var xAxisData1 = [];
-    var chartData1 = [];
+  var chartData1 = [];
 	var xAxisData2 = [];
  	var chartData2 = [];
  	
@@ -82,8 +82,8 @@
             	$.each(response.data, function (i, data){
             		xAxisData1.push(data.month);
             		xAxisData2.push(data.month);
-            		chartData1.push(data.amountCount);
-            		chartData2.push(data.timesCount);
+            		chartData1.push(data.cardAmountCount);
+            		chartData2.push(data.otherAmountCount);
             	})
             	newChart();
             	
@@ -99,13 +99,13 @@
   	    // 指定图表的配置项和数据
   	    var option1 = {
   	      title: {
-  	        text: '消费金额统计'
+  	        text: '储值卡消费金额'
   	      },
   	      tooltip: {
   	        trigger: 'axis'
   	      },
   	      legend: {
-  	        data: ['近六个月消费次数']
+  	        data: ['储值卡消费金额']
   	      },
   	      grid: {
   	        left: '3%',
@@ -128,7 +128,7 @@
   	        }
   	      },
   	      series: [{
-  	        name: '消费金额',
+  	        name: '储值卡消费金额',
   	        type: 'line',
   	        step: 'start',
   	        data: chartData1
@@ -136,13 +136,13 @@
   	    };
   	  	var option2 = {
   	      title: {
-  	        text: '消费次数统计'
+  	        text: '其他消费金额'
   	      },
   	      tooltip: {
   	        trigger: 'axis'
   	      },
   	      legend: {
-  	        data: ['近六个月消费次数']
+  	        data: ['其他消费金额']
   	      },
   	      grid: {
   	        left: '3%',
@@ -166,7 +166,7 @@
   	    	minInterval: 1
   	      },
   	      series: [{
-  	        name: '消费次数',
+  	        name: '其他消费金额',
   	        type: 'line',
   	        step: 'start',
   	        data: chartData2
