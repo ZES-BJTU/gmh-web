@@ -251,8 +251,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private List<AppointmentVo> buildAppointmentVosByUnions(List<AppointmentUnion> unions) {
         List<AppointmentVo> vos = Lists.newArrayList();
         for (AppointmentUnion union : unions) {
-            if (union.getAppointmentPo() == null || union.getEmployeePo() == null || union.getMemberPo() == null
-                    || union.getProjectPo() == null || union.getProjectTypePo() == null) {
+            if (union.getAppointmentPo() == null || union.getEmployeePo() == null || union.getProjectPo() == null
+                    || union.getProjectTypePo() == null) {
                 continue;
             }
             AppointmentVo vo = buildAppointmentVoByUnion(union);
@@ -264,12 +264,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     private AppointmentVo buildAppointmentVoByUnion(AppointmentUnion union) {
         AppointmentPo appointmentPo = union.getAppointmentPo();
         EmployeePo employeePo = union.getEmployeePo();
-        MemberPo memberPo = union.getMemberPo();
         ProjectPo projectPo = union.getProjectPo();
         ProjectTypePo projectTypePo = union.getProjectTypePo();
         AppointmentVo vo = CommonConverter.map(appointmentPo, AppointmentVo.class);
         vo.setStatus(EnumUtils.getDescByKey(AppointmentStatusEnum.class, appointmentPo.getStatus()));
-        vo.setMemberName(memberPo.getName());
+        vo.setMemberName(appointmentPo.getName());
         vo.setEmployeeName(employeePo.getName());
         vo.setProjectCharge(projectPo.getRetailPrice());
         vo.setProjectName(projectPo.getName());
