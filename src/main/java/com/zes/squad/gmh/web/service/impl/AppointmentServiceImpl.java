@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
@@ -268,7 +269,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         ProjectTypePo projectTypePo = union.getProjectTypePo();
         AppointmentVo vo = CommonConverter.map(appointmentPo, AppointmentVo.class);
         vo.setStatus(EnumUtils.getDescByKey(AppointmentStatusEnum.class, appointmentPo.getStatus()));
-        vo.setMemberName(appointmentPo.getName());
+        vo.setMemberName(!Strings.isNullOrEmpty(appointmentPo.getName()) ? appointmentPo.getName() : "");
         vo.setEmployeeName(employeePo.getName());
         vo.setProjectCharge(projectPo.getRetailPrice());
         vo.setProjectName(projectPo.getName());
