@@ -801,7 +801,9 @@
           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         beforeSend: function (settings) {
-          if ($('#charge-vip-id').text() == ''){
+          if ($('#charge-vip-id').text() != ''){
+            settings.data.id = $('#charge-vip-id').text();
+          }else{
             alert('ID为空');
             return false;
           }
