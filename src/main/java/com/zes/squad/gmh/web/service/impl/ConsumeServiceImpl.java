@@ -197,7 +197,7 @@ public class ConsumeServiceImpl implements ConsumeService {
                 dto.setCounselorName(employeePo.getName());
             }
             dto.setStoreName(union.getShopPo().getName());
-            dto.setProjectName(union.getProjectPo().getName());
+            dto.setProjectName(union.getProjectPo() == null ? "" : union.getProjectPo().getName());
             dto.setEmployeeName(union.getEmployeePo().getName());
             if (union.getConsumeRecordPo().getEmployeeId() != null
                     && union.getConsumeRecordPo().getMember().booleanValue()) {
