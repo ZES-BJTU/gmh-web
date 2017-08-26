@@ -31,6 +31,7 @@ import com.zes.squad.gmh.web.entity.param.AppointmentQueryParams;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.entity.vo.TimeVo;
+import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.service.AppointmentService;
 
 @RequestMapping("/appointment")
@@ -42,8 +43,8 @@ public class AppointmentController {
     @RequestMapping("/queryTime")
     @ResponseBody
     public JsonResult<List<TimeVo>> doQueryTime(Date time, Long employeeId) {
-        Preconditions.checkArgument(time != null, "查询时间不能为空");
-        Preconditions.checkArgument(employeeId != null, "操作员标识不能为空");
+        LogicHelper.ensureParameterExist(time, "查询时间不能为空");
+        LogicHelper.ensureParameterExist(employeeId, "操作员标识不能为空");
         List<TimeVo> vos = appointmentService.queryTime(time, employeeId);
         return JsonResult.success(vos);
     }
