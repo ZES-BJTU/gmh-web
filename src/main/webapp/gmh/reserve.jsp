@@ -179,66 +179,80 @@
     <div class="header">修改预约</div>
     <div class="content">
       <span id="mod-appointment-id" style="display:none"></span>
-      <form id="mod-appointment" class="ui form">
-        <div class="field">
-          <label>预约人手机号</label>
-          <input type="text" name="phone" placeholder="请输入预约人手机号">
+      <div class="ui grid">
+        <div class="ten wide column">
+          <form id="mod-appointment" class="ui form">
+            <div class="field">
+              <label>预约人手机号</label>
+              <input type="text" name="phone" placeholder="请输入预约人手机号">
+            </div>
+            <div class="field">
+              <label>预约人姓名</label>
+              <input type="text" name="name" placeholder="请输入预约人姓名">
+            </div>
+            <div class="field">
+              <label>预约人性别</label>
+              <select name="sex" class="ui fluid dropdown mod-appointment-sex-select">
+                <option value="">请选择性别</option>
+                <option value="0">女</option>
+                <option value="1">男</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>顶级分类</label>
+              <select name="topTypeId" class="ui fluid dropdown mod-appointment-top-type-select">
+                <option value="">请选择顶级分类</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>美容项目分类</label>
+              <select name="projectTypeId" class="ui fluid dropdown mod-appointment-type-select">
+                <option value="">请选择美容项目分类</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>美容项目</label>
+              <select name="projectId" class="ui fluid dropdown mod-appointment-project-select">
+                <option value="">请选择美容项目</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>操作员</label>
+              <select name="employeeId" class="ui fluid dropdown mod-appointment-employee-select">
+                <option value="">请选择操作员</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>开始时间</label>
+              <input type="text" name="beginTime" value="" id="modBeginTime" placeholder="请输入开始时间">
+            </div>
+            <div class="field">
+              <label>结束时间</label>
+              <input type="text" name="endTime" value="" id="modEndTime" placeholder="请输入结束时间">
+            </div>
+            <div class="field">
+              <label>是否点排</label>
+              <select name="line" class="ui fluid dropdown mod-appointment-line-select">
+                <option value="">请选择是否点排</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>备注</label>
+              <textarea name="remark" rows="3"></textarea>
+            </div>
+          </form>
         </div>
-        <div class="field">
-          <label>预约人姓名</label>
-          <input type="text" name="name" placeholder="请输入预约人姓名">
+        <div class="six wide column">
+          <form id="check-reserve-time" class="ui form">
+            <div class="field">
+              <label>查询美容师时间</label>
+              <input type="text" name="reserveTime" value="" id="modReserveTime" placeholder="请输入日期">
+            </div>
+            <div class="ui fluid submit button mod-check-reserve-btn">查询</div>
+          </form>
+          <div id="mod-reserve-time" class="reserve-time"></div>
         </div>
-        <div class="field">
-          <label>预约人性别</label>
-          <select name="sex" class="ui fluid dropdown mod-appointment-sex-select">
-            <option value="">请选择性别</option>
-            <option value="0">女</option>
-            <option value="1">男</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>顶级分类</label>
-          <select name="topTypeId" class="ui fluid dropdown mod-appointment-top-type-select">
-            <option value="">请选择顶级分类</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>美容项目分类</label>
-          <select name="projectTypeId" class="ui fluid dropdown mod-appointment-type-select">
-            <option value="">请选择美容项目分类</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>美容项目</label>
-          <select name="projectId" class="ui fluid dropdown mod-appointment-project-select">
-            <option value="">请选择美容项目</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>操作员</label>
-          <select name="employeeId" class="ui fluid dropdown mod-appointment-employee-select">
-            <option value="">请选择操作员</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>开始时间</label>
-          <input type="text" name="beginTime" value="" id="modBeginTime" placeholder="请输入开始时间">
-        </div>
-        <div class="field">
-          <label>结束时间</label>
-          <input type="text" name="endTime" value="" id="modEndTime" placeholder="请输入结束时间">
-        </div>
-        <div class="field">
-          <label>是否点排</label>
-          <select name="line" class="ui fluid dropdown mod-appointment-line-select">
-            <option value="">请选择是否点排</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>备注</label>
-          <textarea name="remark" rows="3"></textarea>
-        </div>
-      </form>
+      </div>
     </div>
     <div class="actions">
       <div class="ui black deny right labeled icon button">
@@ -684,6 +698,8 @@
             closable: false,
             onDeny: function () {
               clearSelect();
+              $('#newReserveTime').val('');
+              $('#new-reserve-time').empty();
               $('#new-appointment').form('clear');
             },
             onApprove: function () {
@@ -799,6 +815,8 @@
             verifyStatus(response.code);
           } else {
             clearSelect();
+            $('#newReserveTime').val('');
+            $('#new-reserve-time').empty();
             $('#new-appointment').form('clear');
             $('.new-appointment-modal').modal('hide');
             loadSearchAppointmentList(1, 10, 'search');
@@ -867,6 +885,8 @@
             closable: false,
             onDeny: function () {
               clearSelect();
+              $('#modReserveTime').val('');
+              $('#mod-reserve-time').empty();
               $('#mod-appointment').form('clear');
               $('#mod-appointment-id').text('');
             },
@@ -989,6 +1009,8 @@
             verifyStatus(response.code);
           } else {
             clearSelect();
+            $('#modReserveTime').val('');
+            $('#mod-reserve-time').empty();
             $('#mod-appointment-id').text('');
             $('#mod-appointment').form('clear');
             $('.mod-appointment-modal').modal('hide');
@@ -1212,7 +1234,10 @@
               $('#new-reserve-time').empty();
               $.each(response.data, function (i, data) {
                 var $item = $('<div class="reserve-time-item"></div>');
-                $item.text(data.time);
+                if(Number(data.percent.replace("%","")) >= 5){ 
+                 $item.text(data.time);
+                }
+                $item.attr('title',data.time);
                 $item.css('height',data.percent);
                 if(data.type == '空闲'){
                   $item.addClass('free');
@@ -1220,6 +1245,59 @@
                   $item.addClass('not-free');
                 }
                 $('#new-reserve-time').append($item);
+              })
+            }
+          },
+          onFailure: function (response) {
+            alert('服务器开小差了');
+          }
+        })
+      })
+      //修改预约时查询操作员时间
+      $(document).on('click','.mod-check-reserve-btn',function(){
+        var time=$('#modReserveTime').val() == '' ? '' : toTimeStamp($('#modReserveTime').val());
+        var employeeId = $('.mod-appointment-employee-select select').val();
+        if(time == ''){
+          alert('请选择时间!');
+          return;
+        }
+        if(employeeId == ''){
+          alert('请选择操作员!');
+          return;
+        }
+        $('.fake-button').api({
+          action: 'appointment queryTime',
+          method: 'POST',
+          on: 'now',
+          beforeXHR: function (xhr) {
+            verifyToken();
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          },
+          beforeSend: function (settings) {
+            settings.data.time = time;
+            settings.data.employeeId = employeeId;
+            return settings;
+          },
+          onSuccess: function (response) {
+            if (response.error != null) {
+              alert(response.error);
+              verifyStatus(response.code);
+            } else {
+              $('#mod-reserve-time').empty();
+              $.each(response.data, function (i, data) {
+                var $item = $('<div class="reserve-time-item"></div>');
+                if(Number(data.percent.replace("%","")) >= 5){ 
+                 $item.text(data.time);
+                }
+                $item.attr('title',data.time);
+                $item.css('height',data.percent);
+                if(data.type == '空闲'){
+                  $item.addClass('free');
+                }else{
+                  $item.addClass('not-free');
+                }
+                $('#mod-reserve-time').append($item);
               })
             }
           },

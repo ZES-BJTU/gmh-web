@@ -205,18 +205,21 @@ td.remark {
 }
 
 .reserve-time{
-    background-color: @theme-color;
+    // background-color: @theme-color;
     height: calc(~"100% - 130px");
     margin-top: 20px;
 }
 .reserve-time-item{
     width: 100%;
-    text-align: center;
+    // text-align: center;
     color: @white-color;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     &.free{
-        background-color:green;
+        background-color:@theme-color;
     }
     &.not-free{
-        background-color:@gray-color;
+        background-color:#c3c3c3;
     }
 }
