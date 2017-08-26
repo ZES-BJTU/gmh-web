@@ -210,6 +210,20 @@
           <label>美容</label>
           <input type="text" name="beautyMoney" placeholder="请输入充值金额">
         </div>
+        <div class="field">
+              <label>操作员</label>
+              <select name="employeeId" class="ui fluid dropdown employee-select">
+                <option value="">请选择操作员</option>
+              </select>
+        </div>
+        <div class="field">
+          <label>来源</label>
+          <input type="text" name="source">
+        </div>
+        <div class="field">
+          <label>备注</label>
+          <input type="text" name="remark">
+        </div>
       </form>
     </div>
     <div class="actions">
@@ -294,6 +308,7 @@
     var searchInfo = '';
     var searchLevelId = '';
     var vipLevelData = [];
+    var employeeData = [];
     $(document).ready(function () {
       //加载会员等级
       $('.fake-button').api({
@@ -323,6 +338,35 @@
           alert('服务器开小差了');
         }
       })
+      //加载所有员工
+       $('.fake-button').api({
+        action: 'employee getAll',
+        method: 'GET',
+        on: 'now',
+        beforeXHR: function (xhr) {
+          verifyToken();
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        },
+        onSuccess: function (response) {
+          if (response.error != null) {
+            alert(response.error);
+            verifyStatus(response.code);
+          } else {
+            $('.employee-select select').find('option:not(:first)').remove();
+            vipLevelData = response.data;
+            $.each(response.data, function (i, data) {
+              var $option = $('<option value="' + data.employeeId + '">' + data.employeeName + '</option>');
+              $('.employee-select select').append($option);
+            })
+            $('.employee-select select').val(0);
+          }
+        },
+        onFailure: function (response) {
+          alert('服务器开小差了');
+        }
+      })
+      //加载所有员工
       //会员管理搜索
       $('.vip-search').form({
         onSuccess: function (e) {
@@ -752,6 +796,7 @@
 
       //充值模态框
       $(document).on('click', '.charge-vip', function () {
+    	loadEmployeeData();
         $('#charge-vip-id').text($(this).parent().parent().find('.vipId').text());
         $('.charge-vip-modal').modal({
             closable: false,
@@ -785,7 +830,14 @@
               type: 'decimal',
               prompt: '美容储值格式错误'
             }]
-          }
+          },
+          newEmployeeId: {
+              identifier: 'employeeId',
+              rules: [{
+                type: 'empty',
+                prompt: '操作员不能为空'
+              }]
+            }
         },
         onSuccess: function (e) {
           //阻止表单的提交
@@ -832,6 +884,13 @@
           $('.mod-vip-select select').append($option.clone());
         })
       }
+      //TODO 
+      function loadEmployeeData() {
+          $.each(employeeData, function (i, data) {
+            var $option = $('<option value="' + data.employeeId + '">' + data.employeeName + '</option>');
+            $('.employee-select select').append($option);
+          })
+        }
 
       function clearVipSelect() {
         $('.new-vip-select select').find('option:not(:first)').remove();

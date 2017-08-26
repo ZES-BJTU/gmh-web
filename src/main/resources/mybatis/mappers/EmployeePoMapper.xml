@@ -26,6 +26,11 @@
 		<include refid="Base_Column_List" />
 		FROM employee WHERE id = #{id, jdbcType=BIGINT}
 	</select>
+	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM employee WHERE shop_id = #{storeId, jdbcType=BIGINT}
+	</select>
 	<select id="selectByIds" parameterType="list" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />

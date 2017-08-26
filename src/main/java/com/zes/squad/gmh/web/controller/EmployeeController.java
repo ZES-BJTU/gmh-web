@@ -28,8 +28,10 @@ import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.dto.EmployeeDto;
 import com.zes.squad.gmh.web.entity.dto.JobDto;
 import com.zes.squad.gmh.web.entity.param.EmployeeParams;
+import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.entity.vo.JobVo;
+import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.helper.CheckHelper;
 import com.zes.squad.gmh.web.service.EmployeeService;
 
@@ -57,6 +59,13 @@ public class EmployeeController {
 
         return JsonResult.success(pagedVos);
     }
+    @RequestMapping("/getAll")
+    @ResponseBody
+    public JsonResult<List<EmployeeItemVo>> doListProjectTypes() {
+        List<EmployeeItemVo> vos = employeeService.getAll();
+        return JsonResult.success(vos);
+    }
+   
 
     @RequestMapping("/search")
     @ResponseBody

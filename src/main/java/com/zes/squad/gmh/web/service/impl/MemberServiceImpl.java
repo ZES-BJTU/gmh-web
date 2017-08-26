@@ -148,7 +148,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void recharge(Long id, BigDecimal nailMoney, BigDecimal beautyMoney) {
+    public void recharge(Long id, Long employeeId,BigDecimal nailMoney, BigDecimal beautyMoney,String source,String remark) {
         MemberPo memberPo = memberMapper.selectById(id);
         LogicHelper.ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
         if (nailMoney != null && !nailMoney.equals(BigDecimal.ZERO)) {
@@ -156,7 +156,7 @@ public class MemberServiceImpl implements MemberService {
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
             po.setProjectId(1L);
-            po.setEmployeeId(null);
+            po.setEmployeeId(employeeId);
             po.setMember(true);
             po.setMemberId(memberPo.getId());
             po.setMobile(memberPo.getPhone());
@@ -166,9 +166,9 @@ public class MemberServiceImpl implements MemberService {
             po.setCharge(nailMoney);
             po.setChargeWay(ChargeWayEnum.CASH.getKey());
             po.setCounselor(null);
-            po.setSource(null);
+            po.setSource(source);
             po.setConsumeTime(new Date());
-            po.setRemark(null);
+            po.setRemark(remark);
             consumeRecordMapper.insert(po);
         }
         if (beautyMoney != null && !beautyMoney.equals(BigDecimal.ZERO)) {
@@ -176,7 +176,7 @@ public class MemberServiceImpl implements MemberService {
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
             po.setProjectId(2L);
-            po.setEmployeeId(null);
+            po.setEmployeeId(employeeId);
             po.setMember(true);
             po.setMemberId(memberPo.getId());
             po.setMobile(memberPo.getPhone());
@@ -186,9 +186,9 @@ public class MemberServiceImpl implements MemberService {
             po.setCharge(beautyMoney);
             po.setChargeWay(ChargeWayEnum.CASH.getKey());
             po.setCounselor(null);
-            po.setSource(null);
+            po.setSource(source);
             po.setConsumeTime(new Date());
-            po.setRemark(null);
+            po.setRemark(remark);
             consumeRecordMapper.insert(po);
         }
     }

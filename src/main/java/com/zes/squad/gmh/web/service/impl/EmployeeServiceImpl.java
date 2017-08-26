@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import com.zes.squad.gmh.web.entity.dto.JobDto;
 import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.union.EmployeeJobUnion;
+import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeJobUnionMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
@@ -182,5 +184,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeJobUnion> unions = employeeJobUnionMapper.listEmployeeJobUnionsByCondition(ids);
         return buildEmployeeDtosByUnions(unions);
     }
+
+	@Override
+	public List<EmployeeItemVo> getAll() {
+		Long storeId = ThreadContext.getStaffStoreId();
+		List<EmployeeItemVo> vos = Lists.newArrayList();
+		List<EmployeePo> pos = employeeMapper.getAll(storeId);
+		for (EmployeePo po : pos) {
+            EmployeeItemVo vo = new EmployeeItemVo();
+            vo.setEmployeeId(po.getId());
+            vo.setEmployeeName(po.getName());
+            vos.add(vo);
+        }
+		return vos;
+	}
 
 }

@@ -82,7 +82,7 @@ public class MemberController {
 
     @RequestMapping("/recharge")
     @ResponseBody
-    public JsonResult<Void> doRecharge(Long id, BigDecimal nailMoney, BigDecimal beautyMoney) {
+    public JsonResult<Void> doRecharge(Long id, Long employeeId, BigDecimal nailMoney, BigDecimal beautyMoney,String source,String remark) {
         ensureParameterExist(id, ErrorMessage.memberIdIsNull);
         if (nailMoney == null && beautyMoney == null) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(), "美甲美睫和美容储值不能同时为空");
@@ -93,7 +93,7 @@ public class MemberController {
         if (beautyMoney != null) {
             ensureParameterValid(beautyMoney.compareTo(BigDecimal.ZERO) != -1, "美容储值输入错误");
         }
-        memberService.recharge(id, nailMoney, beautyMoney);
+        memberService.recharge(id, employeeId, nailMoney, beautyMoney, source, remark);
         return JsonResult.success();
     }
 
