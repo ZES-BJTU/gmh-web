@@ -1181,17 +1181,17 @@
       //新增预约时查询操作员时间
       $(document).on('click','.new-check-reserve-btn',function(){
         var time=$('#newReserveTime').val() == '' ? '' : toTimeStamp($('#newReserveTime').val());
-        var employeeTd = $('.new-appointment-employee-select').val();
+        var employeeTd = $('.new-appointment-employee-select select').val();
         if(time == ''){
           alert('请选择时间!');
           return;
         }
-        if(employeeId == ''){
+        if(employeeTd == ''){
           alert('请选择操作员!');
           return;
         }
         $('.fake-button').api({
-          action: 'appointment start',
+          action: 'appointment queryTime',
           method: 'POST',
           on: 'now',
           beforeXHR: function (xhr) {

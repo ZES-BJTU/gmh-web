@@ -67,6 +67,7 @@ $.fn.api.settings.api = {
   'appointment remind' : url+'/appointment/remind',
   'appointment listEmployeesByProject' : url+'/appointment/listEmployeesByProject',
   'appointment listAppointmentsByEmployee' : url+'/appointment/listAppointmentsByEmployee',
+  'appointment queryTime' : url+'/appointment/queryTime',
   'record search' : url+'/consume/search',
   'record create' : url+'/consume/create',
   'record export' : url+'/consume/export',
