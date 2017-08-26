@@ -29,6 +29,7 @@ import com.zes.squad.gmh.common.enums.AppointmentStatusEnum;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.JobEnum;
 import com.zes.squad.gmh.common.enums.ProjectTypeEnum;
+import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.enums.YesOrNoEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
@@ -133,10 +134,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
         EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
         ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-//        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
-//                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
-//                dto.getBeginTime(), dto.getEndTime());
-//        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
+        //        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
+        //                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+        //                dto.getBeginTime(), dto.getEndTime());
+        //        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
         int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, employeePo.getId(),
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
                 dto.getBeginTime(), dto.getEndTime());
@@ -293,6 +294,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         vo.setTypeId(projectPo.getProjectTypeId());
         vo.setTypeName(projectTypePo.getTypeName());
         vo.setLine(appointmentPo.getLine().booleanValue() ? YesOrNoEnum.YES.getDesc() : YesOrNoEnum.NO.getDesc());
+        if (union.getAppointmentPo().getSex() != null) {
+            vo.setSex(EnumUtils.getDescByKey(SexEnum.class, union.getAppointmentPo().getSex()));
+        }
         return vo;
     }
 
