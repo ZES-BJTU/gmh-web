@@ -217,11 +217,11 @@
               </select>
         </div>
         <div class="field">
-          <label>来源</label>
+          <label>充值来源</label>
           <input type="text" name="source">
         </div>
         <div class="field">
-          <label>备注</label>
+          <label>充值备注</label>
           <input type="text" name="remark">
         </div>
       </form>
