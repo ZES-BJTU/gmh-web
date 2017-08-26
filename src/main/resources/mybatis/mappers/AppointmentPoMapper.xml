@@ -74,14 +74,14 @@
 			AND phone = #{phone, jdbcType=VARCHAR}
 		</if>
 		AND
-		((#{beginTime, jdbcType=TIMESTAMP} BETWEEN begin_time AND end_time)
+		(#{beginTime, jdbcType=TIMESTAMP} BETWEEN begin_time AND end_time)
 		OR
 		(#{endTime, jdbcType=TIMESTAMP} BETWEEN begin_time AND end_time)
 		OR
-		(#{beginTime, jdbcType=TIMESTAMP} <![CDATA[<]]> begin_time 
+		((#{beginTime, jdbcType=TIMESTAMP} <![CDATA[<]]> begin_time 
 		AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[>]]> end_time))
 		OR
-		(#{beginTime, jdbcType=TIMESTAMP} <![CDATA[>]]> begin_time 
+		((#{beginTime, jdbcType=TIMESTAMP} <![CDATA[>]]> begin_time 
 		AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[<]]> end_time))
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">

@@ -133,11 +133,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
         EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
         ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
-                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
-                dto.getBeginTime(), dto.getEndTime());
-        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
-        count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, employeePo.getId(),
+//        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
+//                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+//                dto.getBeginTime(), dto.getEndTime());
+//        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
+        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, employeePo.getId(),
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
                 dto.getBeginTime(), dto.getEndTime());
         ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
