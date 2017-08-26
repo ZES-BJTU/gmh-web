@@ -66,7 +66,7 @@
 		WHERE
 		store_id = #{storeId,
 		jdbcType=BIGINT}
-		AND `status` = #{status, jdbcType=INTEGER}
+		AND `status` IN (1, 2)
 		<if test="employeeId != null">
 			AND employee_id = #{employeeId, jdbcType=BIGINT}
 		</if>
@@ -74,19 +74,15 @@
 			AND phone = #{phone, jdbcType=VARCHAR}
 		</if>
 		AND
-		((begin_time BETWEEN #{beginTime, jdbcType=TIMESTAMP} AND
-		#{endTime,
-		jdbcType=TIMESTAMP})
+		(#{beginTime, jdbcType=TIMESTAMP} BETWEEN begin_time AND end_time)
 		OR
-		(end_time BETWEEN #{beginTime,
-		jdbcType=TIMESTAMP} AND #{endTime,
-		jdbcType=TIMESTAMP}
-		)
+		(#{endTime, jdbcType=TIMESTAMP} BETWEEN begin_time AND end_time)
 		OR
-		(#{beginTime,
-		jdbcType=TIMESTAMP} <![CDATA[<]]>
-		begin_time AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[>]]>
-		end_time))
+		((#{beginTime, jdbcType=TIMESTAMP} <![CDATA[<]]> begin_time 
+		AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[>]]> end_time))
+		OR
+		((#{beginTime, jdbcType=TIMESTAMP} <![CDATA[>]]> begin_time 
+		AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[<]]> end_time))
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
