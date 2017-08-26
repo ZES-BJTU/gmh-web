@@ -1181,12 +1181,12 @@
       //新增预约时查询操作员时间
       $(document).on('click','.new-check-reserve-btn',function(){
         var time=$('#newReserveTime').val() == '' ? '' : toTimeStamp($('#newReserveTime').val());
-        var employeeTd = $('.new-appointment-employee-select select').val();
+        var employeeId = $('.new-appointment-employee-select select').val();
         if(time == ''){
           alert('请选择时间!');
           return;
         }
-        if(employeeTd == ''){
+        if(employeeId == ''){
           alert('请选择操作员!');
           return;
         }
@@ -1201,7 +1201,7 @@
           },
           beforeSend: function (settings) {
             settings.data.time = time;
-            settings.data.employeeTd = employeeTd;
+            settings.data.employeeId = employeeId;
             return settings;
           },
           onSuccess: function (response) {
@@ -1213,7 +1213,7 @@
               $.each(response.data, function (i, data) {
                 var $item = $('<div class="reserve-time-item"></div>');
                 $item.text(data.time);
-                $item.css('height',percent);
+                $item.css('height',data.percent);
                 if(data.type == '空闲'){
                   $item.addClass('free');
                 }else{
