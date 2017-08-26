@@ -5,6 +5,7 @@ import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -381,7 +382,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<TimeVo> queryTime(Date time, Long employeeId) {
         EmployeePo employeePo = employeeMapper.selectById(employeeId);
         LogicHelper.ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-        List<AppointmentPo> pos = appointmentMapper.selectByEmployeeAndTime(time, employeeId);
+        List<AppointmentPo> pos = appointmentMapper.selectByEmployeeAndTime(time, employeeId, getDefaultBeginTime(time),
+                getDefaultEndTime(time));
         if (CollectionUtils.isEmpty(pos)) {
             TimeVo vo = new TimeVo();
             vo.setTime("8:00-22:00");
@@ -419,13 +421,16 @@ public class AppointmentServiceImpl implements AppointmentService {
             } else {
                 vo.setType("占用");
             }
-            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-            vo.setTime(sdf.format(appointmentPos.get(i).getBeginTime()) + "-"
-                    + sdf.format(appointmentPos.get(i).getEndTime()));
-
-            vo.setPercent(
-                    getMinutesBetweenDates(appointmentPos.get(i).getBeginTime(), appointmentPos.get(i).getEndTime())
-                            / TOTAL_MINUTE * 100 + "%");
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            AppointmentPo appointmentPo = appointmentPos.get(i);
+            String beginTime = sdf.format(appointmentPo.getBeginTime());
+            String endTime = sdf.format(appointmentPo.getEndTime());
+            vo.setTime(beginTime + "-" + endTime);
+            int minute = getMinutesBetweenDates(appointmentPos.get(i).getBeginTime(),
+                    appointmentPos.get(i).getEndTime());
+            double persent = ((double) minute) / TOTAL_MINUTE;
+            DecimalFormat decimalFormat = new DecimalFormat("##.00%");
+            vo.setPercent(decimalFormat.format(persent));
             vos.add(vo);
         }
         List<TimeVo> timeVos = Lists.newArrayList();
@@ -444,14 +449,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         return Minutes.minutesBetween(startDateTime, endDateTime).getMinutes();
     }
 
-    private Date getDefaultBeginTime(Date date) {
+    private static Date getDefaultBeginTime(Date date) {
         DateTime dateTime = new DateTime(date.getTime());
         DateTime defaultDateTime = new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(),
                 DEFAULT_START_HOUR, 0);
         return defaultDateTime.toDate();
     }
 
-    private Date getDefaultEndTime(Date date) {
+    private static Date getDefaultEndTime(Date date) {
         DateTime dateTime = new DateTime(date.getTime());
         DateTime defaultDateTime = new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth(),
                 DEFAULT_END_HOUR, 0);
