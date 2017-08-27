@@ -60,6 +60,9 @@ public class MemberController {
     @ResponseBody
     public JsonResult<Integer> insert(MemberDto dto) {
         checkMemberDto(dto);
+        BigDecimal zero = new BigDecimal("0.00");
+        dto.setBeautyMoney(zero);
+        dto.setNailMoney(zero);
         int i = memberService.insert(dto);
         return JsonResult.success(i);
     }
