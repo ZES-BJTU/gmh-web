@@ -31,7 +31,6 @@ import com.zes.squad.gmh.web.entity.param.EmployeeParams;
 import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeVo;
 import com.zes.squad.gmh.web.entity.vo.JobVo;
-import com.zes.squad.gmh.web.entity.vo.ProjectTypeVo;
 import com.zes.squad.gmh.web.helper.CheckHelper;
 import com.zes.squad.gmh.web.service.EmployeeService;
 
