@@ -354,12 +354,7 @@
             verifyStatus(response.code);
           } else {
             $('.employee-select select').find('option:not(:first)').remove();
-            vipLevelData = response.data;
-            $.each(response.data, function (i, data) {
-              var $option = $('<option value="' + data.employeeId + '">' + data.employeeName + '</option>');
-              $('.employee-select select').append($option);
-            })
-            $('.employee-select select').val(0);
+            employeeData = response.data;
           }
         },
         onFailure: function (response) {
