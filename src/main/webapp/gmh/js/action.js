@@ -1,6 +1,7 @@
-//var url = 'http://123.207.168.112:10000';
-// var url = 'http://47.94.97.188:8080';
-var url = 'http://localhost:8080';
+//var url = 'http://123.207.168.112:8080';
+//var url = 'http://47.94.97.188:8080';
+//var url = 'http://localhost:8080';
+var url = 'http://123.56.26.101:8080';
 //  var url = 'http://192.168.199.139:8080';
 $.fn.api.settings.api = {
   'staff login' : url+'/staff/login',
@@ -35,6 +36,7 @@ $.fn.api.settings.api = {
   'employee leave' : url+'/employee/leave',
   'employee listCounselors' : url+'/employee/listCounselors',
   'employee listBeauties' : url+'/employee/listBeauties',
+  'employee getAll' : url+'/employee/getAll',
   'projectType listTops' : url+'/projectType/listTops',
   'projectType listByTopType' : url+'/projectType/listByTopType',
   'projectType getAll' : url+'/projectType/getAll',
