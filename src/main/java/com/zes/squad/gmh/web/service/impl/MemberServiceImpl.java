@@ -148,7 +148,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void recharge(Long id, Long employeeId,BigDecimal nailMoney, BigDecimal beautyMoney,String source,String remark) {
+    public void recharge(Long id, Long employeeId, Long consultant, BigDecimal nailMoney, BigDecimal beautyMoney,String source,String remark) {
         MemberPo memberPo = memberMapper.selectById(id);
         LogicHelper.ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
         if (nailMoney != null && !nailMoney.equals(BigDecimal.ZERO)) {
@@ -165,7 +165,7 @@ public class MemberServiceImpl implements MemberService {
             po.setConsumerName(memberPo.getName());
             po.setCharge(nailMoney);
             po.setChargeWay(ChargeWayEnum.CASH.getKey());
-            po.setCounselor(null);
+            po.setCounselor(consultant);
             po.setSource(source);
             po.setConsumeTime(new Date());
             po.setRemark(remark);
@@ -185,7 +185,7 @@ public class MemberServiceImpl implements MemberService {
             po.setConsumerName(memberPo.getName());
             po.setCharge(beautyMoney);
             po.setChargeWay(ChargeWayEnum.CASH.getKey());
-            po.setCounselor(null);
+            po.setCounselor(consultant);
             po.setSource(source);
             po.setConsumeTime(new Date());
             po.setRemark(remark);

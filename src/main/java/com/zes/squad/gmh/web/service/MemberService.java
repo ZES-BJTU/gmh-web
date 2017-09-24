@@ -21,6 +21,6 @@ public interface MemberService {
 
     MemberVo queryByPhone(String phone);
     
-    void recharge(Long id, Long employeeId, BigDecimal nailMoney, BigDecimal beautyMoney, String source, String remark);
+    void recharge(Long id, Long employeeId, Long consultant, BigDecimal nailMoney, BigDecimal beautyMoney, String source, String remark);
 
 }

@@ -217,6 +217,12 @@
               </select>
         </div>
         <div class="field">
+              <label>咨询师</label>
+              <select name="consultantId" class="ui fluid dropdown consultant-select">
+                <option value="">请选择咨询师</option>
+              </select>
+        </div>
+        <div class="field">
           <label>充值来源</label>
           <input type="text" name="source">
         </div>
@@ -309,6 +315,7 @@
     var searchLevelId = '';
     var vipLevelData = [];
     var employeeData = [];
+    var consultantData = [];
     $(document).ready(function () {
       //加载会员等级
       $('.fake-button').api({
@@ -354,7 +361,9 @@
             verifyStatus(response.code);
           } else {
             $('.employee-select select').find('option:not(:first)').remove();
+            $('.consultant-select select').find('option:not(:first)').remove();
             employeeData = response.data;
+            consultantData = response.data;
           }
         },
         onFailure: function (response) {
@@ -792,10 +801,12 @@
       //充值模态框
       $(document).on('click', '.charge-vip', function () {
     	loadEmployeeData();
+    	loadConsultantData();
         $('#charge-vip-id').text($(this).parent().parent().find('.vipId').text());
         $('.charge-vip-modal').modal({
             closable: false,
             onDeny: function () {
+              clearVipSelect();
               $('#charge-vip').form('clear');
               $('#charge-vip-id').text('');
             },
@@ -879,11 +890,16 @@
           $('.mod-vip-select select').append($option.clone());
         })
       }
-      //TODO 
       function loadEmployeeData() {
           $.each(employeeData, function (i, data) {
             var $option = $('<option value="' + data.employeeId + '">' + data.employeeName + '</option>');
             $('.employee-select select').append($option);
+          })
+        }
+      function loadConsultantData() {
+          $.each(consultantData, function (i, data) {
+            var $option = $('<option value="' + data.employeeId + '">' + data.employeeName + '</option>');
+            $('.consultant-select select').append($option);
           })
         }
 
@@ -892,6 +908,10 @@
         $('.new-vip-select .text').text('');
         $('.mod-vip-select select').find('option:not(:first)').remove();
         $('.mod-vip-select .text').text('');
+        $('.employee-select select').find('option:not(:first)').remove();
+        $('.employee-select .text').text('');
+        $('.consultant-select select').find('option:not(:first)').remove();
+        $('.consultant-select .text').text('');
         $('textarea[name="remark"]').text('');
       }
     })
