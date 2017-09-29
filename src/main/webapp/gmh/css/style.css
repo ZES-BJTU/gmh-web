@@ -195,3 +195,9 @@ td.remark {
 .reserve-time-item.not-free {
   background-color: #c3c3c3;
 }
+.ui.table thead th.add-project {
+  cursor: pointer;
+}
+.ui.table .minus-project {
+  cursor: pointer;
+}
