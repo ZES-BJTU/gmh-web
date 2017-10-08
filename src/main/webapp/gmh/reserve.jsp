@@ -103,7 +103,7 @@
           <div class="two fields">
             <div class="field">
               <label>预约人性别</label>
-              <select name="sex" class="ui fluid dropdown new-reserve-sex-select">
+              <select name="sex" class="ui fluid dropdown new-appointment-sex-select">
               <option value="">请选择性别</option>
               <option value="0">女</option>
               <option value="1">男</option>
@@ -111,7 +111,7 @@
             </div>
             <div class="field">
               <label>是否点排</label>
-              <select name="line" class="ui fluid dropdown mod-appointment-line-select">
+              <select name="line" class="ui fluid dropdown new-appointment-line-select">
               <option value="">请选择是否点排</option>
               <option value="1">是</option>
               <option value="0">否</option>
@@ -150,7 +150,72 @@
         </div>
       </div>
     </div>
-    <div class="ui tiny coupled modal mod-appointment-modal">
+    <div class="ui small coupled modal mod-appointment-modal">
+      <div class="header">修改预约</div>
+      <div class="content">
+        <span id="mod-appointment-id" style="display:none"></span>
+        <form id="mod-appointment" class="ui form">
+          <div class="two fields">
+            <div class="field">
+              <label>预约人手机号</label>
+              <input type="text" name="phone" placeholder="请输入预约人手机号">
+            </div>
+            <div class="field">
+              <label>预约人姓名</label>
+              <input type="text" name="name" placeholder="请输入预约人姓名">
+            </div>
+          </div>
+          <div class="two fields">
+            <div class="field">
+              <label>预约人性别</label>
+              <select name="sex" class="ui fluid dropdown mod-appointment-sex-select">
+              <option value="">请选择性别</option>
+              <option value="0">女</option>
+              <option value="1">男</option>
+            </select>
+            </div>
+            <div class="field">
+              <label>是否点排</label>
+              <select name="line" class="ui fluid dropdown mod-appointment-line-select">
+              <option value="">请选择是否点排</option>
+              <option value="1">是</option>
+              <option value="0">否</option>
+            </select>
+            </div>
+          </div>
+          <table class="ui compact table theme">
+            <thead>
+              <tr>
+                <!-- <th>顶级分类</th> -->
+                <!-- <th>美容项目分类</th> -->
+                <th>美容项目</th>
+                <th>操作员</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th class="mod-add-project"><i class="plus icon"></i></th>
+              </tr>
+            </thead>
+            <tbody id="mod-project-list">
+            </tbody>
+          </table>
+          <div class="field">
+            <label>备注</label>
+            <textarea name="remark" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <div class="ui black deny right labeled icon button">
+          取消
+          <i class="remove icon"></i>
+        </div>
+        <div class="ui positive right labeled icon button">
+          提交
+          <i class="checkmark icon"></i>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="ui tiny coupled modal mod-appointment-modal">
       <div class="header">修改预约</div>
       <div class="content">
         <span id="mod-appointment-id" style="display:none"></span>
@@ -239,8 +304,9 @@
           <i class="checkmark icon"></i>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="ui tiny coupled modal add-project-modal">
+      <span id="add-project-type" style="display:none"></span>
       <div class="header">添加项目</div>
       <div class="content">
         <div class="ui grid">
@@ -550,23 +616,6 @@
           $('.new-appointment-employee-select select').parent().find('.text').addClass('default');
           $('.new-appointment-employee-select select').parent().find('.text').text('请选择操作员');
         })
-        //修改时，点击顶级分类，切换美容项分类
-        $(document).on('change', '.mod-appointment-top-type-select', function () {
-          var topType = $(this).find('select').val();
-          if (topType == '') {
-            return;
-          }
-          loadProjectTypeByTopType(topType, $('.mod-appointment-type-select select'), 'mod', null);
-          $('.mod-appointment-project-select select').find('option:not(:first)').remove();
-          $('.mod-appointment-project-select .text').text('');
-          $('.mod-appointment-project-select select').parent().find('.text').addClass('default');
-          $('.mod-appointment-project-select select').parent().find('.text').text('请选择美容项目');
-          $('.mod-appointment-employee-select select').find('option:not(:first)').remove();
-          $('.mod-appointment-employee-select .text').text('');
-          $('.mod-appointment-employee-select select').val('');
-          $('.mod-appointment-employee-select select').parent().find('.text').addClass('default');
-          $('.mod-appointment-employee-select select').parent().find('.text').text('请选择操作员');
-        })
         //新增时，点击美容项目分类，切换美容项目
         $(document).on('change', '.new-appointment-type-select', function () {
           var typeId = $(this).find('select').val();
@@ -575,14 +624,6 @@
           }
           loadProjectByProjectType(typeId, $('.new-appointment-project-select select'), 'new', null);
         })
-        //修改时，点击美容项目分类，切换美容项目
-        $(document).on('change', '.mod-appointment-type-select', function () {
-          var typeId = $(this).find('select').val();
-          if (typeId == '') {
-            return;
-          }
-          loadProjectByProjectType(typeId, $('.mod-appointment-project-select select'), 'mod', null);
-        })
         //新增时，点击美容项目，切换操作员
         $(document).on('change', '.new-appointment-project-select', function () {
           var projectId = $(this).find('select').val();
@@ -590,14 +631,6 @@
             return;
           }
           loadEmployeeByProject(projectId, $('.new-appointment-employee-select select'), 'new', null);
-        })
-        //修改时，点击美容项目，切换操作员
-        $(document).on('change', '.mod-appointment-project-select', function () {
-          var projectId = $(this).find('select').val();
-          if (projectId == '') {
-            return;
-          }
-          loadEmployeeByProject(projectId, $('.mod-appointment-employee-select select'), 'mod', null);
         })
 
         //项目删除
@@ -696,19 +729,10 @@
                   var $remark = $('<td class="remark" title="' + remark + '">' + afterRemark + '</td>');
                   var $projectCharge = $('<td class="projectCharge" style="display:none">' + data.projectCharge +
                     '</td>');
-                  if (data.status == '进行中') {
-                    var $operate = $(
-                      '<td><button class="ui tiny teal button start-appointment disabled">开始</button>' +
-                      '<button class="ui tiny green button finish-appointment">完成</button>' +
-                      '<button class="ui tiny orange button mod-appointment disabled">修改</button>' +
-                      '<button class="ui tiny red button del-appointment disabled">取消</button></td>');
-                  } else {
-                    var $operate = $(
-                      '<td><button class="ui tiny teal button start-appointment">开始</button>' +
-                      '<button class="ui tiny green button finish-appointment disabled">完成</button>' +
-                      '<button class="ui tiny orange button mod-appointment">修改</button>' +
-                      '<button class="ui tiny red button del-appointment">取消</button></td>');
-                  }
+                  var $operate = $(
+                    '<td><button class="ui tiny green button finish-appointment">完成</button>' +
+                    '<button class="ui tiny orange button mod-appointment">修改</button>' +
+                    '<button class="ui tiny red button del-appointment">取消</button></td>');
 
                   $tr.append($id);
                   $tr.append($memberId);
@@ -734,6 +758,7 @@
                 })
                 $('.paging').children().eq(pagenum - 1).addClass('active');
               }
+              addData();
             },
             onFailure: function (response) {
               alert('服务器开小差了');
@@ -749,10 +774,12 @@
         //添加项目模态框
         $('.add-project-modal')
           .modal('attach events', '.new-appointment-modal .add-project')
+          .modal('attach events', '.mod-appointment-modal .mod-add-project')
           .modal('setting', 'closable', false)
           .modal({
             onDeny: function () {
               $('#newReserveTime').val('');
+              $('#add-project-type').text('');
               $('#new-reserve-time').empty();
               $('#new-appointment-add-project').form('clear');
             },
@@ -821,9 +848,14 @@
 
             var $tr = $('<tr><td style="display:none" class="projectId">' + projectId + '</td><td>' + projectName +
               '</td><td style="display:none" class="employeeId">' + employeeId + '</td><td>' + employeeNmame + '</td><td class="beginTime">' +
-              beginTime + '</td><td class="endTime">' + endTime + '</td><td class="minus-project"><i class="minus icon"></i></td></tr>')
-            $('#project-list').append($tr);
+              beginTime + '</td><td class="endTime">' + endTime + '</td><td class="minus-project"><i class="minus icon"></i></td></tr>');
+            if($('#add-project-type').text() == 'add'){
+              $('#project-list').append($tr);
+            }else{
+              $('#mod-project-list').append($tr);
+            }
             $('#newReserveTime').val('');
+            $('#add-project-type').text('');
             $('#new-reserve-time').empty();
             $('#new-appointment-add-project').form('clear');
             $('.add-project-modal').modal('hide');
@@ -921,7 +953,6 @@
               alert(response.error);
               verifyStatus(response.code);
             } else {
-              clearSelect();
               $('#project-list').empty();
               $('#new-appointment').form('clear');
               $('.new-appointment-modal').modal('hide');
@@ -935,48 +966,12 @@
 
         //修改预约模态框
         $(document).on('click', '.mod-appointment', function () {
-          loadTopTypeData();
-          loadLineData();
           $('#mod-appointment-id').text($(this).parent().parent().find('.appointmentId').text());
           $('#mod-appointment').find('input[name="phone"]').val($(this).parent().parent().find('.memberPhone').text());
           $('#mod-appointment').find('input[name="name"]').val($(this).parent().parent().find('.memberName').text());
           $('.mod-appointment-sex-select select').val($(this).parent().parent().find('.sexId').text());
           $('.mod-appointment-sex-select .text').removeClass('default');
           $('.mod-appointment-sex-select .text').text($(this).parent().parent().find('.sex').text());
-          var topType = $(this).parent().parent().find('.topTypeId').text();
-          $('.mod-appointment-top-type-select select').val(topType);
-          $('.mod-appointment-top-type-select .text').removeClass('default');
-          $('.mod-appointment-top-type-select .text').text($(this).parent().parent().find('.topTypeName').text());
-          var projectTypeId = $(this).parent().parent().find('.typeId').text();
-          var projectTypeName = $(this).parent().parent().find('.typeName').text();
-          var info = {
-            'projectTypeId': projectTypeId,
-            'projectTypeName': projectTypeName
-          };
-          loadProjectTypeByTopType(topType, $('.mod-appointment-type-select select'), 'beforeMod', info);
-
-          var projectId = $(this).parent().parent().find('.projectId').text();
-          var projectName = $(this).parent().parent().find('.projectName').text();
-          var infoProject = {
-            'projectId': projectId,
-            'projectName': projectName
-          };
-          loadProjectByProjectType(projectTypeId, $('.mod-appointment-project-select select'), 'beforeMod',
-            infoProject);
-
-          var employeeId = $(this).parent().parent().find('.employeeId').text();
-          var employeeName = $(this).parent().parent().find('.employeeName').text();
-          var infoEmployee = {
-            'employeeId': employeeId,
-            'employeeName': employeeName
-          };
-          loadEmployeeByProject(projectId, $('.mod-appointment-employee-select select'), 'beforeMod',
-            infoEmployee);
-
-          $('#mod-appointment').find('input[name="beginTime"]').val($(this).parent().parent().find('.beginTime')
-            .text());
-          $('#mod-appointment').find('input[name="endTime"]').val($(this).parent().parent().find('.endTime').text());
-
           var line = $(this).parent().parent().find('.line').text();
           if (line == '是') {
             $('.mod-appointment-line-select select').val(1);
@@ -986,15 +981,25 @@
           $('.mod-appointment-line-select .text').removeClass('default');
           $('.mod-appointment-line-select .text').text($(this).parent().parent().find('.line').text());
 
-          $('#mod-appointment').find('textarea[name="remark"]').val($(this).parent().parent().find('.remark').attr(
-            'title'));
+          // var projectId = $(this).parent().parent().find('.projectId').text();
+          // var projectName = $(this).parent().parent().find('.projectName').text();
+
+          // var employeeId = $(this).parent().parent().find('.employeeId').text();
+          // var employeeName = $(this).parent().parent().find('.employeeName').text();
+          // var infoEmployee = {
+          //   'employeeId': employeeId,
+          //   'employeeName': employeeName
+          // };
+
+          // $('#mod-appointment').find('input[name="beginTime"]').val($(this).parent().parent().find('.beginTime').text());
+          // $('#mod-appointment').find('input[name="endTime"]').val($(this).parent().parent().find('.endTime').text());
+
+          $('#mod-appointment').find('textarea[name="remark"]').val($(this).parent().parent().find('.remark').attr('title'));
           $('.mod-appointment-modal').modal({
               closable: false,
               onDeny: function () {
-                clearSelect();
-                $('#modReserveTime').val('');
-                $('#mod-reserve-time').empty();
                 $('#mod-appointment').form('clear');
+                $('#mod-project-list').empty();
                 $('#mod-appointment-id').text('');
               },
               onApprove: function () {
@@ -1115,7 +1120,6 @@
               alert(response.error);
               verifyStatus(response.code);
             } else {
-              clearSelect();
               $('#modReserveTime').val('');
               $('#mod-reserve-time').empty();
               $('#mod-appointment-id').text('');
@@ -1273,38 +1277,46 @@
         });
 
         //开始预约信息提交
-        $(document).on('click', '.start-appointment', function () {
-          var appointmentId = $(this).parent().parent().find('.appointmentId').text();
-          $('.fake-button').api({
-            action: 'appointment start',
-            method: 'POST',
-            on: 'now',
-            beforeXHR: function (xhr) {
-              verifyToken();
-              xhr.setRequestHeader('X-token', getSessionStorage('token'));
-              xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            },
-            beforeSend: function (settings) {
-              if (appointmentId != '') {
-                settings.data.id = appointmentId;
-                return settings;
-              } else {
-                alert('ID为空');
-                return false;
-              }
-            },
-            onSuccess: function (response) {
-              if (response.error != null) {
-                alert(response.error);
-                verifyStatus(response.code);
-              } else {
-                loadSearchAppointmentList(1, 10, 'search');
-              }
-            },
-            onFailure: function (response) {
-              alert('服务器开小差了');
-            }
-          })
+        // $(document).on('click', '.start-appointment', function () {
+        //   var appointmentId = $(this).parent().parent().find('.appointmentId').text();
+        //   $('.fake-button').api({
+        //     action: 'appointment start',
+        //     method: 'POST',
+        //     on: 'now',
+        //     beforeXHR: function (xhr) {
+        //       verifyToken();
+        //       xhr.setRequestHeader('X-token', getSessionStorage('token'));
+        //       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        //     },
+        //     beforeSend: function (settings) {
+        //       if (appointmentId != '') {
+        //         settings.data.id = appointmentId;
+        //         return settings;
+        //       } else {
+        //         alert('ID为空');
+        //         return false;
+        //       }
+        //     },
+        //     onSuccess: function (response) {
+        //       if (response.error != null) {
+        //         alert(response.error);
+        //         verifyStatus(response.code);
+        //       } else {
+        //         loadSearchAppointmentList(1, 10, 'search');
+        //       }
+        //     },
+        //     onFailure: function (response) {
+        //       alert('服务器开小差了');
+        //     }
+        //   })
+        // })
+
+        //区分是新增预约还是修改预约
+        $(document).on('click','.add-project',function(){
+          $('#add-project-type').text('add');
+        })
+        $(document).on('click','.mod-add-project',function(){
+          $('#add-project-type').text('mod');
         })
 
         //新增预约时查询操作员时间
@@ -1360,101 +1372,48 @@
             }
           })
         })
-        //修改预约时查询操作员时间
-        $(document).on('click', '.mod-check-reserve-btn', function () {
-          var time = $('#modReserveTime').val() == '' ? '' : toTimeStamp($('#modReserveTime').val());
-          var employeeId = $('.mod-appointment-employee-select select').val();
-          if (time == '') {
-            alert('请选择时间!');
-            return;
-          }
-          if (employeeId == '') {
-            alert('请选择操作员!');
-            return;
-          }
-          $('.fake-button').api({
-            action: 'appointment queryTime',
-            method: 'POST',
-            on: 'now',
-            beforeXHR: function (xhr) {
-              verifyToken();
-              xhr.setRequestHeader('X-token', getSessionStorage('token'));
-              xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            },
-            beforeSend: function (settings) {
-              settings.data.time = time;
-              settings.data.employeeId = employeeId;
-              return settings;
-            },
-            onSuccess: function (response) {
-              if (response.error != null) {
-                alert(response.error);
-                verifyStatus(response.code);
-              } else {
-                $('#mod-reserve-time').empty();
-                $.each(response.data, function (i, data) {
-                  var $item = $('<div class="reserve-time-item"></div>');
-                  if (Number(data.percent.replace("%", "")) >= 5) {
-                    $item.text(data.time);
-                  }
-                  $item.attr('title', data.time);
-                  $item.css('height', data.percent);
-                  if (data.type == '空闲') {
-                    $item.addClass('free');
-                  } else {
-                    $item.addClass('not-free');
-                  }
-                  $('#mod-reserve-time').append($item);
-                })
-              }
-            },
-            onFailure: function (response) {
-              alert('服务器开小差了');
-            }
-          })
-        })
 
-        function loadTopTypeData() {
-          var data = [{
-              'id': 1,
-              'topTypeName': '美甲'
-            },
-            {
-              'id': 2,
-              'topTypeName': '美睫'
-            },
-            {
-              'id': 3,
-              'topTypeName': '美容'
-            },
-            {
-              'id': 4,
-              'topTypeName': '产品'
-            }
-          ];
-          $.each(data, function (i, data) {
-            var $option = $('<option value="' + data.id + '">' + data.topTypeName + '</option>');
-            $('.new-appointment-top-type-select select').append($option);
-            $('.mod-appointment-top-type-select select').append($option.clone());
-          })
-        }
+        // function loadTopTypeData() {
+        //   var data = [{
+        //       'id': 1,
+        //       'topTypeName': '美甲'
+        //     },
+        //     {
+        //       'id': 2,
+        //       'topTypeName': '美睫'
+        //     },
+        //     {
+        //       'id': 3,
+        //       'topTypeName': '美容'
+        //     },
+        //     {
+        //       'id': 4,
+        //       'topTypeName': '产品'
+        //     }
+        //   ];
+        //   $.each(data, function (i, data) {
+        //     var $option = $('<option value="' + data.id + '">' + data.topTypeName + '</option>');
+        //     $('.new-appointment-top-type-select select').append($option);
+        //     $('.mod-appointment-top-type-select select').append($option.clone());
+        //   })
+        // }
 
-        function loadLineData() {
-          var data = [{
-              'lineType': 1,
-              'lineName': '是'
-            },
-            {
-              'lineType': 0,
-              'lineName': '否'
-            }
-          ];
-          $.each(data, function (i, data) {
-            var $option = $('<option value="' + data.lineType + '">' + data.lineName + '</option>');
-            $('.new-appointment-line-select select').append($option);
-            $('.mod-appointment-line-select select').append($option.clone());
-          })
-        }
+        // function loadLineData() {
+        //   var data = [{
+        //       'lineType': 1,
+        //       'lineName': '是'
+        //     },
+        //     {
+        //       'lineType': 0,
+        //       'lineName': '否'
+        //     }
+        //   ];
+        //   $.each(data, function (i, data) {
+        //     var $option = $('<option value="' + data.lineType + '">' + data.lineName + '</option>');
+        //     $('.new-appointment-line-select select').append($option);
+        //     $('.mod-appointment-line-select select').append($option.clone());
+        //   })
+        // }
 
         function loadCounselorsData() {
           $.each(counselorsData, function (i, data) {
@@ -1592,31 +1551,76 @@
           })
         }
 
-        function clearSelect() {
-          $('.new-appointment-top-type-select select').find('option:not(:first)').remove();
-          $('.new-appointment-top-type-select .text').text('');
-          $('.mod-appointment-top-type-select select').find('option:not(:first)').remove();
-          $('.mod-appointment-top-type-select .text').text('');
-          $('.new-appointment-type-select select').find('option:not(:first)').remove();
-          $('.new-appointment-type-select .text').text('');
-          $('.mod-appointment-type-select select').find('option:not(:first)').remove();
-          $('.mod-appointment-type-select .text').text('');
-          $('.new-appointment-project-select select').find('option:not(:first)').remove();
-          $('.new-appointment-project-select .text').text('');
-          $('.mod-appointment-project-select select').find('option:not(:first)').remove();
-          $('.mod-appointment-project-select .text').text('');
-          $('.new-appointment-employee-select select').find('option:not(:first)').remove();
-          $('.new-appointment-employee-select .text').text('');
-          $('.mod-appointment-employee-select select').find('option:not(:first)').remove();
-          $('.mod-appointment-employee-select .text').text('');
-          $('.new-appointment-line-select select').find('option:not(:first)').remove();
-          $('.new-appointment-line-select .text').text('');
-          $('.mod-appointment-line-select select').find('option:not(:first)').remove();
-          $('.mod-appointment-line-select .text').text('');
-          $('.new-appointment-counselor-select select').find('option:not(:first)').remove();
-          $('.new-appointment-counselor-select .text').text('');
-        }
+        // function clearSelect() {
+        //   $('.new-appointment-top-type-select select').find('option:not(:first)').remove();
+        //   $('.new-appointment-top-type-select .text').text('');
+        //   $('.mod-appointment-top-type-select select').find('option:not(:first)').remove();
+        //   $('.mod-appointment-top-type-select .text').text('');
+        //   $('.new-appointment-type-select select').find('option:not(:first)').remove();
+        //   $('.new-appointment-type-select .text').text('');
+        //   $('.mod-appointment-type-select select').find('option:not(:first)').remove();
+        //   $('.mod-appointment-type-select .text').text('');
+        //   $('.new-appointment-project-select select').find('option:not(:first)').remove();
+        //   $('.new-appointment-project-select .text').text('');
+        //   $('.mod-appointment-project-select select').find('option:not(:first)').remove();
+        //   $('.mod-appointment-project-select .text').text('');
+        //   $('.new-appointment-employee-select select').find('option:not(:first)').remove();
+        //   $('.new-appointment-employee-select .text').text('');
+        //   $('.mod-appointment-employee-select select').find('option:not(:first)').remove();
+        //   $('.mod-appointment-employee-select .text').text('');
+        //   $('.new-appointment-line-select select').find('option:not(:first)').remove();
+        //   $('.new-appointment-line-select .text').text('');
+        //   $('.mod-appointment-line-select select').find('option:not(:first)').remove();
+        //   $('.mod-appointment-line-select .text').text('');
+        //   $('.new-appointment-counselor-select select').find('option:not(:first)').remove();
+        //   $('.new-appointment-counselor-select .text').text('');
+        // }
       })
+
+      function addData(){
+        var $tr = $('<tr></tr>');
+        var $id = $('<td class="appointmentId" style="display:none">1</td>');
+        var $memberId = $('<td class="memberId" style="display:none">1</td>');
+        var $memberName = $('<td class="memberName">张三</td>');
+        var $memberPhone = $('<td class="memberPhone">18813091990</td>');
+        var $sexId = $('<td class="sexId" style="display:none">1</td>');
+        var $sex = $('<td class="sex" style="display:none">男</td>');
+        var pid = [1,2];
+        var $projectId = $('<td class="projectId" style="display:none">' + pid + '</td>');
+        var pname = ['美容1','美容2'];
+        var $projectName = $('<td class="projectName">' + pname.join('<br>') + '</td>');
+        var $employeeId = $('<td class="employeeId" style="display:none">1</td>');
+        var $employeeName = $('<td class="employeeName">员工1</td>');
+        var $beginTime = $('<td class="beginTime">2010-09-01 12:00</td>');
+        var $endTime = $('<td class="endTime">2010-09-01 12:00</td>');
+        var $line = $('<td class="line">是</td>');
+        var $status = $('<td class="status">进行中</td>');
+
+        var $remark = $('<td class="remark" title="无">无</td>');
+        var $projectCharge = $('<td class="projectCharge" style="display:none">1000</td>');
+        var $operate = $(
+          '<td><button class="ui tiny green button finish-appointment">完成</button>' +
+          '<button class="ui tiny orange button mod-appointment">修改</button>' +
+          '<button class="ui tiny red button del-appointment">取消</button></td>');
+
+        $tr.append($id);
+        $tr.append($memberId);
+        $tr.append($memberName);
+        $tr.append($memberPhone);
+        $tr.append($sex);
+        $tr.append($projectId);
+        $tr.append($projectName);
+        $tr.append($employeeId);
+        $tr.append($employeeName);
+        $tr.append($beginTime);
+        $tr.append($endTime);
+        $tr.append($line);
+        $tr.append($status);
+        $tr.append($remark);
+        $tr.append($projectCharge);
+        $tr.append($operate);
+        $('#appointment-list').append($tr);
+      }
     </script>
   </body>
 
