@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
@@ -26,6 +27,8 @@ import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
+import com.zes.squad.gmh.web.entity.dto.AppointmentProjectDto;
+import com.zes.squad.gmh.web.entity.param.AppointmentParams;
 import com.zes.squad.gmh.web.entity.param.AppointmentQueryParams;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
@@ -36,6 +39,7 @@ import com.zes.squad.gmh.web.service.AppointmentService;
 @RequestMapping("/appointment")
 @Controller
 public class AppointmentController {
+
     @Autowired
     private AppointmentService appointmentService;
 
@@ -91,11 +95,29 @@ public class AppointmentController {
 
     @RequestMapping("/insert")
     @ResponseBody
-    public JsonResult<Integer> insert(AppointmentDto dto) {
-        checkAppointmentDto(dto);
+    public JsonResult<Integer> insert(AppointmentParams params) {
+        checkAppointmentParams(params);
+        AppointmentDto dto = buildAppointmentDtoByParams(params);
         int i = appointmentService.insert(dto);
         return JsonResult.success(i);
 
+    }
+
+    private AppointmentDto buildAppointmentDtoByParams(AppointmentParams params) {
+        AppointmentDto dto = CommonConverter.map(params, AppointmentDto.class);
+        List<AppointmentProjectDto> projectDtos = Lists.newArrayList();
+        String[] projects = params.getProjects().split(";");
+        for (String project : projects) {
+            String[] projectDetail = project.split(",");
+            AppointmentProjectDto projectDto = new AppointmentProjectDto();
+            projectDto.setProjectId(Long.valueOf(projectDetail[0]));
+            projectDto.setEmployeeId(Long.valueOf(projectDetail[1]));
+            projectDto.setBeginTime(new Date(Long.valueOf(projectDetail[2])));
+            projectDto.setEndTime(new Date(Long.valueOf(projectDetail[3])));
+            projectDtos.add(projectDto);
+        }
+        dto.setAppointmentProjectDtos(projectDtos);
+        return dto;
     }
 
     @RequestMapping("/update")
@@ -106,10 +128,6 @@ public class AppointmentController {
         ensureParameterExist(dto.getName(), "预约人姓名为空");
         ensureParameterExist(dto.getPhone(), "预约人手机号为空");
         ensureParameterExist(dto.getSex(), "预约人性别为空");
-        ensureParameterExist(dto.getProjectId(), ErrorMessage.appointmentProjectIdIsNull);
-        ensureParameterExist(dto.getEmployeeId(), ErrorMessage.appointmentEmployeeIdIsNull);
-        ensureParameterExist(dto.getBeginTime(), ErrorMessage.appointmentBeginingTimeIsNull);
-        ensureParameterExist(dto.getEndTime(), ErrorMessage.appointmentEndingTimeIsNull);
         int i = appointmentService.update(dto);
         return JsonResult.success(i);
     }
@@ -166,20 +184,14 @@ public class AppointmentController {
         ensureParameterValid(isValidPageSize(params.getPageSize()), ErrorMessage.pageSizeIsError);
     }
 
-    private void checkAppointmentDto(AppointmentDto dto) {
-        ensureEntityExist(dto, ErrorMessage.paramIsNull);
-        ensureParameterExist(dto.getName(), "预约人姓名为空");
-        ensureParameterExist(dto.getPhone(), "预约人手机号为空");
-        ensureParameterExist(dto.getSex(), "预约人性别为空");
-        ensureParameterValid(isValidMobile(dto.getPhone()), ErrorMessage.memberMobileIsError);
-        ensureParameterExist(dto.getProjectId(), ErrorMessage.projectIdIsNull);
-        ensureParameterExist(dto.getEmployeeId(), ErrorMessage.employeeNotSelected);
-        ensureParameterExist(dto.getBeginTime(), ErrorMessage.appointmentBeginingTimeIsNull);
-        ensureParameterExist(dto.getEndTime(), ErrorMessage.appointmentBeginingTimeIsNull);
-        ensureParameterValid(dto.getBeginTime().after(new Date()), ErrorMessage.appointmentBeginingTimeIsError);
-        ensureParameterValid(dto.getBeginTime().before(dto.getEndTime()),
-                ErrorMessage.appointmentEndingTimeShouldAfterBeginningTime);
-        ensureParameterExist(dto.getLine(), ErrorMessage.appointmentLineIsNull);
+    private void checkAppointmentParams(AppointmentParams params) {
+        ensureEntityExist(params, ErrorMessage.paramIsNull);
+        ensureParameterExist(params.getName(), "预约人姓名为空");
+        ensureParameterExist(params.getPhone(), "预约人手机号为空");
+        ensureParameterExist(params.getSex(), "预约人性别为空");
+        ensureParameterValid(isValidMobile(params.getPhone()), ErrorMessage.memberMobileIsError);
+        ensureParameterExist(params.getProjects(), "预约项目为空");
+        ensureParameterExist(params.getLine(), ErrorMessage.appointmentLineIsNull);
     }
 
 }

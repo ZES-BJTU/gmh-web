@@ -62,47 +62,54 @@
 		SELECT
 		COUNT(*)
 		FROM
-		appointment
+		appointment a,
+		appointment_project ap,
 		WHERE
-		store_id = #{storeId,
+		a.store_id = #{storeId,
 		jdbcType=BIGINT}
 		AND
-		`status` IN
+		a.`status` IN
 		<foreach collection="status" item="item" separator="," open="("
 			close=")">
 			#{item, jdbcType=INTEGER}
 		</foreach>
+		AND
+		a.id = ap.appointment_id
 		<if test="employeeId != null">
-			AND employee_id = #{employeeId, jdbcType=BIGINT}
+			AND ap.employee_id = #{employeeId, jdbcType=BIGINT}
 		</if>
 		<if test="phone != null and phone != ''">
 			AND phone = #{phone, jdbcType=VARCHAR}
 		</if>
 		AND
-		(DATE_FORMAT(#{beginTime, jdbcType=TIMESTAMP},'%Y-%m-%d') = DATE_FORMAT(begin_time,'%Y-%m-%d')
+		(DATE_FORMAT(#{beginTime, jdbcType=TIMESTAMP},'%Y-%m-%d') =
+		DATE_FORMAT(ap.begin_time,'%Y-%m-%d')
 		AND
-		DATE_FORMAT(#{beginTime, jdbcType=TIMESTAMP},'%Y-%m-%d %H:%i') =
-		DATE_FORMAT(begin_time,'%Y-%m-%d %H:%i')
+		DATE_FORMAT(#{beginTime,
+		jdbcType=TIMESTAMP},'%Y-%m-%d %H:%i') =
+		DATE_FORMAT(ap.begin_time,'%Y-%m-%d %H:%i')
 		OR
 		DATE_FORMAT(#{endTime,
-		jdbcType=TIMESTAMP},'%Y-%m-%d %H:%i') = DATE_FORMAT(end_time,'%Y-%m-%d
+		jdbcType=TIMESTAMP},'%Y-%m-%d %H:%i') =
+		DATE_FORMAT(ap.end_time,'%Y-%m-%d
 		%H:%i')
 		OR
-		(#{beginTime, jdbcType=TIMESTAMP} BETWEEN begin_time AND
-		end_time)
+		(#{beginTime,
+		jdbcType=TIMESTAMP} BETWEEN ap.begin_time AND
+		ap.end_time)
 		OR
-		(#{endTime, jdbcType=TIMESTAMP} BETWEEN begin_time AND
-		end_time)
+		(#{endTime, jdbcType=TIMESTAMP} BETWEEN ap.begin_time AND
+		ap.end_time)
 		OR
 		((#{beginTime, jdbcType=TIMESTAMP} <![CDATA[<]]>
-		begin_time
+		ap.begin_time
 		AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[>]]>
-		end_time))
+		ap.end_time))
 		OR
 		((#{beginTime, jdbcType=TIMESTAMP} <![CDATA[>]]>
-		begin_time
+		ap.begin_time
 		AND #{endTime, jdbcType=TIMESTAMP} <![CDATA[<]]>
-		end_time)))
+		ap.end_time)))
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
@@ -110,6 +117,10 @@
 		FROM appointment WHERE id = #{id, jdbcType=BIGINT}
 	</select>
 	<insert id="insert" parameterType="com.zes.squad.gmh.web.entity.po.AppointmentPo">
+		<selectKey keyProperty="id" order="AFTER" resultType="long">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
 		INSERT INTO
 		appointment(
 		store_id,member_id,

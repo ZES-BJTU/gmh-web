@@ -41,7 +41,9 @@ import com.zes.squad.gmh.web.entity.condition.AppointmentUnionQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;
+import com.zes.squad.gmh.web.entity.dto.AppointmentProjectDto;
 import com.zes.squad.gmh.web.entity.po.AppointmentPo;
+import com.zes.squad.gmh.web.entity.po.AppointmentProjectPo;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
 import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
@@ -55,6 +57,7 @@ import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.entity.vo.TimeVo;
 import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.AppointmentMapper;
+import com.zes.squad.gmh.web.mapper.AppointmentProjectMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
@@ -70,31 +73,33 @@ import lombok.Synchronized;
 @Service("appointmentJobService")
 public class AppointmentServiceImpl implements AppointmentService {
 
-    private static final int       DEFAULT_REMIND_MINUTE = 30;
+    private static final int         DEFAULT_REMIND_MINUTE = 30;
 
-    private static final int       DEFAULT_START_HOUR    = 8;
-    private static final int       DEFAULT_END_HOUR      = 22;
+    private static final int         DEFAULT_START_HOUR    = 8;
+    private static final int         DEFAULT_END_HOUR      = 22;
 
-    private static final int       TOTAL_MINUTE          = (DEFAULT_END_HOUR - DEFAULT_START_HOUR) * 60;
+    private static final int         TOTAL_MINUTE          = (DEFAULT_END_HOUR - DEFAULT_START_HOUR) * 60;
 
     @Autowired
-    private AppointmentMapper      appointmentMapper;
+    private AppointmentMapper        appointmentMapper;
     @Autowired
-    private AppointmentUnionMapper appointmentUnionMapper;
+    private AppointmentProjectMapper appointmentProjectMapper;
     @Autowired
-    private ConsumeRecordMapper    consumeRecordMapper;
+    private AppointmentUnionMapper   appointmentUnionMapper;
     @Autowired
-    private EmployeeMapper         employeeMapper;
+    private ConsumeRecordMapper      consumeRecordMapper;
     @Autowired
-    private EmployeeJobMapper      employeeJobMapper;
+    private EmployeeMapper           employeeMapper;
     @Autowired
-    private ProjectUnionMapper     projectUnionMapper;
+    private EmployeeJobMapper        employeeJobMapper;
     @Autowired
-    private ProjectMapper          projectMapper;
+    private ProjectUnionMapper       projectUnionMapper;
     @Autowired
-    private MemberMapper           memberMapper;
+    private ProjectMapper            projectMapper;
     @Autowired
-    private ProjectTypeMapper      projectTypeMapper;
+    private MemberMapper             memberMapper;
+    @Autowired
+    private ProjectTypeMapper        projectTypeMapper;
 
     @Override
     public List<AppointmentVo> listAllAppointments() {
@@ -125,23 +130,22 @@ public class AppointmentServiceImpl implements AppointmentService {
         return union;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public int insert(AppointmentDto dto) {
         MemberQueryCondition memberQueryCondition = new MemberQueryCondition();
         memberQueryCondition.setPhone(dto.getPhone());
+        for (AppointmentProjectDto projectDto : dto.getAppointmentProjectDtos()) {
+            ProjectPo projectPo = projectMapper.selectById(projectDto.getProjectId());
+            ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
+            EmployeePo employeePo = employeeMapper.selectById(projectDto.getEmployeeId());
+            ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+            int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, employeePo.getId(),
+                    Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+                    projectDto.getBeginTime(), projectDto.getEndTime());
+            ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
+        }
         MemberPo memberPo = memberMapper.selectByCondition(memberQueryCondition);
-        ProjectPo projectPo = projectMapper.selectById(dto.getProjectId());
-        ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
-        EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
-        ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-        //        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
-        //                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
-        //                dto.getBeginTime(), dto.getEndTime());
-        //        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
-        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, employeePo.getId(),
-                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
-                dto.getBeginTime(), dto.getEndTime());
-        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
         dto.setStoreId(ThreadContext.getStaffStoreId());
         dto.setMemberId(memberPo != null ? memberPo.getId() : null);
         dto.setStatus(AppointmentStatusEnum.TO_DO.getKey());
@@ -151,35 +155,43 @@ public class AppointmentServiceImpl implements AppointmentService {
             po.setName(memberPo.getName());
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
         }
-        return appointmentMapper.insert(po);
+        int result = appointmentMapper.insert(po);
+        ensureConditionSatisfied(po.getId() != null, "预约标识绑定失败");
+        List<AppointmentProjectDto> dtos = dto.getAppointmentProjectDtos();
+        List<AppointmentProjectPo> pos = CommonConverter.mapList(dtos, AppointmentProjectPo.class);
+        for (AppointmentProjectPo projectPo : pos) {
+            projectPo.setAppointmentId(po.getId());
+        }
+        appointmentProjectMapper.batchInsert(pos);
+        return result;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public int update(AppointmentDto dto) {
-        ProjectPo projectPo = projectMapper.selectById(dto.getProjectId());
-        ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
-        EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
-        ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
         AppointmentPo po = appointmentMapper.selectById(dto.getId());
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
+        for (AppointmentProjectDto projectDto : dto.getAppointmentProjectDtos()) {
+            ProjectPo projectPo = projectMapper.selectById(projectDto.getProjectId());
+            ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
+            EmployeePo employeePo = employeeMapper.selectById(projectDto.getEmployeeId());
+            ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+            //判断是否时间上冲突
+            int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
+                    Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+                    projectDto.getBeginTime(), projectDto.getEndTime());
+            ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
+            count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null,
+                    projectDto.getEmployeeId(),
+                    Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
+                    projectDto.getBeginTime(), projectDto.getEndTime());
+            ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
+        }
         appointmentMapper.deleteById(dto.getId());
-        //判断是否时间上冲突
-        int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
-                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
-                dto.getBeginTime(), dto.getEndTime());
-        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
-        count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null, dto.getEmployeeId(),
-                Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
-                dto.getBeginTime(), dto.getEndTime());
-        ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
+        appointmentProjectMapper.deleteByAppointmentId(dto.getId());
         po.setPhone(dto.getPhone());
         po.setName(dto.getName());
         po.setSex(dto.getSex());
-        po.setProjectId(dto.getProjectId());
-        po.setEmployeeId(dto.getEmployeeId());
-        po.setBeginTime(dto.getBeginTime());
-        po.setEndTime(dto.getEndTime());
         po.setLine(dto.getLine());
         po.setRemark(dto.getRemark());
         MemberQueryCondition memberQueryCondition = new MemberQueryCondition();
@@ -190,7 +202,14 @@ public class AppointmentServiceImpl implements AppointmentService {
             po.setName(memberPo.getName());
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
         }
-        return appointmentMapper.insert(po);
+        int result = appointmentMapper.insert(po);
+        List<AppointmentProjectDto> dtos = dto.getAppointmentProjectDtos();
+        List<AppointmentProjectPo> pos = CommonConverter.mapList(dtos, AppointmentProjectPo.class);
+        for (AppointmentProjectPo projectPo : pos) {
+            projectPo.setAppointmentId(po.getId());
+        }
+        appointmentProjectMapper.batchInsert(pos);
+        return result;
     }
 
     @Override
