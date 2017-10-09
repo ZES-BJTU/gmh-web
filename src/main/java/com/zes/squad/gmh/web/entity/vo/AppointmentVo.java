@@ -7,25 +7,26 @@ import lombok.Data;
 
 @Data
 public class AppointmentVo {
-    private Long       id;
-    private Long       storeId;
-    private String     storeName;
-    private Long       memberId;
-    private String     memberName;
-    private String     phone;
-    private String     sex;
-    private Integer    topType;
-    private String     topTypeName;
-    private Long       typeId;
-    private String     typeName;
-    private Long       projectId;
-    private String     projectName;
-    private BigDecimal projectCharge;
-    private Long       employeeId;
-    private String     employeeName;
-    private Date       beginTime;
-    private Date       endTime;
-    private String     status;
-    private String     line;
-    private String     remark;
+    private Long         id;
+    private Long         storeId;
+    private String       storeName;
+    private Long         memberId;
+    private String       memberName;
+    private String       phone;
+    private String       name;
+    private String       sex;
+    private Integer[]    topTypes;
+    private String[]     topTypeNames;
+    private Long[]       typeIds;
+    private String[]     typeNames;
+    private Long[]       projectIds;
+    private String[]     projectNames;
+    private BigDecimal[] projectCharges;
+    private Long[]       employeeIds;
+    private String[]     employeeNames;
+    private Date[]       beginTimes;
+    private Date[]       endTimes;
+    private String       status;
+    private String       line;
+    private String       remark;
 }

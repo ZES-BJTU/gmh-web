@@ -50,6 +50,7 @@ import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.po.ProjectPo;
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
+import com.zes.squad.gmh.web.entity.union.AppointmentProjectUnion;
 import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
@@ -287,8 +288,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private List<AppointmentVo> buildAppointmentVosByUnions(List<AppointmentUnion> unions) {
         List<AppointmentVo> vos = Lists.newArrayList();
         for (AppointmentUnion union : unions) {
-            if (union.getAppointmentPo() == null || union.getEmployeePo() == null || union.getProjectPo() == null
-                    || union.getProjectTypePo() == null) {
+            if (union.getAppointmentPo() == null || union.getAppointmentProjectUnions() == null
+                    || union.getAppointmentProjectUnions().isEmpty()) {
                 continue;
             }
             AppointmentVo vo = buildAppointmentVoByUnion(union);
@@ -299,19 +300,36 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private AppointmentVo buildAppointmentVoByUnion(AppointmentUnion union) {
         AppointmentPo appointmentPo = union.getAppointmentPo();
-        EmployeePo employeePo = union.getEmployeePo();
-        ProjectPo projectPo = union.getProjectPo();
-        ProjectTypePo projectTypePo = union.getProjectTypePo();
+        List<AppointmentProjectUnion> unions = union.getAppointmentProjectUnions();
+        ensureConditionSatisfied(unions != null && !unions.isEmpty(), "预约项目查询失败");
         AppointmentVo vo = CommonConverter.map(appointmentPo, AppointmentVo.class);
         vo.setStatus(EnumUtils.getDescByKey(AppointmentStatusEnum.class, appointmentPo.getStatus()));
-        vo.setMemberName(!Strings.isNullOrEmpty(appointmentPo.getName()) ? appointmentPo.getName() : "");
-        vo.setEmployeeName(employeePo.getName());
-        vo.setProjectCharge(projectPo.getRetailPrice());
-        vo.setProjectName(projectPo.getName());
-        vo.setTopType(projectTypePo.getTopType());
-        vo.setTopTypeName(EnumUtils.getDescByKey(ProjectTypeEnum.class, projectTypePo.getTopType()));
-        vo.setTypeId(projectPo.getProjectTypeId());
-        vo.setTypeName(projectTypePo.getTypeName());
+        vo.setMemberName(!Strings.isNullOrEmpty(union.getMemberPo().getName()) ? union.getMemberPo().getName() : "");
+        Integer[] topTypes = new Integer[unions.size()];
+        String[] topTypeNames = new String[unions.size()];
+        Long[] typeIds = new Long[unions.size()];
+        String[] typeNames = new String[unions.size()];
+        Long[] projectIds = new Long[unions.size()];
+        String[] projectNames = new String[unions.size()];
+        BigDecimal[] projectCharges = new BigDecimal[unions.size()];
+        Long[] employeeIds = new Long[unions.size()];
+        String[] employeeNames = new String[unions.size()];
+        Date[] beginTimes = new Date[unions.size()];
+        Date[] endTimes = new Date[unions.size()];
+        for (int i = 0; i < unions.size(); i++) {
+            topTypes[i] = unions.get(i).getProjectTypePo().getTopType();
+            topTypeNames[i] = EnumUtils.getDescByKey(ProjectTypeEnum.class,
+                    Integer.valueOf(String.valueOf(unions.get(i).getProjectTypePo().getTypeName())));
+            typeIds[i] = unions.get(i).getProjectTypePo().getId();
+            typeNames[i] = unions.get(i).getProjectTypePo().getTypeName();
+            projectIds[i] = unions.get(i).getProjectPo().getId();
+            projectNames[i] = unions.get(i).getProjectPo().getName();
+            projectCharges[i] = unions.get(i).getProjectPo().getRetailPrice();
+            employeeIds[i] = unions.get(i).getEmployeePo().getId();
+            employeeNames[i] = unions.get(i).getEmployeePo().getName();
+            beginTimes[i] = unions.get(i).getAppointmentProjectPo().getBeginTime();
+            endTimes[i] = unions.get(i).getAppointmentProjectPo().getEndTime();
+        }
         vo.setLine(appointmentPo.getLine().booleanValue() ? YesOrNoEnum.YES.getDesc() : YesOrNoEnum.NO.getDesc());
         if (union.getAppointmentPo().getSex() != null) {
             vo.setSex(EnumUtils.getDescByKey(SexEnum.class, union.getAppointmentPo().getSex()));
