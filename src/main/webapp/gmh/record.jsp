@@ -24,6 +24,10 @@
   <link href="js/bootstrap-datetimepicker-master/datetimepicker.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 
+  <!-- C-Lodop -->
+  <script src="http://localhost:8000/CLodopfuncs.js"></script>
+  <script src="http://localhost:18000/CLodopfuncs.js"></script>
+  
   <!--Script-->
   <script src="js/action.js"></script>
   <script src="js/tools.js"></script>
@@ -55,6 +59,7 @@
           <div class="four wide right aligned column">
             <button class="ui blue button new-record">新建</button>
             <button class="ui teal button export-record">导出</button>
+            <button class="ui teal button print-record">打印</button>
           </div>
         </div>
         <div class="one column row">
@@ -633,6 +638,11 @@
           href = href +'?startTime='+ startTime + '&endTime=' + endTime + '&token=' + getSessionStorage('token');
           window.location.href = href;
         }
+      })
+
+      $(document).on('click','.print-record',function(){
+        var LODOP=getCLodop();
+        LODOP.PREVIEW();
       })
 
       function loadTopTypeData() {

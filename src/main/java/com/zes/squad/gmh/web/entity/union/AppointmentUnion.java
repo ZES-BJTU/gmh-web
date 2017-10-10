@@ -1,26 +1,21 @@
 package com.zes.squad.gmh.web.entity.union;
 
+import java.util.List;
+
 import com.zes.squad.gmh.web.entity.po.AppointmentPo;
-import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
-import com.zes.squad.gmh.web.entity.po.ProjectPo;
-import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 
 import lombok.Data;
 
 @Data
 public class AppointmentUnion {
 
-    private Long          id;
+    private Long                          id;
 
-    private AppointmentPo appointmentPo;
+    private AppointmentPo                 appointmentPo;
 
-    private EmployeePo    employeePo;
+    private List<AppointmentProjectUnion> appointmentProjectUnions;
 
-    private MemberPo      memberPo;
-
-    private ProjectPo     projectPo;
-
-    private ProjectTypePo projectTypePo;
+    private MemberPo                      memberPo;
 
 }
