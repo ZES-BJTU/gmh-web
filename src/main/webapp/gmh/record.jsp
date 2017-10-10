@@ -23,10 +23,6 @@
   <!--Style-->
   <link href="js/bootstrap-datetimepicker-master/datetimepicker.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-
-  <!-- C-Lodop -->
-  <script src="http://localhost:8000/CLodopfuncs.js"></script>
-  <script src="http://localhost:18000/CLodopfuncs.js"></script>
   
   <!--Script-->
   <script src="js/action.js"></script>
@@ -641,8 +637,7 @@
       })
 
       $(document).on('click','.print-record',function(){
-        var LODOP=getCLodop();
-        LODOP.PREVIEW();
+        window.open('printTemplet.html');
       })
 
       function loadTopTypeData() {
