@@ -944,9 +944,8 @@
               projects += ';' + pid + ',' + eid + ',' + btime + ',' + etime;
             })
             projects = projects.substring(1);
-            console.log(projects);
             settings.data.projects = projects;
-            return false;
+            return settings;
           },
           onSuccess: function (response) {
             if (response.error != null) {
@@ -981,18 +980,20 @@
           $('.mod-appointment-line-select .text').removeClass('default');
           $('.mod-appointment-line-select .text').text($(this).parent().parent().find('.line').text());
 
-          // var projectId = $(this).parent().parent().find('.projectId').text();
-          // var projectName = $(this).parent().parent().find('.projectName').text();
+          var pids = $(this).parent().parent().find('.projectId').html().split(',');
+          var pnames = $(this).parent().parent().find('.projectName').html().split('<br>');
+          var eids = $(this).parent().parent().find('.employeeId').html().split(',');
+          var enames = $(this).parent().parent().find('.employeeName').html().split('<br>');
+          var btimes = $(this).parent().parent().find('.beginTime').html().split('<br>');
+          var etimes = $(this).parent().parent().find('.endTime').html().split('<br>');
 
-          // var employeeId = $(this).parent().parent().find('.employeeId').text();
-          // var employeeName = $(this).parent().parent().find('.employeeName').text();
-          // var infoEmployee = {
-          //   'employeeId': employeeId,
-          //   'employeeName': employeeName
-          // };
-
-          // $('#mod-appointment').find('input[name="beginTime"]').val($(this).parent().parent().find('.beginTime').text());
-          // $('#mod-appointment').find('input[name="endTime"]').val($(this).parent().parent().find('.endTime').text());
+          //加载多个项目
+          for(var i = 0; i < pids.length; i++){
+            var $tr = $('<tr><td style="display:none" class="projectId">' + pids[i] + '</td><td>' + pnames[i] +
+                '</td><td style="display:none" class="employeeId">' + eids[i] + '</td><td>' + enames[i] + '</td><td class="beginTime">' +
+                  btimes[i] + '</td><td class="endTime">' + etimes[i] + '</td><td class="minus-project"><i class="minus icon"></i></td></tr>');
+            $('#mod-project-list').append($tr);
+          }
 
           $('#mod-appointment').find('textarea[name="remark"]').val($(this).parent().parent().find('.remark').attr('title'));
           $('.mod-appointment-modal').modal({
@@ -1041,48 +1042,6 @@
                 prompt: '预约人性别不能为空'
               }]
             },
-            modTopTypeId: {
-              identifier: 'topTypeId',
-              rules: [{
-                type: 'empty',
-                prompt: '顶层分类不能为空'
-              }]
-            },
-            modProjectTypeId: {
-              identifier: 'projectTypeId',
-              rules: [{
-                type: 'empty',
-                prompt: '美容项目分类不能为空'
-              }]
-            },
-            modProjectId: {
-              identifier: 'projectId',
-              rules: [{
-                type: 'empty',
-                prompt: '美容项目不能为空'
-              }]
-            },
-            modEmployeeId: {
-              identifier: 'employeeId',
-              rules: [{
-                type: 'empty',
-                prompt: '操作员不能为空'
-              }]
-            },
-            modBeginTime: {
-              identifier: 'beginTime',
-              rules: [{
-                type: 'empty',
-                prompt: '开始时间不能为空'
-              }]
-            },
-            modEndTime: {
-              identifier: 'endTime',
-              rules: [{
-                type: 'empty',
-                prompt: '结束时间不能为空'
-              }]
-            },
             modLine: {
               identifier: 'line',
               rules: [{
@@ -1106,9 +1065,21 @@
           },
           beforeSend: function (settings) {
             if ($('#mod-appointment-id').text() != '') {
-              settings.data.beginTime = toTimeStamp(settings.data.beginTime);
-              settings.data.endTime = toTimeStamp(settings.data.endTime);
               settings.data.id = $('#mod-appointment-id').text();
+              if($('#project-list').children().length == 0){
+                alert('请添加项目!');
+                return false;
+              }
+              var projects = '';
+              $('#project-list').children().each(function(){
+                var pid = $(this).find('.projectId').text();
+                var eid = $(this).find('.employeeId').text();
+                var btime = toTimeStamp($(this).find('.beginTime').text());
+                var etime = toTimeStamp($(this).find('.endTime').text());
+                projects += ';' + pid + ',' + eid + ',' + btime + ',' + etime;
+              })
+              projects = projects.substring(1);
+              settings.data.projects = projects;
               return settings;
             } else {
               alert('ID为空');
@@ -1120,8 +1091,7 @@
               alert(response.error);
               verifyStatus(response.code);
             } else {
-              $('#modReserveTime').val('');
-              $('#mod-reserve-time').empty();
+              $('#project-list').empty();
               $('#mod-appointment-id').text('');
               $('#mod-appointment').form('clear');
               $('.mod-appointment-modal').modal('hide');
@@ -1589,15 +1559,20 @@
         var $projectId = $('<td class="projectId" style="display:none">' + pid + '</td>');
         var pname = ['美容1','美容2'];
         var $projectName = $('<td class="projectName">' + pname.join('<br>') + '</td>');
-        var $employeeId = $('<td class="employeeId" style="display:none">1</td>');
-        var $employeeName = $('<td class="employeeName">员工1</td>');
-        var $beginTime = $('<td class="beginTime">2010-09-01 12:00</td>');
-        var $endTime = $('<td class="endTime">2010-09-01 12:00</td>');
+        var eid = [1,2];
+        var $employeeId = $('<td class="employeeId" style="display:none">' + eid + '</td>');
+        var ename = ['员工1','员工2'];
+        var $employeeName = $('<td class="employeeName">' + ename.join('<br>') + '</td>');
+        var btime = ['2010-09-01 12:00','2010-09-01 12:00'];
+        var $beginTime = $('<td class="beginTime">' + btime.join('<br>') + '</td>');
+        var etime = ['2010-09-01 12:00','2010-09-01 12:00'];
+        var $endTime = $('<td class="endTime">' + btime.join('<br>') + '</td>');
         var $line = $('<td class="line">是</td>');
         var $status = $('<td class="status">进行中</td>');
 
         var $remark = $('<td class="remark" title="无">无</td>');
-        var $projectCharge = $('<td class="projectCharge" style="display:none">1000</td>');
+        var pcharge = [1000,2000];
+        var $projectCharge = $('<td class="projectCharge" style="display:none">' + pcharge + '</td>');
         var $operate = $(
           '<td><button class="ui tiny green button finish-appointment">完成</button>' +
           '<button class="ui tiny orange button mod-appointment">修改</button>' +
