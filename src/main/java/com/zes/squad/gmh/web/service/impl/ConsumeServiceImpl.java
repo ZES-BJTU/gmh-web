@@ -45,15 +45,21 @@ import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.ProjectQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
+import com.zes.squad.gmh.web.entity.dto.ConsumeRecordProjectDto;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
+import com.zes.squad.gmh.web.entity.po.ConsumeRecordProjectPo;
 import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
+import com.zes.squad.gmh.web.entity.union.ConsumeRecordProjectUnion;
 import com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
+import com.zes.squad.gmh.web.entity.vo.MemberVo;
 import com.zes.squad.gmh.web.helper.CalculateHelper;
+import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
+import com.zes.squad.gmh.web.mapper.ConsumeRecordProjectMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
@@ -70,35 +76,28 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsumeServiceImpl implements ConsumeService {
 
     @Autowired
-    private ConsumeRecordMapper      consumeRecordmapper;
+    private ConsumeRecordMapper        consumeRecordmapper;
     @Autowired
-    private MemberUnionMapper        memberUnionMapper;
+    private ConsumeRecordProjectMapper consumeRecordProjectMapper;
     @Autowired
-    private ProjectUnionMapper       projectUnionMapper;
+    private MemberUnionMapper          memberUnionMapper;
     @Autowired
-    private MemberMapper             memberMapper;
+    private ProjectUnionMapper         projectUnionMapper;
     @Autowired
-    private ConsumeRecordUnionMapper consumeRecordUnionMapper;
+    private MemberMapper               memberMapper;
     @Autowired
-    private EmployeeMapper           employeeMapper;
+    private ConsumeRecordUnionMapper   consumeRecordUnionMapper;
     @Autowired
-    private EmployeeJobMapper        employeeJobMepper;
+    private EmployeeMapper             employeeMapper;
+    @Autowired
+    private EmployeeJobMapper          employeeJobMepper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
     @Override
     public void createConsumeRecord(ConsumeRecordDto dto) {
-        //确保美容项目合法
-        ProjectQueryCondition condition = new ProjectQueryCondition();
-        condition.setProjectId(dto.getProjectId());
-        List<ProjectUnion> projectUnions = projectUnionMapper.listProjectUnionsByCondition(condition);
-        ensureCollectionNotEmpty(projectUnions, ErrorMessage.projectNotFound);
-        ProjectUnion projectUnion = projectUnions.get(0);
-        //确保员工合法
-        EmployeePo employeePo = employeeMapper.selectById(dto.getEmployeeId());
-        ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
         if (dto.getCounselorId() != null) {
-            employeePo = employeeMapper.selectById(dto.getCounselorId());
+            EmployeePo employeePo = employeeMapper.selectById(dto.getCounselorId());
             ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
             List<EmployeeJobPo> employeeJobPos = employeeJobMepper.selectByEmployeeId(employeePo.getId());
             if (CollectionUtils.isEmpty(employeeJobPos)) {
@@ -132,21 +131,38 @@ public class ConsumeServiceImpl implements ConsumeService {
                 ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
                 BigDecimal nailMoney = memberPo.getNailMoney();
                 BigDecimal beautyMoney = memberPo.getBeautyMoney();
-                Integer projectType = projectUnion.getProjectTypePo().getTopType();
-                if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
-                    ensureConditionSatisfied(nailMoney.compareTo(dto.getCharge()) != -1,
-                            ErrorMessage.nailMoneyNotEnough);
-                    //扣除美甲美睫储值
-                    memberMapper.updateNailMoney(dto.getMemberId(), nailMoney.subtract(dto.getCharge()));
-                } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
-                        || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
-                    ensureConditionSatisfied(beautyMoney.compareTo(dto.getCharge()) != -1,
-                            ErrorMessage.beautyMoneyNotEnough);
-                    //扣除美容储值
-                    memberMapper.updateBeautyMoney(dto.getMemberId(), beautyMoney.subtract(dto.getCharge()));
-                } else {
-                    throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS, "美容项目分类不合法");
+
+                for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
+                    //确保美容项目合法
+                    ProjectQueryCondition condition = new ProjectQueryCondition();
+                    condition.setProjectId(projectDto.getProjectId());
+                    List<ProjectUnion> projectUnions = projectUnionMapper.listProjectUnionsByCondition(condition);
+                    ensureCollectionNotEmpty(projectUnions, ErrorMessage.projectNotFound);
+                    //确保员工合法
+                    EmployeePo employeePo = employeeMapper.selectById(projectDto.getEmployeeId());
+                    ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+
+                    ProjectUnion projectUnion = projectUnions.get(0);
+                    Integer projectType = projectUnion.getProjectTypePo().getTopType();
+                    if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
+                        ensureConditionSatisfied(nailMoney.compareTo(projectDto.getCharge()) != -1,
+                                ErrorMessage.nailMoneyNotEnough);
+                        //扣除美甲美睫储值
+                        nailMoney = nailMoney.subtract(projectDto.getCharge());
+                        memberMapper.updateNailMoney(dto.getMemberId(), nailMoney);
+                    } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
+                            || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
+                        ensureConditionSatisfied(beautyMoney.compareTo(projectDto.getCharge()) != -1,
+                                ErrorMessage.beautyMoneyNotEnough);
+                        //扣除美容储值
+                        beautyMoney = beautyMoney.subtract(projectDto.getCharge());
+                        memberMapper.updateBeautyMoney(dto.getMemberId(), beautyMoney);
+                    } else {
+                        throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS, "美容项目分类不合法");
+                    }
+
                 }
+
             }
         } else {
             ensureConditionSatisfied(dto.getChargeWay() == ChargeWayEnum.CASH.getKey(),
@@ -157,6 +173,13 @@ public class ConsumeServiceImpl implements ConsumeService {
         po.setConsumeTime(new Date());
         po.setCounselor(dto.getCounselorId());
         consumeRecordmapper.insert(po);
+        LogicHelper.ensureConditionSatisfied(po.getId() != null, "消费记录标识生成失败");
+        List<ConsumeRecordProjectPo> pos = CommonConverter.mapList(dto.getConsumeRecordProjectDtos(),
+                ConsumeRecordProjectPo.class);
+        for (ConsumeRecordProjectPo projectPo : pos) {
+            projectPo.setConsumeRecordId(po.getId());
+        }
+        consumeRecordProjectMapper.batchInsert(pos);
     }
 
     @Override
@@ -198,8 +221,22 @@ public class ConsumeServiceImpl implements ConsumeService {
                 dto.setCounselorName(employeePo.getName());
             }
             dto.setStoreName(union.getShopPo().getName());
-            dto.setProjectName(union.getProjectPo() == null ? "" : union.getProjectPo().getName());
-            dto.setEmployeeName(union.getEmployeePo() == null ? "" : union.getEmployeePo().getName());
+            //            dto.setProjectName(union.getProjectPo() == null ? "" : union.getProjectPo().getName());
+            //            dto.setEmployeeName(union.getEmployeePo() == null ? "" : union.getEmployeePo().getName());
+
+            List<ConsumeRecordProjectUnion> projectUnions = union.getConsumeRecordProjectUnions();
+            List<ConsumeRecordProjectDto> projectDtos = Lists.newArrayList();
+            for (ConsumeRecordProjectUnion projectUnion : projectUnions) {
+                ConsumeRecordProjectDto projectDto = new ConsumeRecordProjectDto();
+                projectDto.setProjectId(projectUnion.getConsumeRecordProjectPo().getProjectId());
+                projectDto.setProjectName(projectUnion.getProjectPo().getName());
+                projectDto.setEmployeeId(projectUnion.getConsumeRecordProjectPo().getEmployeeId());
+                projectDto.setEmployeeName(projectUnion.getEmployeePo().getName());
+                projectDto.setCharge(projectUnion.getConsumeRecordProjectPo().getCharge());
+                projectDtos.add(projectDto);
+            }
+            dto.setConsumeRecordProjectDtos(projectDtos);
+
             if (union.getConsumeRecordPo().getEmployeeId() != null
                     && union.getConsumeRecordPo().getMember().booleanValue()) {
                 dto.setMember(true);
@@ -302,14 +339,33 @@ public class ConsumeServiceImpl implements ConsumeService {
                 cell.setCellType(CellType.STRING);
                 cell.setCellValue(shopName == null ? "" : shopName);
                 cell.setCellStyle(style);
+                //                //美容项目
+                //                String projectName = union.getProjectPo().getName();
+                //                cell = hssfRow.createCell(column++);
+                //                cell.setCellType(CellType.STRING);
+                //                cell.setCellValue(projectName == null ? "" : projectName);
+                //                cell.setCellStyle(style);
+                //                //操作员
+                //                String employeeName = union.getEmployeePo().getName();
+                //                cell = hssfRow.createCell(column++);
+                //                cell.setCellType(CellType.STRING);
+                //                cell.setCellValue(employeeName == null ? "" : employeeName);
+                //                cell.setCellStyle(style);
                 //美容项目
-                String projectName = union.getProjectPo().getName();
+                List<ConsumeRecordProjectUnion> projectUnions = union.getConsumeRecordProjectUnions();
+                String projectName = "";
+                String employeeName = "";
+                for (ConsumeRecordProjectUnion projectUnion : projectUnions) {
+                    projectName = projectName + "," + projectUnion.getProjectPo().getName();
+                    employeeName = employeeName + "," + projectUnion.getEmployeePo().getName();
+                }
+                projectName = projectName.substring(1);
                 cell = hssfRow.createCell(column++);
                 cell.setCellType(CellType.STRING);
                 cell.setCellValue(projectName == null ? "" : projectName);
                 cell.setCellStyle(style);
                 //操作员
-                String employeeName = union.getEmployeePo().getName();
+                employeeName = employeeName.substring(1);
                 cell = hssfRow.createCell(column++);
                 cell.setCellType(CellType.STRING);
                 cell.setCellValue(employeeName == null ? "" : employeeName);
@@ -400,6 +456,28 @@ public class ConsumeServiceImpl implements ConsumeService {
     private static String formatDateTime(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
+    }
+
+    @Override
+    public List<MemberVo> listMemberCardsByPhone(String phone) {
+        MemberQueryCondition condition = new MemberQueryCondition();
+        condition.setPhone(phone);
+        condition.setStoreId(ThreadContext.getStaffStoreId());
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(condition);
+        if (CollectionUtils.isEmpty(unions)) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY, "查询会员卡信息失败");
+        }
+        return buildMemberVosByUnions(unions);
+    }
+
+    private List<MemberVo> buildMemberVosByUnions(List<MemberUnion> unions) {
+        List<MemberVo> vos = Lists.newArrayList();
+        for (MemberUnion union : unions) {
+            MemberVo vo = CommonConverter.map(union.getMemberPo(), MemberVo.class);
+            vo.setMemberLevelName(union.getMemberLevelPo().getName());
+            vos.add(vo);
+        }
+        return vos;
     }
 
 }

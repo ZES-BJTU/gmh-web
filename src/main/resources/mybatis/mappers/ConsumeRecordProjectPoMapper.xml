@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.ConsumeRecordProjectMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.po.ConsumeRecordProjectPo">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="consume_record_id" jdbcType="BIGINT" property="consumeRecordId" />
+		<result column="project_id" jdbcType="BIGINT" property="projectId" />
+		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
+		<result column="charge" jdbcType="DECIMAL" property="charge" />
+		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		`id`,`consume_record_id`,`project_id`,
+		`employee_id`,`charge`,
+		`created_time`,`modified_time`
+	</sql>
+	<insert id="batchInsert"
+		parameterType="com.zes.squad.gmh.web.entity.po.ConsumeRecordProjectPo">
+		INSERT INTO
+		consume_record_project
+		(`consume_record_id`,
+		`project_id`,
+		`employee_id`,
+		`charge`)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.consumeRecordId, jdbcType=BIGINT}
+			#{item.projectId,jdbcType=BIGINT},
+			#{item.employeeId,jdbcType=BIGINT},
+			#{item.charge,jdbcType=DECIMAL})
+		</foreach>
+	</insert>
+</mapper>

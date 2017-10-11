@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.ConsumeRecordProjectUnionMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.union.ConsumeRecordProjectUnion">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<association property="consumeRecordProjectPo"
+			resultMap="com.zes.squad.gmh.web.mapper.ConsumeRecordProjectMapper.BaseResultMap" />
+		<association property="projectPo"
+			resultMap="com.zes.squad.gmh.web.mapper.ProjectMapper.BaseResultMap"
+			columnPrefix="p_" />
+		<association property="employeePo"
+			resultMap="com.zes.squad.gmh.web.mapper.EmployeeMapper.BaseResultMap"
+			columnPrefix="e_" />
+	</resultMap>
+
+</mapper>

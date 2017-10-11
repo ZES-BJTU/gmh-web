@@ -87,6 +87,7 @@
 				LIKE #{search}
 			</if>
 		</where>
+		ORDER BY a.created_time DESC
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
@@ -122,7 +123,7 @@
 		LEFT JOIN
 		appointment_project ap
 		ON
-		a.id = ap.appointment
+		a.id = ap.appointment_id
 		LEFT JOIN
 		employee e
 		ON ap.employee_id =

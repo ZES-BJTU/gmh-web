@@ -36,11 +36,13 @@ import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
+import com.zes.squad.gmh.web.entity.dto.ConsumeRecordProjectDto;
 import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordExportParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
+import com.zes.squad.gmh.web.entity.vo.MemberVo;
 import com.zes.squad.gmh.web.service.ConsumeService;
 import com.zes.squad.gmh.web.service.StaffService;
 import com.zes.squad.gmh.web.view.ExcelView;
@@ -65,29 +67,41 @@ public class ConsumeController extends BaseController {
     public JsonResult<Void> doCreateConsumeRecord(ConsumeRecordParams params) {
         checkConsumeRecordParams(params);
         ConsumeRecordDto dto = CommonConverter.map(params, ConsumeRecordDto.class);
+        dto.setConsumeRecordProjectDtos(buildConsumeRecordProjectDtoByProjects(params.getProjects()));
         StaffDto staff = getStaff();
         dto.setStoreId(staff.getStoreId());
         consumeService.createConsumeRecord(dto);
         return JsonResult.success();
     }
 
+    @RequestMapping("/listByPhone")
+    @ResponseBody
+    public JsonResult<List<MemberVo>> doListMemberCardsByPhone(String phone) {
+        ensureParameterExist(phone, "会员手机号为空");
+        List<MemberVo> vos = consumeService.listMemberCardsByPhone(phone);
+        return JsonResult.success(vos);
+    }
+
+    @RequestMapping("/modify")
+    @ResponseBody
+    public JsonResult<Void> doModifyConsumeRecordByRecord(ConsumeRecordParams params) {
+        return null;
+    }
+
     private void checkConsumeRecordParams(ConsumeRecordParams params) {
         ensureParameterExist(params, ErrorMessage.paramIsNull);
-        ensureParameterExist(params.getProjectId(), ErrorMessage.projectNotSelected);
-        ensureParameterExist(params.getEmployeeId(), ErrorMessage.employeeNotSelected);
+        //        ensureParameterExist(params.getProjectId(), ErrorMessage.projectNotSelected);
+        //        ensureParameterExist(params.getEmployeeId(), ErrorMessage.employeeNotSelected);
         ensureParameterExist(params.getMobile(), ErrorMessage.consumeRecordMobileIsNull);
         ensureParameterValid(isValidMobile(params.getMobile()), ErrorMessage.consumeRecordMobileIsError);
         ensureParameterExist(params.getConsumerName(), ErrorMessage.consumerNameIsError);
         ensureParameterExist(params.getCharge(), ErrorMessage.consumeRecordChargeIsNull);
-        ensureParameterValid(params.getCharge().compareTo(BigDecimal.ZERO) == 1,
-                ErrorMessage.consumeRecordChargeIsError);
-        if (params.getDiscount() != null) {
-            ensureParameterValid(params.getCharge().compareTo(BigDecimal.ZERO) == 1,
-                    ErrorMessage.consumeRecordChargeIsError);
-        }
         ensureParameterExist(params.getChargeWay(), ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, params.getChargeWay())),
                 ErrorMessage.consumeRecordChargeWayIsError);
+        if (params.getChargeWay() != null) {
+            ensureParameterExist(params.getMemberId(), "会员卡为空");
+        }
         ensureParameterExist(params.getSex(), ErrorMessage.consumerSexIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(SexEnum.class, params.getSex())),
                 ErrorMessage.consumerSexIsError);
@@ -195,5 +209,19 @@ public class ConsumeController extends BaseController {
             ensureParameterValid(params.getEndTime().before(new Date()), ErrorMessage.consumeRecordEndTimeIsError);
         }
         return null;
+    }
+
+    private List<ConsumeRecordProjectDto> buildConsumeRecordProjectDtoByProjects(String projects) {
+        ensureParameterExist(projects, "消费记录项目信息为空");
+        List<ConsumeRecordProjectDto> dtos = Lists.newArrayList();
+        for (String project : projects.split(";")) {
+            String[] details = project.split(",");
+            ConsumeRecordProjectDto dto = new ConsumeRecordProjectDto();
+            dto.setProjectId(Long.valueOf(details[0]));
+            dto.setEmployeeId(Long.valueOf(details[1]));
+            dto.setCharge(new BigDecimal(details[2]));
+            dtos.add(dto);
+        }
+        return dtos;
     }
 }

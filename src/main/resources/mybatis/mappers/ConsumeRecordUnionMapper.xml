@@ -9,12 +9,9 @@
 		<association property="shopPo"
 			resultMap="com.zes.squad.gmh.web.mapper.ShopMapper.BaseResultMap"
 			columnPrefix="s_" />
-		<association property="projectPo"
-			resultMap="com.zes.squad.gmh.web.mapper.ProjectMapper.BaseResultMap"
-			columnPrefix="p_" />
-		<association property="employeePo"
-			resultMap="com.zes.squad.gmh.web.mapper.EmployeeMapper.BaseResultMap"
-			columnPrefix="e_" />
+		<collection property="consumeRecordProjectUnions"
+			resultMap="com.zes.squad.gmh.web.mapper.ConsumeRecordProjectUnionMapper.BaseResultMap"
+			columnPrefix="crp_" />
 	</resultMap>
 	<select id="listConsumeRecordsByCondition"
 		parameterType="com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition"
@@ -39,22 +36,31 @@
 		s.`id`
 		AS s_id,
 		s.name AS s_name,
-		p.`id` AS p_id,
-		p.name AS p_name,
-		e.`id` AS
-		e_id,
-		e.name AS e_name
+		crp.`id` AS crp_id,
+		crp.consume_record_id AS crp_consume_record_id,
+		crp.project_id AS crp_project_id,
+		crp.employee_id AS crp_employee_id,
+		crp.charge AS crp_charge,
+		p.`id` AS crp_p_project_id,
+		p.name AS crp_p_name,
+		e.`id` AS crp_p_employee_id,
+		e.name AS crp_p_name
 		FROM consume_record cr
-		LEFT JOIN shop s
+		LEFT JOIN 
+		consume_record_project crp
 		ON
-		cr.store_id =
-		s.`id`
-		LEFT JOIN project p
-		ON cr.project_id = p.`id`
-		LEFT
-		JOIN
+		cr.id = crp.consume_record_id
+		LEFT JOIN 
+		shop s
+		ON
+		cr.store_id = s.`id`
+		LEFT JOIN 
+		project p
+		ON crp.project_id = p.`id`
+		LEFT JOIN 
 		employee e
-		ON cr.employee_id = e.`id`
+		ON 
+		crp.employee_id = e.`id`
 		<where>
 			<if test="storeId != null">
 				AND cr.store_id = #{storeId, jdbcType=BIGINT}

@@ -1,8 +1,8 @@
 package com.zes.squad.gmh.web.entity.union;
 
+import java.util.List;
+
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
-import com.zes.squad.gmh.web.entity.po.EmployeePo;
-import com.zes.squad.gmh.web.entity.po.ProjectPo;
 import com.zes.squad.gmh.web.entity.po.ShopPo;
 
 import lombok.Data;
@@ -10,14 +10,12 @@ import lombok.Data;
 @Data
 public class ConsumeRecordUnion {
 
-    private Long            id;
+    private Long                            id;
 
-    private ConsumeRecordPo consumeRecordPo;
+    private ConsumeRecordPo                 consumeRecordPo;
 
-    private ShopPo          shopPo;
+    private ShopPo                          shopPo;
 
-    private ProjectPo       projectPo;
-
-    private EmployeePo      employeePo;
+    private List<ConsumeRecordProjectUnion> consumeRecordProjectUnions;
 
 }
