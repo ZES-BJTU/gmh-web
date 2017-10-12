@@ -41,4 +41,11 @@ public interface ConsumeService {
      */
     List<MemberVo> listMemberCardsByPhone(String phone);
 
+    /**
+     * 修改消费记录
+     * 
+     * @param dto
+     */
+    void modifyConsumeRecord(ConsumeRecordDto dto);
+
 }

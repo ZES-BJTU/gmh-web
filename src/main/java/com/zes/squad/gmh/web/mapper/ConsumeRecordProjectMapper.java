@@ -14,4 +14,12 @@ public interface ConsumeRecordProjectMapper {
      */
     int batchInsert(List<ConsumeRecordProjectPo> pos);
 
+    /**
+     * 根据消费记录id删除
+     * 
+     * @param consumeRecordId
+     * @return
+     */
+    int deleteByConsumeRecordId(Long consumeRecordId);
+
 }

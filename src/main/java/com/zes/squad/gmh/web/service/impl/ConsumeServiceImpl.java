@@ -60,6 +60,7 @@ import com.zes.squad.gmh.web.helper.CalculateHelper;
 import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordProjectMapper;
+import com.zes.squad.gmh.web.mapper.ConsumeRecordProjectUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
@@ -76,21 +77,23 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsumeServiceImpl implements ConsumeService {
 
     @Autowired
-    private ConsumeRecordMapper        consumeRecordmapper;
+    private ConsumeRecordMapper             consumeRecordMapper;
     @Autowired
-    private ConsumeRecordProjectMapper consumeRecordProjectMapper;
+    private ConsumeRecordProjectMapper      consumeRecordProjectMapper;
     @Autowired
-    private MemberUnionMapper          memberUnionMapper;
+    private ConsumeRecordProjectUnionMapper consumeRecordProjectUnionMapper;
     @Autowired
-    private ProjectUnionMapper         projectUnionMapper;
+    private MemberUnionMapper               memberUnionMapper;
     @Autowired
-    private MemberMapper               memberMapper;
+    private ProjectUnionMapper              projectUnionMapper;
     @Autowired
-    private ConsumeRecordUnionMapper   consumeRecordUnionMapper;
+    private MemberMapper                    memberMapper;
     @Autowired
-    private EmployeeMapper             employeeMapper;
+    private ConsumeRecordUnionMapper        consumeRecordUnionMapper;
     @Autowired
-    private EmployeeJobMapper          employeeJobMepper;
+    private EmployeeMapper                  employeeMapper;
+    @Autowired
+    private EmployeeJobMapper               employeeJobMepper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
@@ -174,7 +177,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
         po.setConsumeTime(new Date());
         po.setCounselor(dto.getCounselorId());
-        consumeRecordmapper.insert(po);
+        consumeRecordMapper.insert(po);
         LogicHelper.ensureConditionSatisfied(po.getId() != null, "消费记录标识生成失败");
         List<ConsumeRecordProjectPo> pos = CommonConverter.mapList(dto.getConsumeRecordProjectDtos(),
                 ConsumeRecordProjectPo.class);
@@ -480,6 +483,124 @@ public class ConsumeServiceImpl implements ConsumeService {
             vos.add(vo);
         }
         return vos;
+    }
+
+    @Override
+    public void modifyConsumeRecord(ConsumeRecordDto dto) {
+        //回复会员卡储值
+        if (dto.getChargeWay().intValue() == ChargeWayEnum.CARD.getKey()) {
+            Long memberId = consumeRecordMapper.selectMemberById(dto.getId());
+            ensureConditionSatisfied(memberId != null, "根据消费记录获取会员信息失败");
+            MemberPo memberPo = memberMapper.selectById(memberId);
+            ensureEntityExist(memberPo, "查询会员信息失败");
+            BigDecimal nailMoney = memberPo.getNailMoney();
+            BigDecimal beautyMoney = memberPo.getBeautyMoney();
+            List<ConsumeRecordProjectUnion> unions = consumeRecordProjectUnionMapper
+                    .selectByConsumeRecordId(dto.getId());
+            ensureCollectionNotEmpty(unions, "消费记录项目查询失败");
+            for (ConsumeRecordProjectUnion union : unions) {
+                if (union.getProjectTypePo().getTopType() == ProjectTypeEnum.NAIL.getKey()
+                        || union.getProjectTypePo().getTopType() == ProjectTypeEnum.LIDS.getKey()) {
+                    nailMoney = nailMoney.add(union.getConsumeRecordProjectPo().getCharge());
+                    memberMapper.updateNailMoney(memberId, nailMoney);
+                }
+                if (union.getProjectTypePo().getTopType() == ProjectTypeEnum.BEAUTY.getKey()
+                        || union.getProjectTypePo().getTopType() == ProjectTypeEnum.PRODUCT.getKey()) {
+                    beautyMoney = beautyMoney.add(union.getConsumeRecordProjectPo().getCharge());
+                    memberMapper.updateBeautyMoney(memberId, beautyMoney);
+                }
+            }
+        }
+        //删除老记录
+        consumeRecordMapper.deleteById(dto.getId());
+        consumeRecordProjectMapper.deleteByConsumeRecordId(dto.getId());
+        //复用新建消费记录
+        if (dto.getCounselorId() != null) {
+            EmployeePo employeePo = employeeMapper.selectById(dto.getCounselorId());
+            ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+            List<EmployeeJobPo> employeeJobPos = employeeJobMepper.selectByEmployeeId(employeePo.getId());
+            if (CollectionUtils.isEmpty(employeeJobPos)) {
+                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
+                        ErrorMessage.employeeJobNotFound);
+            }
+            boolean contain = false;
+            for (EmployeeJobPo po : employeeJobPos) {
+                if (po.getJobType() == JobEnum.MANAGER.getKey() || po.getJobType() == JobEnum.COUNSELOR.getKey()) {
+                    contain = true;
+                    break;
+                }
+            }
+            ensureConditionSatisfied(contain, ErrorMessage.employeeJobTypeIsError);
+        }
+        MemberQueryCondition memberCondition = new MemberQueryCondition();
+        memberCondition.setStoreId(ThreadContext.getStaffStoreId());
+        memberCondition.setPhone(dto.getMobile());
+        List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(memberCondition);
+        if (!CollectionUtils.isEmpty(unions)) {
+            MemberPo member = unions.get(0).getMemberPo();
+            dto.setMember(true);
+            dto.setMemberId(member.getId());
+            dto.setAge(member.getAge());
+            dto.setConsumerName(member.getName());
+            dto.setSex(Integer.valueOf(String.valueOf(member.getSex())));
+            //处理会员消费
+            MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
+            dto.setAge(CalculateHelper.calculateAgeByBirthday(memberPo.getBirthday()));
+            if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
+                ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
+                BigDecimal nailMoney = memberPo.getNailMoney();
+                BigDecimal beautyMoney = memberPo.getBeautyMoney();
+
+                for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
+                    //确保美容项目合法
+                    ProjectQueryCondition condition = new ProjectQueryCondition();
+                    condition.setProjectId(projectDto.getProjectId());
+                    List<ProjectUnion> projectUnions = projectUnionMapper.listProjectUnionsByCondition(condition);
+                    ensureCollectionNotEmpty(projectUnions, ErrorMessage.projectNotFound);
+                    //确保员工合法
+                    EmployeePo employeePo = employeeMapper.selectById(projectDto.getEmployeeId());
+                    ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+
+                    ProjectUnion projectUnion = projectUnions.get(0);
+                    Integer projectType = projectUnion.getProjectTypePo().getTopType();
+                    if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
+                        ensureConditionSatisfied(nailMoney.compareTo(projectDto.getCharge()) != -1,
+                                ErrorMessage.nailMoneyNotEnough);
+                        //扣除美甲美睫储值
+                        nailMoney = nailMoney.subtract(projectDto.getCharge());
+                        ensureConditionSatisfied(nailMoney.compareTo(BigDecimal.ZERO) != -1, "美甲美睫储值不足");
+                        memberMapper.updateNailMoney(dto.getMemberId(), nailMoney);
+                    } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
+                            || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
+                        ensureConditionSatisfied(beautyMoney.compareTo(projectDto.getCharge()) != -1,
+                                ErrorMessage.beautyMoneyNotEnough);
+                        //扣除美容储值
+                        beautyMoney = beautyMoney.subtract(projectDto.getCharge());
+                        ensureConditionSatisfied(beautyMoney.compareTo(BigDecimal.ZERO) != -1, "美容储值不足");
+                        memberMapper.updateBeautyMoney(dto.getMemberId(), beautyMoney);
+                    } else {
+                        throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS, "美容项目分类不合法");
+                    }
+
+                }
+
+            }
+        } else {
+            ensureConditionSatisfied(dto.getChargeWay() == ChargeWayEnum.CASH.getKey(),
+                    ErrorMessage.consumerShouldChooseCash);
+            dto.setMember(false);
+        }
+        ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
+        po.setConsumeTime(new Date());
+        po.setCounselor(dto.getCounselorId());
+        consumeRecordMapper.insert(po);
+        LogicHelper.ensureConditionSatisfied(po.getId() != null, "消费记录标识生成失败");
+        List<ConsumeRecordProjectPo> pos = CommonConverter.mapList(dto.getConsumeRecordProjectDtos(),
+                ConsumeRecordProjectPo.class);
+        for (ConsumeRecordProjectPo projectPo : pos) {
+            projectPo.setConsumeRecordId(po.getId());
+        }
+        consumeRecordProjectMapper.batchInsert(pos);
     }
 
 }

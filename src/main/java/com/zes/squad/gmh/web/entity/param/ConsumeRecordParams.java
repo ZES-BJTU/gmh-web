@@ -7,8 +7,7 @@ import lombok.Data;
 @Data
 public class ConsumeRecordParams {
 
-    //    private Long       projectId;
-    //    private Long       employeeId;
+    private Long       id;
     private String     mobile;
     private Integer    age;
     private Integer    sex;

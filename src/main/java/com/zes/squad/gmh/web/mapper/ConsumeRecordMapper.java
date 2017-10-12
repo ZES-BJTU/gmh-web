@@ -35,4 +35,20 @@ public interface ConsumeRecordMapper {
      */
     List<ConsumeCountPo> sumOtherCharge(@Param("storeId") Long storeId, @Param("month") Integer month);
 
+    /**
+     * 根据消费记录id查询会员
+     * 
+     * @param id
+     * @return
+     */
+    Long selectMemberById(Long id);
+
+    /**
+     * 根据id删除
+     * 
+     * @param id
+     * @return
+     */
+    int deleteById(Long id);
+
 }

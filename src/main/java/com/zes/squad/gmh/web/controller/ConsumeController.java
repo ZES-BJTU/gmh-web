@@ -85,7 +85,14 @@ public class ConsumeController extends BaseController {
     @RequestMapping("/modify")
     @ResponseBody
     public JsonResult<Void> doModifyConsumeRecordByRecord(ConsumeRecordParams params) {
-        return null;
+        checkConsumeRecordParams(params);
+        ensureParameterExist(params.getId(), "消费记录标识为空");
+        ConsumeRecordDto dto = CommonConverter.map(params, ConsumeRecordDto.class);
+        dto.setConsumeRecordProjectDtos(buildConsumeRecordProjectDtoByProjects(params.getProjects()));
+        StaffDto staff = getStaff();
+        dto.setStoreId(staff.getStoreId());
+        consumeService.createConsumeRecord(dto);
+        return JsonResult.success();
     }
 
     private void checkConsumeRecordParams(ConsumeRecordParams params) {

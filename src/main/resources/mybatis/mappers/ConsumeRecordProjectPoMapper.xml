@@ -32,4 +32,8 @@
 			#{item.charge,jdbcType=DECIMAL})
 		</foreach>
 	</insert>
+	<delete id="deleteByConsumeRecordId" parameterType="long">
+		DELETE FROM consume_record_project WHERE consume_record_id =
+		#{consumeRecordId, jdbcType=BIGINT}
+	</delete>
 </mapper>

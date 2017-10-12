@@ -96,7 +96,7 @@
 		`store_id` = #{storeId,
 		jdbcType=BIGINT}
 		AND
-        charge_way = 2
+		charge_way = 2
 		AND
 		consume_time <![CDATA[>]]>
 		DATE_SUB(NOW(), INTERVAL #{month,
@@ -104,4 +104,10 @@
 		GROUP BY
 		DATE_FORMAT(`consume_time`, '%Y-%m')
 	</select>
+	<select id="selectMemberById" parameterType="long" resultType="long">
+		SELECT member_id FROM consume_record WHERE id = #{id, jdbcType=BIGINT}
+	</select>
+	<delete id="deleteById" parameterType="long">
+		DELETE FROM consume_record WHERE id = #{id, jdbcType=BIGINT}
+	</delete>
 </mapper>
