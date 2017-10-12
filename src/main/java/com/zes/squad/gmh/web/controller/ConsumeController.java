@@ -41,6 +41,7 @@ import com.zes.squad.gmh.web.entity.dto.StaffDto;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordExportParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordParams;
 import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
+import com.zes.squad.gmh.web.entity.vo.ConsumeRecordProjectVo;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
 import com.zes.squad.gmh.web.service.ConsumeService;
@@ -91,7 +92,7 @@ public class ConsumeController extends BaseController {
         dto.setConsumeRecordProjectDtos(buildConsumeRecordProjectDtoByProjects(params.getProjects()));
         StaffDto staff = getStaff();
         dto.setStoreId(staff.getStoreId());
-        consumeService.createConsumeRecord(dto);
+        consumeService.modifyConsumeRecord(dto);
         return JsonResult.success();
     }
 
@@ -200,6 +201,9 @@ public class ConsumeController extends BaseController {
             } else {
                 vo.setConsumerDesc(CONSUMER);
             }
+            List<ConsumeRecordProjectVo> projectVos = CommonConverter.mapList(dto.getConsumeRecordProjectDtos(),
+                    ConsumeRecordProjectVo.class);
+            vo.setConsumeRecordProjectVos(projectVos);
             vos.add(vo);
         }
         return PagedLists.newPagedList(pagedDtos.getPageNum(), pagedDtos.getPageSize(), pagedDtos.getTotalCount(), vos);
@@ -227,6 +231,7 @@ public class ConsumeController extends BaseController {
             dto.setProjectId(Long.valueOf(details[0]));
             dto.setEmployeeId(Long.valueOf(details[1]));
             dto.setCharge(new BigDecimal(details[2]));
+            dto.setCounselorId(Long.valueOf(details[3]));
             dtos.add(dto);
         }
         return dtos;
