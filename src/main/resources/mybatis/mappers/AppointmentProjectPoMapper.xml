@@ -33,5 +33,9 @@
 		appointment_project WHERE appointment_id = #{appointmentId,
 		jdbcType=BIGINT}
 	</delete>
-
+	<select id="selectByAppointmentId" parameterType="long"
+		resultMap="BaseResultMap">
+		SELECT * FROM appointment_project WHERE appointment_id = #{appointmentId,
+		jdbcType=BIGINT}
+	</select>
 </mapper>

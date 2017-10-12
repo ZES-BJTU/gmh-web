@@ -7,7 +7,6 @@ import static com.zes.squad.gmh.web.helper.LogicHelper.ensureEntityExist;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterValid;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -156,18 +155,16 @@ public class AppointmentController {
 
     @RequestMapping("/finish")
     @ResponseBody
-    public JsonResult<Integer> finish(Long id, BigDecimal charge, Integer chargeWay, Long counselorId, String source,
-                                      String remark) {
+    public JsonResult<Integer> finish(Long id, Integer chargeWay, String projects, String source, String remark) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.appointmentNotSelected);
         }
-        ensureParameterExist(charge, ErrorMessage.consumeRecordChargeIsNull);
-        ensureParameterValid(charge.compareTo(BigDecimal.ZERO) == 1, ErrorMessage.consumeRecordChargeIsError);
+        ensureParameterExist(projects, "消费项目信息为空");
         ensureParameterExist(chargeWay, ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay)),
                 ErrorMessage.consumeRecordChargeWayIsError);
-        int i = appointmentService.finish(id, charge, chargeWay, counselorId, source, remark);
+        int i = appointmentService.finish(id, chargeWay, projects, source, remark);
         return JsonResult.success(i);
     }
 

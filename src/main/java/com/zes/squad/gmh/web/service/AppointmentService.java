@@ -1,6 +1,5 @@
 package com.zes.squad.gmh.web.service;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public interface AppointmentService {
 
     int start(Long id);
 
-    int finish(Long id, BigDecimal charge, Integer chargeWay, Long counselorId, String source, String remark);
+    int finish(Long id, Integer chargeWay, String projects, String source, String remark);
 
     List<AppointmentVo> remind();
 

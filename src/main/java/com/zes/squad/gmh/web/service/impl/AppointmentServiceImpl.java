@@ -230,9 +230,20 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
     @Override
-    public int finish(Long id, BigDecimal charge, Integer chargeWay, Long counselorId, String source, String remark) {
+    //projects数据projectId,charge,conselorId
+    public int finish(Long id, Integer chargeWay, String projects, String source, String remark) {
         AppointmentPo po = appointmentMapper.selectById(id);
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
+        String[] consumeProjects = projects.split(";");
+        List<ConsumeRecordProjectPo> projectPos = Lists.newArrayList();
+        for (String project : consumeProjects) {
+            String[] detail = project.split(",");
+            ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
+            projectPo.setProjectId(Long.valueOf(detail[0]));
+            projectPo.setCharge(new BigDecimal(detail[1]));
+            projectPo.setCounselorId(Long.valueOf(detail[2]));
+            projectPos.add(projectPo);
+        }
         MemberPo memberPo = null;
         if (po.getMemberId() != null) {
             memberPo = memberMapper.selectById(po.getMemberId());
@@ -261,35 +272,48 @@ public class AppointmentServiceImpl implements AppointmentService {
         recordPo.setConsumeTime(new Date());
         recordPo.setRemark(remark);
         consumeRecordMapper.insert(recordPo);
-        ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
-        projectPo.setConsumeRecordId(recordPo.getId());
-        projectPo.setProjectId(po.getProjectId());
-        projectPo.setEmployeeId(po.getEmployeeId());
-        projectPo.setCharge(charge);
-        projectPo.setCounselorId(counselorId);
-        consumeRecordProjectMapper.batchInsert(Lists.newArrayList(projectPo));
+        List<AppointmentProjectPo> appointmentProjectPos = appointmentProjectMapper.selectByAppointmentId(id);
+        ensureConditionSatisfied(CollectionUtils.isNotEmpty(appointmentProjectPos), "根据预约标识查询预约项目失败");
+        for (ConsumeRecordProjectPo projectPo : projectPos) {
+            projectPo.setConsumeRecordId(recordPo.getId());
+            for (AppointmentProjectPo appointmentProjectPo : appointmentProjectPos) {
+                if (appointmentProjectPo.getProjectId().equals(projectPo.getProjectId())) {
+                    projectPo.setEmployeeId(appointmentProjectPo.getEmployeeId());
+                    break;
+                }
+            }
+        }
+        consumeRecordProjectMapper.batchInsert(projectPos);
         if (memberPo != null) {
             // 扣除会员卡储值
             if (chargeWay == ChargeWayEnum.CARD.getKey()) {
-                ProjectQueryCondition condition = new ProjectQueryCondition();
-                condition.setProjectId(po.getProjectId());
-                ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
-                ensureEntityExist(union, ErrorMessage.appointmentNotFound);
-                BigDecimal nailMoney = memberPo.getNailMoney();
-                BigDecimal beautyMoney = memberPo.getBeautyMoney();
-                Integer projectType = union.getProjectTypePo().getTopType();
-                if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
-                    ensureConditionSatisfied(nailMoney.compareTo(charge) != -1, ErrorMessage.nailMoneyNotEnough);
-                    //扣除美甲美睫储值
-                    memberMapper.updateNailMoney(po.getMemberId(), nailMoney.subtract(charge));
-                } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
-                        || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
-                    ensureConditionSatisfied(beautyMoney.compareTo(charge) != -1, ErrorMessage.beautyMoneyNotEnough);
-                    //扣除美容储值
-                    memberMapper.updateBeautyMoney(po.getMemberId(), beautyMoney.subtract(charge));
-                } else {
-                    throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS,
-                            ErrorMessage.projectTopTypeIsError);
+                for (ConsumeRecordProjectPo projectPo : projectPos) {
+
+                    ProjectQueryCondition condition = new ProjectQueryCondition();
+                    condition.setProjectId(projectPo.getProjectId());
+                    ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
+                    ensureEntityExist(union, ErrorMessage.appointmentNotFound);
+                    BigDecimal nailMoney = memberPo.getNailMoney();
+                    BigDecimal beautyMoney = memberPo.getBeautyMoney();
+                    Integer projectType = union.getProjectTypePo().getTopType();
+                    if (projectType == ProjectTypeEnum.NAIL.getKey() || projectType == ProjectTypeEnum.LIDS.getKey()) {
+                        nailMoney = nailMoney.subtract(projectPo.getCharge());
+                        ensureConditionSatisfied(nailMoney.compareTo(BigDecimal.ZERO) != -1,
+                                ErrorMessage.nailMoneyNotEnough);
+                        //扣除美甲美睫储值
+                        memberMapper.updateNailMoney(po.getMemberId(), nailMoney);
+                    } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
+                            || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
+                        beautyMoney = beautyMoney.subtract(projectPo.getCharge());
+                        ensureConditionSatisfied(beautyMoney.compareTo(BigDecimal.ZERO) != -1,
+                                ErrorMessage.beautyMoneyNotEnough);
+                        //扣除美容储值
+                        memberMapper.updateBeautyMoney(po.getMemberId(), beautyMoney);
+                    } else {
+                        throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS,
+                                ErrorMessage.projectTopTypeIsError);
+                    }
+
                 }
             }
         }

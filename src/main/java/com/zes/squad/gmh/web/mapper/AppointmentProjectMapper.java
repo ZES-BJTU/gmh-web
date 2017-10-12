@@ -24,4 +24,12 @@ public interface AppointmentProjectMapper {
      */
     int deleteByAppointmentId(@Param("appointmentId") Long appointmentId);
 
+    /**
+     * 根据预约id查询
+     * 
+     * @param appointmentId
+     * @return
+     */
+    List<AppointmentProjectPo> selectByAppointmentId(Long appointmentId);
+
 }
