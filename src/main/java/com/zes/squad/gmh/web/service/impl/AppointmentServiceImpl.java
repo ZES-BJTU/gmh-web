@@ -45,6 +45,7 @@ import com.zes.squad.gmh.web.entity.dto.AppointmentProjectDto;
 import com.zes.squad.gmh.web.entity.po.AppointmentPo;
 import com.zes.squad.gmh.web.entity.po.AppointmentProjectPo;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
+import com.zes.squad.gmh.web.entity.po.ConsumeRecordProjectPo;
 import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
@@ -61,6 +62,7 @@ import com.zes.squad.gmh.web.mapper.AppointmentMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentProjectMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
+import com.zes.squad.gmh.web.mapper.ConsumeRecordProjectMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
@@ -74,33 +76,35 @@ import lombok.Synchronized;
 @Service("appointmentJobService")
 public class AppointmentServiceImpl implements AppointmentService {
 
-    private static final int         DEFAULT_REMIND_MINUTE = 30;
+    private static final int           DEFAULT_REMIND_MINUTE = 30;
 
-    private static final int         DEFAULT_START_HOUR    = 8;
-    private static final int         DEFAULT_END_HOUR      = 22;
+    private static final int           DEFAULT_START_HOUR    = 8;
+    private static final int           DEFAULT_END_HOUR      = 22;
 
-    private static final int         TOTAL_MINUTE          = (DEFAULT_END_HOUR - DEFAULT_START_HOUR) * 60;
+    private static final int           TOTAL_MINUTE          = (DEFAULT_END_HOUR - DEFAULT_START_HOUR) * 60;
 
     @Autowired
-    private AppointmentMapper        appointmentMapper;
+    private AppointmentMapper          appointmentMapper;
     @Autowired
-    private AppointmentProjectMapper appointmentProjectMapper;
+    private AppointmentProjectMapper   appointmentProjectMapper;
     @Autowired
-    private AppointmentUnionMapper   appointmentUnionMapper;
+    private AppointmentUnionMapper     appointmentUnionMapper;
     @Autowired
-    private ConsumeRecordMapper      consumeRecordMapper;
+    private ConsumeRecordMapper        consumeRecordMapper;
     @Autowired
-    private EmployeeMapper           employeeMapper;
+    private ConsumeRecordProjectMapper consumeRecordProjectMapper;
     @Autowired
-    private EmployeeJobMapper        employeeJobMapper;
+    private EmployeeMapper             employeeMapper;
     @Autowired
-    private ProjectUnionMapper       projectUnionMapper;
+    private EmployeeJobMapper          employeeJobMapper;
     @Autowired
-    private ProjectMapper            projectMapper;
+    private ProjectUnionMapper         projectUnionMapper;
     @Autowired
-    private MemberMapper             memberMapper;
+    private ProjectMapper              projectMapper;
     @Autowired
-    private ProjectTypeMapper        projectTypeMapper;
+    private MemberMapper               memberMapper;
+    @Autowired
+    private ProjectTypeMapper          projectTypeMapper;
 
     @Override
     public List<AppointmentVo> listAllAppointments() {
@@ -239,8 +243,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         ConsumeRecordPo recordPo = new ConsumeRecordPo();
         recordPo.setStoreId(po.getStoreId());
-        recordPo.setProjectId(po.getProjectId());
-        recordPo.setEmployeeId(po.getEmployeeId());
+        //        recordPo.setProjectId(po.getProjectId());
+        //        recordPo.setEmployeeId(po.getEmployeeId());
         if (po.getMemberId() != null) {
             recordPo.setMember(true);
             recordPo.setMemberId(po.getMemberId());
@@ -250,13 +254,20 @@ public class AppointmentServiceImpl implements AppointmentService {
         recordPo.setMobile(po.getPhone());
         recordPo.setSex(po.getSex());
         recordPo.setConsumerName(po.getName());
-        recordPo.setCharge(charge);
+        //        recordPo.setCharge(charge);
         recordPo.setChargeWay(chargeWay);
-        recordPo.setCounselor(counselorId);
+        //        recordPo.setCounselor(counselorId);
         recordPo.setSource(source);
         recordPo.setConsumeTime(new Date());
         recordPo.setRemark(remark);
         consumeRecordMapper.insert(recordPo);
+        ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
+        projectPo.setConsumeRecordId(recordPo.getId());
+        projectPo.setProjectId(po.getProjectId());
+        projectPo.setEmployeeId(po.getEmployeeId());
+        projectPo.setCharge(charge);
+        projectPo.setCounselorId(counselorId);
+        consumeRecordProjectMapper.batchInsert(Lists.newArrayList(projectPo));
         if (memberPo != null) {
             // 扣除会员卡储值
             if (chargeWay == ChargeWayEnum.CARD.getKey()) {

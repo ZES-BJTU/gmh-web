@@ -12,5 +12,7 @@ public class ConsumeRecordProjectDto {
     private Long       employeeId;
     private String     employeeName;
     private BigDecimal charge;
+    private Long       counselorId;
+    private String     counselorName;
 
 }

@@ -26,6 +26,7 @@ import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.MemberDto;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
+import com.zes.squad.gmh.web.entity.po.ConsumeRecordProjectPo;
 import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
@@ -33,6 +34,7 @@ import com.zes.squad.gmh.web.entity.vo.MemberVo;
 import com.zes.squad.gmh.web.helper.CalculateHelper;
 import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
+import com.zes.squad.gmh.web.mapper.ConsumeRecordProjectMapper;
 import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
@@ -42,13 +44,15 @@ import com.zes.squad.gmh.web.service.MemberService;
 public class MemberServiceImpl implements MemberService {
 
     @Autowired
-    private MemberMapper        memberMapper;
+    private MemberMapper               memberMapper;
     @Autowired
-    private MemberLevelMapper   memberLevelMapper;
+    private MemberLevelMapper          memberLevelMapper;
     @Autowired
-    private MemberUnionMapper   memberUnionMapper;
+    private MemberUnionMapper          memberUnionMapper;
     @Autowired
-    private ConsumeRecordMapper consumeRecordMapper;
+    private ConsumeRecordMapper        consumeRecordMapper;
+    @Autowired
+    private ConsumeRecordProjectMapper consumeRecordProjectMapper;
 
     public List<MemberVo> listMembers() {
         MemberQueryCondition condition = new MemberQueryCondition();
@@ -148,14 +152,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void recharge(Long id, Long employeeId, Long consultant, BigDecimal nailMoney, BigDecimal beautyMoney,String source,String remark) {
+    public void recharge(Long id, Long employeeId, Long consultant, BigDecimal nailMoney, BigDecimal beautyMoney,
+                         String source, String remark) {
         MemberPo memberPo = memberMapper.selectById(id);
         LogicHelper.ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
         if (nailMoney != null && !nailMoney.equals(BigDecimal.ZERO)) {
             memberMapper.updateNailMoney(id, nailMoney.add(memberPo.getNailMoney()));
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
-            po.setProjectId(1L);
+            //            po.setProjectId(1L);
             po.setEmployeeId(employeeId);
             po.setMember(true);
             po.setMemberId(memberPo.getId());
@@ -163,19 +168,25 @@ public class MemberServiceImpl implements MemberService {
             po.setAge(memberPo.getAge());
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
             po.setConsumerName(memberPo.getName());
-            po.setCharge(nailMoney);
+            //            po.setCharge(nailMoney);
             po.setChargeWay(ChargeWayEnum.CASH.getKey());
-            po.setCounselor(consultant);
+            //            po.setCounselor(consultant);
             po.setSource(source);
             po.setConsumeTime(new Date());
             po.setRemark(remark);
             consumeRecordMapper.insert(po);
+            ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
+            projectPo.setConsumeRecordId(po.getId());
+            projectPo.setCharge(nailMoney);
+            projectPo.setProjectId(1L);
+            projectPo.setCounselorId(consultant);
+            consumeRecordProjectMapper.batchInsert(Lists.newArrayList(projectPo));
         }
         if (beautyMoney != null && !beautyMoney.equals(BigDecimal.ZERO)) {
             memberMapper.updateBeautyMoney(id, beautyMoney.add(memberPo.getBeautyMoney()));
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
-            po.setProjectId(2L);
+            //            po.setProjectId(2L);
             po.setEmployeeId(employeeId);
             po.setMember(true);
             po.setMemberId(memberPo.getId());
@@ -183,13 +194,19 @@ public class MemberServiceImpl implements MemberService {
             po.setAge(memberPo.getAge());
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
             po.setConsumerName(memberPo.getName());
-            po.setCharge(beautyMoney);
+            //            po.setCharge(beautyMoney);
             po.setChargeWay(ChargeWayEnum.CASH.getKey());
-            po.setCounselor(consultant);
+            //            po.setCounselor(consultant);
             po.setSource(source);
             po.setConsumeTime(new Date());
             po.setRemark(remark);
             consumeRecordMapper.insert(po);
+            ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
+            projectPo.setConsumeRecordId(po.getId());
+            projectPo.setCharge(beautyMoney);
+            projectPo.setProjectId(2L);
+            projectPo.setCounselorId(consultant);
+            consumeRecordProjectMapper.batchInsert(Lists.newArrayList(projectPo));
         }
     }
 

@@ -99,22 +99,24 @@ public class ConsumeServiceImpl implements ConsumeService {
     @Synchronized
     @Override
     public void createConsumeRecord(ConsumeRecordDto dto) {
-        if (dto.getCounselorId() != null) {
-            EmployeePo employeePo = employeeMapper.selectById(dto.getCounselorId());
-            ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-            List<EmployeeJobPo> employeeJobPos = employeeJobMepper.selectByEmployeeId(employeePo.getId());
-            if (CollectionUtils.isEmpty(employeeJobPos)) {
-                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
-                        ErrorMessage.employeeJobNotFound);
-            }
-            boolean contain = false;
-            for (EmployeeJobPo po : employeeJobPos) {
-                if (po.getJobType() == JobEnum.MANAGER.getKey() || po.getJobType() == JobEnum.COUNSELOR.getKey()) {
-                    contain = true;
-                    break;
+        for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
+            if (projectDto.getCounselorId() != null) {
+                EmployeePo employeePo = employeeMapper.selectById(projectDto.getCounselorId());
+                ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+                List<EmployeeJobPo> employeeJobPos = employeeJobMepper.selectByEmployeeId(employeePo.getId());
+                if (CollectionUtils.isEmpty(employeeJobPos)) {
+                    throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
+                            ErrorMessage.employeeJobNotFound);
                 }
+                boolean contain = false;
+                for (EmployeeJobPo po : employeeJobPos) {
+                    if (po.getJobType() == JobEnum.MANAGER.getKey() || po.getJobType() == JobEnum.COUNSELOR.getKey()) {
+                        contain = true;
+                        break;
+                    }
+                }
+                ensureConditionSatisfied(contain, ErrorMessage.employeeJobTypeIsError);
             }
-            ensureConditionSatisfied(contain, ErrorMessage.employeeJobTypeIsError);
         }
         MemberQueryCondition memberCondition = new MemberQueryCondition();
         memberCondition.setStoreId(ThreadContext.getStaffStoreId());
@@ -176,7 +178,6 @@ public class ConsumeServiceImpl implements ConsumeService {
         }
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
         po.setConsumeTime(new Date());
-        po.setCounselor(dto.getCounselorId());
         consumeRecordMapper.insert(po);
         LogicHelper.ensureConditionSatisfied(po.getId() != null, "消费记录标识生成失败");
         List<ConsumeRecordProjectPo> pos = CommonConverter.mapList(dto.getConsumeRecordProjectDtos(),
@@ -218,13 +219,13 @@ public class ConsumeServiceImpl implements ConsumeService {
         List<ConsumeRecordDto> dtos = Lists.newArrayList();
         for (ConsumeRecordUnion union : unions) {
             ConsumeRecordDto dto = CommonConverter.map(union.getConsumeRecordPo(), ConsumeRecordDto.class);
-            Long counselorId = union.getConsumeRecordPo().getCounselor();
-            dto.setCounselorId(counselorId);
-            if (counselorId != null) {
-                EmployeePo employeePo = employeeMapper.selectById(counselorId);
-                ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-                dto.setCounselorName(employeePo.getName());
-            }
+            //            Long counselorId = union.getConsumeRecordPo().getCounselor();
+            //            dto.setCounselorId(counselorId);
+            //            if (counselorId != null) {
+            //                EmployeePo employeePo = employeeMapper.selectById(counselorId);
+            //                ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+            //                dto.setCounselorName(employeePo.getName());
+            //            }
             dto.setStoreName(union.getShopPo().getName());
             //            dto.setProjectName(union.getProjectPo() == null ? "" : union.getProjectPo().getName());
             //            dto.setEmployeeName(union.getEmployeePo() == null ? "" : union.getEmployeePo().getName());
@@ -238,6 +239,11 @@ public class ConsumeServiceImpl implements ConsumeService {
                 projectDto.setEmployeeId(projectUnion.getConsumeRecordProjectPo().getEmployeeId());
                 projectDto.setEmployeeName(projectUnion.getEmployeePo().getName());
                 projectDto.setCharge(projectUnion.getConsumeRecordProjectPo().getCharge());
+                Long counselorId = projectUnion.getConsumeRecordProjectPo().getCounselorId();
+                projectDto.setCounselorId(counselorId);
+                EmployeePo employeePo = employeeMapper.selectById(counselorId);
+                ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+                projectDto.setCounselorName(employeePo.getName());
                 projectDtos.add(projectDto);
             }
             dto.setConsumeRecordProjectDtos(projectDtos);
@@ -418,17 +424,31 @@ public class ConsumeServiceImpl implements ConsumeService {
                 cell.setCellType(CellType.STRING);
                 cell.setCellValue(chargeWay == null ? "" : EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay));
                 cell.setCellStyle(style);
+                //                //咨询师/经理
+                //                cell = hssfRow.createCell(column++);
+                //                cell.setCellType(CellType.STRING);
+                //                Long counselorId = union.getConsumeRecordPo().getCounselor();
+                //                if (counselorId != null) {
+                //                    EmployeePo po = employeeMapper.selectById(counselorId);
+                //                    ensureEntityExist(po, ErrorMessage.counselorNotFound);
+                //                    cell.setCellValue(counselorId == null ? "" : po.getName());
+                //                } else {
+                //                    cell.setCellValue("");
+                //                }
+                //                cell.setCellStyle(style);
                 //咨询师/经理
                 cell = hssfRow.createCell(column++);
                 cell.setCellType(CellType.STRING);
-                Long counselorId = union.getConsumeRecordPo().getCounselor();
-                if (counselorId != null) {
-                    EmployeePo po = employeeMapper.selectById(counselorId);
-                    ensureEntityExist(po, ErrorMessage.counselorNotFound);
-                    cell.setCellValue(counselorId == null ? "" : po.getName());
-                } else {
-                    cell.setCellValue("");
+                String conselorName = "";
+                for (ConsumeRecordProjectUnion projectUnion : projectUnions) {
+                    if (projectUnion.getConsumeRecordProjectPo().getCounselorId() != null) {
+                        EmployeePo po = employeeMapper
+                                .selectById(projectUnion.getConsumeRecordProjectPo().getCounselorId());
+                        ensureEntityExist(po, ErrorMessage.counselorNotFound);
+                        conselorName = conselorName + "," + po.getName();
+                    }
                 }
+                cell.setCellValue(conselorName.substring(1));
                 cell.setCellStyle(style);
                 //来源
                 String source = union.getConsumeRecordPo().getSource();
@@ -515,22 +535,24 @@ public class ConsumeServiceImpl implements ConsumeService {
         consumeRecordMapper.deleteById(dto.getId());
         consumeRecordProjectMapper.deleteByConsumeRecordId(dto.getId());
         //复用新建消费记录
-        if (dto.getCounselorId() != null) {
-            EmployeePo employeePo = employeeMapper.selectById(dto.getCounselorId());
-            ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-            List<EmployeeJobPo> employeeJobPos = employeeJobMepper.selectByEmployeeId(employeePo.getId());
-            if (CollectionUtils.isEmpty(employeeJobPos)) {
-                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
-                        ErrorMessage.employeeJobNotFound);
-            }
-            boolean contain = false;
-            for (EmployeeJobPo po : employeeJobPos) {
-                if (po.getJobType() == JobEnum.MANAGER.getKey() || po.getJobType() == JobEnum.COUNSELOR.getKey()) {
-                    contain = true;
-                    break;
+        for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
+            if (projectDto.getCounselorId() != null) {
+                EmployeePo employeePo = employeeMapper.selectById(projectDto.getCounselorId());
+                ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+                List<EmployeeJobPo> employeeJobPos = employeeJobMepper.selectByEmployeeId(employeePo.getId());
+                if (CollectionUtils.isEmpty(employeeJobPos)) {
+                    throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
+                            ErrorMessage.employeeJobNotFound);
                 }
+                boolean contain = false;
+                for (EmployeeJobPo po : employeeJobPos) {
+                    if (po.getJobType() == JobEnum.MANAGER.getKey() || po.getJobType() == JobEnum.COUNSELOR.getKey()) {
+                        contain = true;
+                        break;
+                    }
+                }
+                ensureConditionSatisfied(contain, ErrorMessage.employeeJobTypeIsError);
             }
-            ensureConditionSatisfied(contain, ErrorMessage.employeeJobTypeIsError);
         }
         MemberQueryCondition memberCondition = new MemberQueryCondition();
         memberCondition.setStoreId(ThreadContext.getStaffStoreId());
@@ -592,7 +614,6 @@ public class ConsumeServiceImpl implements ConsumeService {
         }
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
         po.setConsumeTime(new Date());
-        po.setCounselor(dto.getCounselorId());
         consumeRecordMapper.insert(po);
         LogicHelper.ensureConditionSatisfied(po.getId() != null, "消费记录标识生成失败");
         List<ConsumeRecordProjectPo> pos = CommonConverter.mapList(dto.getConsumeRecordProjectDtos(),

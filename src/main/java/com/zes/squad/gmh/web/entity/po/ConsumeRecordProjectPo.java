@@ -17,5 +17,6 @@ public class ConsumeRecordProjectPo extends Po {
     private Long              projectId;
     private Long              employeeId;
     private BigDecimal        charge;
+    private Long              counselorId;
 
 }
