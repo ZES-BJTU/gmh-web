@@ -149,6 +149,7 @@ public class ConsumeServiceImpl implements ConsumeService {
                                 ErrorMessage.nailMoneyNotEnough);
                         //扣除美甲美睫储值
                         nailMoney = nailMoney.subtract(projectDto.getCharge());
+                        ensureConditionSatisfied(nailMoney.compareTo(BigDecimal.ZERO) != -1, "美甲美睫储值不足");
                         memberMapper.updateNailMoney(dto.getMemberId(), nailMoney);
                     } else if (projectType == ProjectTypeEnum.BEAUTY.getKey()
                             || projectType == ProjectTypeEnum.PRODUCT.getKey()) {
@@ -156,6 +157,7 @@ public class ConsumeServiceImpl implements ConsumeService {
                                 ErrorMessage.beautyMoneyNotEnough);
                         //扣除美容储值
                         beautyMoney = beautyMoney.subtract(projectDto.getCharge());
+                        ensureConditionSatisfied(beautyMoney.compareTo(BigDecimal.ZERO) != -1, "美容储值不足");
                         memberMapper.updateBeautyMoney(dto.getMemberId(), beautyMoney);
                     } else {
                         throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_ILLEGAL_STATUS, "美容项目分类不合法");
