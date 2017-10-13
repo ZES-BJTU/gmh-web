@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.mapper;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -50,5 +51,27 @@ public interface ConsumeRecordMapper {
      * @return
      */
     int deleteById(Long id);
+
+    /**
+     * 根据id查询
+     * 
+     * @param id
+     * @return
+     */
+    ConsumeRecordPo selectById(Long id);
+
+    /**
+     * 条件查询
+     * 
+     * @param storeId
+     * @param mobile
+     * @param memberId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<ConsumeRecordPo> selectByCondition(@Param("storeId") Long storeId, @Param("mobile") String mobile,
+                                            @Param("memberId") Long memberId, @Param("startTime") Date startTime,
+                                            @Param("endTime") Date endTime);
 
 }

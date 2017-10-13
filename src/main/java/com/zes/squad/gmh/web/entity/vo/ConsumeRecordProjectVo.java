@@ -12,6 +12,7 @@ public class ConsumeRecordProjectVo {
     private Long       employeeId;
     private String     employeeName;
     private BigDecimal charge;
+    private BigDecimal retailPrice;
     private Long       counselorId;
     private String     counselorName;
 

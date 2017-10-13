@@ -105,7 +105,27 @@
 	<select id="selectMemberById" parameterType="long" resultType="long">
 		SELECT member_id FROM consume_record WHERE id = #{id, jdbcType=BIGINT}
 	</select>
+	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM consume_record
+		WHERE id = #{id, jdbcType=BIGINT}
+	</select>
+	<select id="selectByCondition" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM consume_record
+		WHERE store_id = #{storeId, jdbcType=BIGINT}
+		AND
+		mobile = #{mobile, jdbcType=VARCHAR}
+		<if test="memberId != null">
+			AND member_id = #{memberId, jdbcType=BIGINT}
+		</if>
+		AND consume_time BETWEEN #{startTime, jdbcType=TIMESTAMP} AND
+		#{endTime, jdbcType=TIMESTAMP}
+	</select>
 	<delete id="deleteById" parameterType="long">
-		DELETE FROM consume_record WHERE id = #{id, jdbcType=BIGINT}
+		DELETE FROM consume_record
+		WHERE id = #{id, jdbcType=BIGINT}
 	</delete>
 </mapper>

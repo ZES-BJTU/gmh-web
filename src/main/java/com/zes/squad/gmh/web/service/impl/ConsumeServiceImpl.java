@@ -51,11 +51,14 @@ import com.zes.squad.gmh.web.entity.po.ConsumeRecordProjectPo;
 import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
+import com.zes.squad.gmh.web.entity.po.ShopPo;
 import com.zes.squad.gmh.web.entity.union.ConsumeRecordProjectUnion;
 import com.zes.squad.gmh.web.entity.union.ConsumeRecordUnion;
 import com.zes.squad.gmh.web.entity.union.MemberUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
+import com.zes.squad.gmh.web.entity.vo.ConsumeRecordProjectVo;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
+import com.zes.squad.gmh.web.entity.vo.PrintSingleVo;
 import com.zes.squad.gmh.web.helper.CalculateHelper;
 import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
@@ -67,6 +70,7 @@ import com.zes.squad.gmh.web.mapper.EmployeeMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
 import com.zes.squad.gmh.web.mapper.ProjectUnionMapper;
+import com.zes.squad.gmh.web.mapper.ShopMapper;
 import com.zes.squad.gmh.web.service.ConsumeService;
 
 import lombok.Synchronized;
@@ -94,6 +98,8 @@ public class ConsumeServiceImpl implements ConsumeService {
     private EmployeeMapper                  employeeMapper;
     @Autowired
     private EmployeeJobMapper               employeeJobMepper;
+    @Autowired
+    private ShopMapper                      shopMapper;
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Synchronized
@@ -622,6 +628,79 @@ public class ConsumeServiceImpl implements ConsumeService {
             projectPo.setConsumeRecordId(po.getId());
         }
         consumeRecordProjectMapper.batchInsert(pos);
+    }
+
+    @Override
+    public PrintSingleVo queryById(Long id) {
+        ConsumeRecordPo consumeRecordPo = consumeRecordMapper.selectById(id);
+        ensureEntityExist(consumeRecordPo, "获取消费记录失败");
+        ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
+        ensureEntityExist(shopPo, "获取门店信息失败");
+        PrintSingleVo vo = new PrintSingleVo();
+        vo.setAddress(shopPo.getAddress());
+        vo.setShopPhone(shopPo.getPhone());
+        if (consumeRecordPo.getMember().booleanValue()) {
+            vo.setMemberPhone(consumeRecordPo.getMobile());
+            MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
+            ensureEntityExist(memberPo, "获取会员信息失败");
+            vo.setNailMoney(memberPo.getNailMoney());
+            vo.setBeautyMoney(memberPo.getBeautyMoney());
+        }
+        vo.setConsumeTime(consumeRecordPo.getConsumeTime());
+        vo.setChargeWay(EnumUtils.getDescByKey(ChargeWayEnum.class, consumeRecordPo.getChargeWay()));
+        List<ConsumeRecordProjectUnion> unions = consumeRecordProjectUnionMapper.selectByConsumeRecordId(id);
+        ensureCollectionNotEmpty(unions, "获取消费记录项目失败");
+        List<ConsumeRecordProjectVo> vos = Lists.newArrayList();
+        for (ConsumeRecordProjectUnion union : unions) {
+            ConsumeRecordProjectVo projectVo = new ConsumeRecordProjectVo();
+            projectVo.setProjectName(union.getProjectPo().getName());
+            projectVo.setEmployeeName(union.getEmployeePo().getName());
+            projectVo.setCharge(union.getConsumeRecordProjectPo().getCharge());
+            projectVo.setRetailPrice(union.getProjectPo().getRetailPrice());
+            vos.add(projectVo);
+        }
+        vo.setConsumeRecordProjectVos(vos);
+        return vo;
+    }
+
+    @Override
+    public List<PrintSingleVo> listConsumeRecords(String mobile, Long memberId, Long startTime, Long endTime) {
+        List<ConsumeRecordPo> consumeRecordPos = consumeRecordMapper.selectByCondition(ThreadContext.getStaffStoreId(),
+                mobile, memberId, new Date(startTime), new Date(endTime));
+        if (CollectionUtils.isEmpty(consumeRecordPos)) {
+            return Lists.newArrayList();
+        }
+        List<PrintSingleVo> printSingleVos = Lists.newArrayList();
+        for(ConsumeRecordPo consumeRecordPo : consumeRecordPos){
+            ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
+            ensureEntityExist(shopPo, "获取门店信息失败");
+            PrintSingleVo vo = new PrintSingleVo();
+            vo.setAddress(shopPo.getAddress());
+            vo.setShopPhone(shopPo.getPhone());
+            if (consumeRecordPo.getMember().booleanValue()) {
+                vo.setMemberPhone(consumeRecordPo.getMobile());
+                MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
+                ensureEntityExist(memberPo, "获取会员信息失败");
+                vo.setNailMoney(memberPo.getNailMoney());
+                vo.setBeautyMoney(memberPo.getBeautyMoney());
+            }
+            vo.setConsumeTime(consumeRecordPo.getConsumeTime());
+            vo.setChargeWay(EnumUtils.getDescByKey(ChargeWayEnum.class, consumeRecordPo.getChargeWay()));
+            List<ConsumeRecordProjectUnion> unions = consumeRecordProjectUnionMapper.selectByConsumeRecordId(consumeRecordPo.getId());
+            ensureCollectionNotEmpty(unions, "获取消费记录项目失败");
+            List<ConsumeRecordProjectVo> vos = Lists.newArrayList();
+            for (ConsumeRecordProjectUnion union : unions) {
+                ConsumeRecordProjectVo projectVo = new ConsumeRecordProjectVo();
+                projectVo.setProjectName(union.getProjectPo().getName());
+                projectVo.setEmployeeName(union.getEmployeePo().getName());
+                projectVo.setCharge(union.getConsumeRecordProjectPo().getCharge());
+                projectVo.setRetailPrice(union.getProjectPo().getRetailPrice());
+                vos.add(projectVo);
+            }
+            vo.setConsumeRecordProjectVos(vos);
+            printSingleVos.add(vo);
+        }
+        return printSingleVos;
     }
 
 }

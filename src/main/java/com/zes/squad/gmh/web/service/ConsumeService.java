@@ -8,6 +8,7 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.ConsumeRecordDto;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
+import com.zes.squad.gmh.web.entity.vo.PrintSingleVo;
 
 public interface ConsumeService {
 
@@ -47,5 +48,24 @@ public interface ConsumeService {
      * @param dto
      */
     void modifyConsumeRecord(ConsumeRecordDto dto);
+
+    /**
+     * 根据id查询消费记录
+     * 
+     * @param id
+     * @return
+     */
+    PrintSingleVo queryById(Long id);
+
+    /**
+     * 查询一段时间消费记录
+     * 
+     * @param mobile
+     * @param memberId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<PrintSingleVo> listConsumeRecords(String mobile, Long memberId, Long startTime, Long endTime);
 
 }
