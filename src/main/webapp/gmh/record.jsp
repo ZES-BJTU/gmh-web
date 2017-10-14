@@ -1036,7 +1036,7 @@
         onSuccess: function (e) {
           //阻止表单的提交
           e.preventDefault();
-          var href = "http://123.56.26.101:8080/consume/export";
+          var href = "http://localhost:8080/consume/export";
           var startTime = $('#startTime').val() == '' ? '' : toTimeStamp($('#startTime').val());
           var endTime = $('#endTime').val() == '' ? '' : toTimeStamp($('#endTime').val());
           verifyToken();

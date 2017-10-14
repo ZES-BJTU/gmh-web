@@ -78,7 +78,6 @@ public class ConsumeController extends BaseController {
     @RequestMapping("/listByPhone")
     @ResponseBody
     public JsonResult<List<MemberVo>> doListMemberCardsByPhone(String phone) {
-        ensureParameterExist(phone, "会员手机号为空");
         List<MemberVo> vos = consumeService.listMemberCardsByPhone(phone);
         return JsonResult.success(vos);
     }
@@ -107,7 +106,7 @@ public class ConsumeController extends BaseController {
         ensureParameterExist(params.getChargeWay(), ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, params.getChargeWay())),
                 ErrorMessage.consumeRecordChargeWayIsError);
-        if (params.getChargeWay() != null) {
+        if (params.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
             ensureParameterExist(params.getMemberId(), "会员卡为空");
         }
         ensureParameterExist(params.getSex(), ErrorMessage.consumerSexIsNull);
