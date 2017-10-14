@@ -94,7 +94,7 @@
 				LIKE #{search}
 			</if>
 		</where>
-		ORDER BY a.created_time DESC
+		ORDER BY a.created_time
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
