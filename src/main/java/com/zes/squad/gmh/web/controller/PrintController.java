@@ -2,6 +2,7 @@ package com.zes.squad.gmh.web.controller;
 
 import static com.zes.squad.gmh.web.helper.LogicHelper.ensureParameterExist;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ public class PrintController {
 
     @RequestMapping("/records")
     @ResponseBody
-    public JsonResult<List<PrintSingleVo>> doPrintConsumeRecords(String mobile, Long memberId, Long startTime,
-                                                                 Long endTime) {
+    public JsonResult<List<PrintSingleVo>> doPrintConsumeRecords(String mobile, Long memberId, Date startTime,
+                                                                 Date endTime) {
         ensureParameterExist(mobile, "手机号为空");
         ensureParameterExist(memberId, "会员标识为空");
         ensureParameterExist(startTime, "开始时间不能为空");

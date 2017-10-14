@@ -664,9 +664,9 @@ public class ConsumeServiceImpl implements ConsumeService {
     }
 
     @Override
-    public List<PrintSingleVo> listConsumeRecords(String mobile, Long memberId, Long startTime, Long endTime) {
+    public List<PrintSingleVo> listConsumeRecords(String mobile, Long memberId, Date startTime, Date endTime) {
         List<ConsumeRecordPo> consumeRecordPos = consumeRecordMapper.selectByCondition(ThreadContext.getStaffStoreId(),
-                mobile, memberId, new Date(startTime), new Date(endTime));
+                mobile, memberId, startTime, endTime);
         if (CollectionUtils.isEmpty(consumeRecordPos)) {
             return Lists.newArrayList();
         }

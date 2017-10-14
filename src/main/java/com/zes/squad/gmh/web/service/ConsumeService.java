@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -66,6 +67,6 @@ public interface ConsumeService {
      * @param endTime
      * @return
      */
-    List<PrintSingleVo> listConsumeRecords(String mobile, Long memberId, Long startTime, Long endTime);
+    List<PrintSingleVo> listConsumeRecords(String mobile, Long memberId, Date startTime, Date endTime);
 
 }
