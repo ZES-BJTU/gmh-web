@@ -1230,14 +1230,10 @@
               var pcharge = $(this).find('.charge').text();
               var counselor = $(this).find('.new-appointment-counselor-select select').val();
               if(counselor == ''){
-                counselorStatus = 1;
+                counselor = 0;
               }
               projects += ';' + pid + ',' + pcharge  + ',' + counselor;
             })
-            if(counselorStatus == 1){
-              alert('经理/咨询师为空!');
-              return false;
-            }
             projects = projects.substring(1);
             settings.data.projects = projects;
             return settings;

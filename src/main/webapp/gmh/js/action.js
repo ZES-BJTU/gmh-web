@@ -72,6 +72,7 @@ $.fn.api.settings.api = {
   'appointment queryTime' : url+'/appointment/queryTime',
   'record search' : url+'/consume/search',
   'record create' : url+'/consume/create',
+  'record update' : url+'/consume/update',
   'record export' : url+'/consume/export',
   'record listByPhone' : url+'/consume/listByPhone',
   'statistics record' : url+'/statistics/record'

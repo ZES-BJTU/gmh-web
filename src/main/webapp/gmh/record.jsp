@@ -76,6 +76,7 @@
                   <th>消费时间</th>
                   <th>来源</th>
                   <th>备注</th>
+                  <th>操作</th>
                 </tr>
               </thead>
               <tbody id="record-list">
@@ -147,6 +148,84 @@
         <div class="field">
           <label>支付金额</label>
           <input type="text" name="charge" id="finalCharge" placeholder="请输入支付金额">
+        </div>
+        <div class="field">
+          <label>来源</label>
+          <input type="text" name="source" placeholder="请输入来源">
+        </div>
+        <div class="field">
+          <label>备注</label>
+          <textarea name="remark" rows="3"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui black deny right labeled icon button">
+        取消
+        <i class="remove icon"></i>
+      </div>
+      <div class="ui positive right labeled icon button">
+        提交
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="ui large modal mod-record-modal">
+    <div class="header">修改消费记录</div>
+    <div class="content">
+      <span id="mod-record-id" style="display:none"></span>
+      <form id="mod-record" class="ui form">
+        <div class="two fields">
+          <div class="field">
+            <label>消费人手机号</label>
+            <input type="text" name="mobile" id="mod-record-mobile" placeholder="请输入预约人手机号">
+          </div>
+          <div class="field">
+            <label>消费人姓名</label>
+            <input type="text" name="consumerName" placeholder="请输入预约人姓名">
+          </div>
+        </div>
+        <div class="field">
+          <label>性别</label>
+          <select name="sex" class="ui fluid dropdown mod-record-sex-select">
+          <option value="">请选择性别</option>
+          <option value="0">女</option>
+          <option value="1">男</option>
+        </select>
+        </div>
+        <table class="ui compact table theme">
+          <thead>
+            <tr>
+              <th>美容项目</th>
+              <th>操作员</th>
+              <th>价格</th>
+              <th>折扣(%)</th>
+              <th>实付价格</th>
+              <th>经理/咨询师</th>
+              <th class="add-project"><i class="plus icon"></i></th>
+            </tr>
+          </thead>
+          <tbody id="mod-project-list">
+          </tbody>
+        </table>
+        <div class="field">
+          <label>支付方式</label>
+          <select name="chargeWay" class="ui fluid dropdown mod-record-chargeWay-select">
+            <option value="">请选择支付方式</option>
+            <option value="1">会员卡</option>
+            <option value="2">其他</option>
+            <option value="3">赠送</option>
+          </select>
+        </div>
+        <div class="field" id="mod-card-field" style="display:none">
+          <label>会员卡</label>
+          <select name="menberId" class="ui fluid dropdown mod-record-card-select">
+            <option value="">请选择会员卡</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>支付金额</label>
+          <input type="text" name="charge" id="modFinalCharge" placeholder="请输入支付金额">
         </div>
         <div class="field">
           <label>来源</label>
@@ -462,6 +541,9 @@
                   afterRemark = remark;
                 }
                 var $remark = $('<td class="remark" title="' + remark + '">' + afterRemark + '</td>');
+                var $operate = $(
+                    '<td><button class="ui tiny orange button mod-appointment">修改</button>' +
+                    '<button class="ui tiny teal button del-appointment">打印</button></td>');
 
                 $tr.append($id);
                 $tr.append($memberId);
@@ -508,7 +590,54 @@
         //不同支付方式的不同处理
         var code = $(this).find('select').val();
         if(code == 1){
+          //输入手机号，变更会员卡
           changeCharge();
+          var mobile = Number($('#new-record-mobile').val());
+          var reg = new RegExp("^1\\d{10}$");  
+          if (mobile != '') {
+            if(reg.test(mobile)) {  
+              //加载会员卡
+              $('.fake-button').api({
+                action: 'record listByPhone',
+                method: 'GET',
+                on: 'now',
+                beforeXHR: function (xhr) {
+                  verifyToken();
+                  xhr.setRequestHeader('X-token', getSessionStorage('token'));
+                  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                },
+                beforeSend: function (settings) {
+                  if (mobile != '') {
+                    settings.data.phone = mobile;
+                    return settings;
+                  } else {
+                    alert('手机号为空');
+                    return false;
+                  }
+                },
+                onSuccess: function (response) {
+                  clearCard();
+                  if (response.error != null) {
+                    alert(response.error);
+                    verifyStatus(response.code);
+                  } else {
+                    $.each(response.data, function (i, data) {
+                      var $option = $('<option value="' + data.id + '">' + data.memberLevelName + '</option>');
+                      $('.new-record-card-select .text').removeClass('unselected');
+                      $('.new-record-card-select select').append($option);
+                    })
+                  }
+                },
+                onFailure: function (response) {
+                  alert('服务器开小差了');
+                }
+              })
+            }else{
+              alert('请输入正确的手机号！');
+            } 
+          }else{
+            alert('请输入手机号！');
+          }
           $('#card-field').show();
         }else if(code == 2){
           changeCharge();
@@ -519,51 +648,6 @@
         }
       })
 
-      //输入手机号，变更会员卡
-      $(document).on('blur', '#new-record-mobile', function () {
-        var mobile = Number($(this).val());
-        var reg = new RegExp("^1\\d{10}$");  
-        if ($(this).val() != '') {
-          if(reg.test(mobile)) {  
-            //加载会员卡
-            $('.fake-button').api({
-              action: 'record listByPhone',
-              method: 'GET',
-              on: 'now',
-              beforeXHR: function (xhr) {
-                verifyToken();
-                xhr.setRequestHeader('X-token', getSessionStorage('token'));
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-              },
-              beforeSend: function (settings) {
-                if (mobile != '') {
-                  settings.data.phone = mobile;
-                  return settings;
-                } else {
-                  alert('手机号为空');
-                  return false;
-                }
-              },
-              onSuccess: function (response) {
-                clearCard();
-                if (response.error != null) {
-                  alert(response.error);
-                  verifyStatus(response.code);
-                } else {
-                  $.each(response.data, function (i, data) {
-                    var $option = $('<option value="' + data.id + '">' + data.memberLevelName + '</option>');
-                    $('.new-record-card-select .text').removeClass('unselected');
-                    $('.new-record-card-select select').append($option);
-                  })
-                }
-              },
-              onFailure: function (response) {
-                alert('服务器开小差了');
-              }
-            })
-          } 
-        }
-      })
       //输入折扣，变更实付金额
       $(document).on('blur', '.discount', function () {
         var pcharge = $(this).parent().parent().find('.projectCharge').text();
@@ -677,7 +761,6 @@
 
       //新建消费记录模态框
       $('.new-record').on('click', function () {
-        loadCounselorsData();
         $('.new-record-modal').modal({
             closable: false,
             onDeny: function () {
@@ -774,14 +857,10 @@
             var pcharge = $(this).find('.charge').text();
             var counselor = $(this).find('.new-record-counselor-select select').val();
             if(counselor == ''){
-              counselorStatus = 1;
+              counselor = 0;
             }
             projects += ';' + pid + ',' + eid + ',' + pcharge  + ',' + counselor;
           })
-          if(counselorStatus == 1){
-            alert('经理/咨询师为空!');
-            return false;
-          }
           projects = projects.substring(1);
           settings.data.projects = projects;
           return settings;
@@ -797,6 +876,134 @@
             $('#card-field').hide();
             $('#new-record').form('clear');
             $('.new-record-modal').modal('hide');
+            loadSearchRecordList(1, 10, 'search');
+          }
+        },
+        onFailure: function (response) {
+          alert('服务器开小差了');
+        },
+      });
+      //修改消费记录模态框
+      $('.mod-record').on('click', function () {
+        $('.mod-record-modal').modal({
+            closable: false,
+            onDeny: function () {
+              clearCounselor();
+              clearCard();
+              $('#mod-project-list').empty();
+              $('#mod-card-field').hide();
+              $('#mod-record').form('clear');
+            },
+            onApprove: function () {
+              $('#mod-record').submit();
+              return false;
+            }
+          })
+          .modal('show');
+      })
+      //修改消费记录信息提交
+      $('#mod-record').form({
+        on: 'submit',
+        inline: true,
+        fields: {
+          modConsumerName: {
+            identifier: 'consumerName',
+            rules: [{
+              type: 'empty',
+              prompt: '消费人姓名不能为空'
+            }]
+          },
+          modMobile: {
+            identifier: 'mobile',
+            rules: [{
+              type: 'empty',
+              prompt: '消费人手机号不能为空'
+            }, {
+              type: 'number',
+              prompt: '请输入正确的手机号'
+            }, {
+              type: 'exactLength[11]',
+              prompt: '请输入11位手机号'
+            }]
+          },
+          modSex: {
+            identifier: 'sex',
+            rules: [{
+              type: 'empty',
+              prompt: '性别不能为空'
+            }]
+          },
+          modChargeWay: {
+            identifier: 'chargeWay',
+            rules: [{
+              type: 'empty',
+              prompt: '支付方式不能为空'
+            }]
+          },
+          modCharge: {
+            identifier: 'charge',
+            rules: [{
+              type: 'empty',
+              prompt: '支付金额不能为空'
+            }, {
+              type: 'decimal',
+              prompt: '请输入数字'
+            }]
+          }
+        },
+        onSuccess: function (e) {
+          //阻止表单的提交
+          e.preventDefault();
+        }
+      }).api({
+        action: 'record update',
+        method: 'POST',
+        serializeForm: true,
+        beforeXHR: function (xhr) {
+          verifyToken();
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        },
+        beforeSend: function (settings) {
+          if ($('#mod-record-id').text() != '') {
+            alert('ID为空');
+            return false;
+          }
+          settings.data.id = $('#mod-record-id').text();
+          if(settings.data.chargeWay == 1 && settings.data.chargeCard == ''){
+            alert('请选择会员卡！');
+            return false;
+          }
+          if($('#project-list').children().length == 0){
+            alert('项目为空!');
+            return false;
+          }
+          var projects = '';
+          $('#mod-project-list').children().each(function(){
+            var pid = $(this).find('.projectId').text();
+            var eid = $(this).find('.employeeId').text();
+            var pcharge = $(this).find('.charge').text();
+            var counselor = $(this).find('.mod-record-counselor-select select').val();
+            if(counselor == ''){
+              counselor = 0;
+            }
+            projects += ';' + pid + ',' + eid + ',' + pcharge  + ',' + counselor;
+          })
+          projects = projects.substring(1);
+          settings.data.projects = projects;
+          return settings;
+        },
+        onSuccess: function (response) {
+          if (response.error != null) {
+            alert(response.error);
+            verifyStatus(response.code);
+          } else {
+            clearCounselor();
+            clearCard();
+            $('#mod-project-list').empty();
+            $('#mod-card-field').hide();
+            $('#mod-record').form('clear');
+            $('.mod-record-modal').modal('hide');
             loadSearchRecordList(1, 10, 'search');
           }
         },
