@@ -10,7 +10,7 @@
 			resultMap="com.zes.squad.gmh.web.mapper.MemberMapper.BaseResultMap"
 			columnPrefix="m_" />
 		<collection property="appointmentProjectUnions"
-			resultMap="com.zes.squad.gmh.web.mapper.AppointmentUnionMapper.BaseResultMap"
+			resultMap="com.zes.squad.gmh.web.mapper.AppointmentProjectUnionMapper.BaseResultMap"
 			columnPrefix="apu_" />
 	</resultMap>
 	<sql id="BaseColumnList">

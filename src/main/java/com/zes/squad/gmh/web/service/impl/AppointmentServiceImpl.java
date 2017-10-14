@@ -354,7 +354,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         for (int i = 0; i < unions.size(); i++) {
             topTypes[i] = unions.get(i).getProjectTypePo().getTopType();
             topTypeNames[i] = EnumUtils.getDescByKey(ProjectTypeEnum.class,
-                    Integer.valueOf(String.valueOf(unions.get(i).getProjectTypePo().getTypeName())));
+                    Integer.valueOf(String.valueOf(unions.get(i).getProjectTypePo().getTopType())));
             typeIds[i] = unions.get(i).getProjectTypePo().getId();
             typeNames[i] = unions.get(i).getProjectTypePo().getTypeName();
             projectIds[i] = unions.get(i).getProjectPo().getId();
