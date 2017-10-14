@@ -692,8 +692,8 @@ public class ConsumeServiceImpl implements ConsumeService {
             PrintSingleVo vo = new PrintSingleVo();
             vo.setAddress(shopPo.getAddress());
             vo.setShopPhone(shopPo.getPhone());
+            vo.setMemberPhone(consumeRecordPo.getMobile());
             if (consumeRecordPo.getMember().booleanValue()) {
-                vo.setMemberPhone(consumeRecordPo.getMobile());
                 MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
                 ensureEntityExist(memberPo, "获取会员信息失败");
                 vo.setNailMoney(memberPo.getNailMoney());
@@ -707,10 +707,19 @@ public class ConsumeServiceImpl implements ConsumeService {
             List<ConsumeRecordProjectVo> vos = Lists.newArrayList();
             for (ConsumeRecordProjectUnion union : unions) {
                 ConsumeRecordProjectVo projectVo = new ConsumeRecordProjectVo();
+                projectVo.setProjectId(union.getConsumeRecordProjectPo().getProjectId());
                 projectVo.setProjectName(union.getProjectPo().getName());
+                projectVo.setEmployeeId(union.getConsumeRecordProjectPo().getEmployeeId());
                 projectVo.setEmployeeName(union.getEmployeePo().getName());
                 projectVo.setCharge(union.getConsumeRecordProjectPo().getCharge());
                 projectVo.setRetailPrice(union.getProjectPo().getRetailPrice());
+                Long counselorId = union.getConsumeRecordProjectPo().getCounselorId();
+                if (counselorId != null) {
+                    EmployeePo employeePo = employeeMapper.selectById(counselorId);
+                    ensureEntityExist(employeePo, "获取咨询师/经理信息失败");
+                    projectVo.setCounselorId(counselorId);
+                    projectVo.setCounselorName(employeePo.getName());
+                }
                 vos.add(projectVo);
             }
             vo.setConsumeRecordProjectVos(vos);

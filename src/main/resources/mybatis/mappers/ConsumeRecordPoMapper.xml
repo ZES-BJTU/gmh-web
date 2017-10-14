@@ -121,8 +121,18 @@
 		<if test="memberId != null">
 			AND member_id = #{memberId, jdbcType=BIGINT}
 		</if>
-		AND consume_time BETWEEN #{startTime, jdbcType=TIMESTAMP} AND
-		#{endTime, jdbcType=TIMESTAMP}
+		<if test="startTime == null and endTime != null">
+			AND consume_time <![CDATA[<]]>
+			#{endTime, jdbcType=TIMESTAMP}
+		</if>
+		<if test="startTime != null and endTime == null">
+			AND consume_time <![CDATA[>]]>
+			#{startTime, jdbcType=TIMESTAMP}
+		</if>
+		<if test="startTime != null and endTime != null">
+			AND consume_time BETWEEN #{startTime, jdbcType=TIMESTAMP} AND
+			#{endTime, jdbcType=TIMESTAMP}
+		</if>
 	</select>
 	<delete id="deleteById" parameterType="long">
 		DELETE FROM consume_record

@@ -34,9 +34,6 @@ public class PrintController {
     public JsonResult<List<PrintSingleVo>> doPrintConsumeRecords(String mobile, Long memberId, Date startTime,
                                                                  Date endTime) {
         ensureParameterExist(mobile, "手机号为空");
-        ensureParameterExist(memberId, "会员标识为空");
-        ensureParameterExist(startTime, "开始时间不能为空");
-        ensureParameterExist(endTime, "结束时间不能为空");
         return JsonResult.success(consumeService.listConsumeRecords(mobile, memberId, startTime, endTime));
     }
 
