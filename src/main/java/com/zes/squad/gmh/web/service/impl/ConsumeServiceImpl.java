@@ -484,9 +484,7 @@ public class ConsumeServiceImpl implements ConsumeService {
                 cell.setCellStyle(style);
             }
             return workbook;
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             log.error("消费记录导出到文件异常", e);
             return null;
         }
