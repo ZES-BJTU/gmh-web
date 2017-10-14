@@ -1270,7 +1270,8 @@
       })
 
       $(document).on('click','.print-record',function(){
-        window.open('printTemplet.html');
+        var recordId = $(this).parent().parent().find('.recordId').text();
+        window.open('printrecordTemplet.html?recordId='+recordId);
       })
       
       function loadCounselorsData() {

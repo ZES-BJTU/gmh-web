@@ -26,6 +26,7 @@
   <script src="js/script.js"></script>
 </head>
 <body style="font-size:1px !important;">
+    <button class="ui blue button fake-button" style="display:none;"></button>
     <div>poppee</div>
     <div>北京市朝阳区南三里屯路1号通盈中心1层 邮编 100027</div>
     <div>1/F.Topwin Center.Beijing 100027</div>
@@ -75,7 +76,32 @@
     </table>
     <script>
         $(document).ready(function(){
-            window.print();
+            $('.fake-button').api({
+            action: 'print record',
+            method: 'GET',
+            on: 'now',
+            beforeXHR: function (xhr) {
+                verifyToken();
+                xhr.setRequestHeader('X-token', getSessionStorage('token'));
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            },
+            beforeSend: function (settings) {
+                settings.data.id = getQueryString('recordId');
+                return settings;
+            },
+            onSuccess: function (response) {
+                if (response.error != null) {
+                    alert(response.error);
+                    verifyStatus(response.code);
+                } else {
+                    console.log(response);
+                }
+            },
+            onFailure: function (response) {
+                alert('服务器开小差了');
+            }
+            })
+            // window.print();
         })
     </script>
 </body>

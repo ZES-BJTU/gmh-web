@@ -75,5 +75,7 @@ $.fn.api.settings.api = {
   'record update' : url+'/consume/modify',
   'record export' : url+'/consume/export',
   'record listByPhone' : url+'/consume/listByPhone',
-  'statistics record' : url+'/statistics/record'
+  'statistics record' : url+'/statistics/record',
+  'print record' : url+'/print/record',
+  'print records' : url+'/print/records',
 };
