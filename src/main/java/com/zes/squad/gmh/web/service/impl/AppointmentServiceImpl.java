@@ -234,7 +234,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
             projectPo.setProjectId(Long.valueOf(detail[0]));
             projectPo.setCharge(new BigDecimal(detail[1]));
-            projectPo.setCounselorId(Long.valueOf(detail[2]));
+            projectPo.setCounselorId(detail[2].equals("0") ? null : Long.valueOf(detail[2]));
             projectPos.add(projectPo);
         }
         ConsumeRecordPo recordPo = new ConsumeRecordPo();
@@ -325,21 +325,21 @@ public class AppointmentServiceImpl implements AppointmentService {
         ensureConditionSatisfied(unions != null && !unions.isEmpty(), "预约项目查询失败");
         AppointmentVo vo = CommonConverter.map(appointmentPo, AppointmentVo.class);
         vo.setStatus(EnumUtils.getDescByKey(AppointmentStatusEnum.class, appointmentPo.getStatus()));
-//        List<MemberPo> memberPos = null;
-//        if (union.getMemberPo() == null) {
-//            MemberQueryCondition condition = new MemberQueryCondition();
-//            condition.setPhone(appointmentPo.getPhone());
-//            condition.setStoreId(ThreadContext.getStaffStoreId());
-//            memberPos = memberMapper.selectByCondition(condition);
-//            if (CollectionUtils.isEmpty(memberPos)) {
-//                vo.setMemberName("");
-//            } else {
-//                vo.setMemberName(memberPos.get(0).getName());
-//            }
-//        } else {
-//            vo.setMemberName(
-//                    !Strings.isNullOrEmpty(union.getMemberPo().getName()) ? union.getMemberPo().getName() : "");
-//        }
+        //        List<MemberPo> memberPos = null;
+        //        if (union.getMemberPo() == null) {
+        //            MemberQueryCondition condition = new MemberQueryCondition();
+        //            condition.setPhone(appointmentPo.getPhone());
+        //            condition.setStoreId(ThreadContext.getStaffStoreId());
+        //            memberPos = memberMapper.selectByCondition(condition);
+        //            if (CollectionUtils.isEmpty(memberPos)) {
+        //                vo.setMemberName("");
+        //            } else {
+        //                vo.setMemberName(memberPos.get(0).getName());
+        //            }
+        //        } else {
+        //            vo.setMemberName(
+        //                    !Strings.isNullOrEmpty(union.getMemberPo().getName()) ? union.getMemberPo().getName() : "");
+        //        }
         vo.setMemberName(appointmentPo.getName());
         Integer[] topTypes = new Integer[unions.size()];
         String[] topTypeNames = new String[unions.size()];
