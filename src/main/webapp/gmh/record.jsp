@@ -555,7 +555,7 @@
                 var $employeeId = $('<td class="employeeId" style="display:none">' + employeeIds + '</td>');
                 var $employeeName = $('<td class="employeeName">' + employeeNames.join('<br>') + '</td>');
                 var $counselorId = $('<td class="counselorId" style="display:none">' + counselorIds + '</td>');
-                var $counselorName = $('<td class="counselorName">' + counselorName.join('<br>') + '</td>');
+                var $counselorName = $('<td class="counselorName">' + counselorNames.join('<br>') + '</td>');
                 var $rerailPrice = $('<td class="rerailPrice">' + rerailPrices.join('<br>') + '</td>');
                 var $charge = $('<td class="charge">' + charges.join('<br>') + '</td>');
 
