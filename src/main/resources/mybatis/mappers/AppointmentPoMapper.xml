@@ -63,7 +63,7 @@
 		COUNT(*)
 		FROM
 		appointment a,
-		appointment_project ap,
+		appointment_project ap
 		WHERE
 		a.store_id = #{storeId,
 		jdbcType=BIGINT}
