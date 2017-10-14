@@ -250,6 +250,7 @@ public class ConsumeServiceImpl implements ConsumeService {
                 EmployeePo employeePo = employeeMapper.selectById(counselorId);
                 ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
                 projectDto.setCounselorName(employeePo.getName());
+                projectDto.setRetailPrice(projectUnion.getProjectPo().getRetailPrice());
                 projectDtos.add(projectDto);
             }
             dto.setConsumeRecordProjectDtos(projectDtos);
@@ -373,8 +374,8 @@ public class ConsumeServiceImpl implements ConsumeService {
                 String projectName = "";
                 String employeeName = "";
                 for (ConsumeRecordProjectUnion projectUnion : projectUnions) {
-                    projectName = projectName + "," + projectUnion.getProjectPo().getName();
-                    employeeName = employeeName + "," + projectUnion.getEmployeePo().getName();
+                    projectName = projectName + "\n" + projectUnion.getProjectPo().getName();
+                    employeeName = employeeName + "\n" + projectUnion.getEmployeePo().getName();
                 }
                 projectName = projectName.substring(1);
                 cell = hssfRow.createCell(column++);
@@ -671,7 +672,7 @@ public class ConsumeServiceImpl implements ConsumeService {
             return Lists.newArrayList();
         }
         List<PrintSingleVo> printSingleVos = Lists.newArrayList();
-        for(ConsumeRecordPo consumeRecordPo : consumeRecordPos){
+        for (ConsumeRecordPo consumeRecordPo : consumeRecordPos) {
             ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
             ensureEntityExist(shopPo, "获取门店信息失败");
             PrintSingleVo vo = new PrintSingleVo();
@@ -686,7 +687,8 @@ public class ConsumeServiceImpl implements ConsumeService {
             }
             vo.setConsumeTime(consumeRecordPo.getConsumeTime());
             vo.setChargeWay(EnumUtils.getDescByKey(ChargeWayEnum.class, consumeRecordPo.getChargeWay()));
-            List<ConsumeRecordProjectUnion> unions = consumeRecordProjectUnionMapper.selectByConsumeRecordId(consumeRecordPo.getId());
+            List<ConsumeRecordProjectUnion> unions = consumeRecordProjectUnionMapper
+                    .selectByConsumeRecordId(consumeRecordPo.getId());
             ensureCollectionNotEmpty(unions, "获取消费记录项目失败");
             List<ConsumeRecordProjectVo> vos = Lists.newArrayList();
             for (ConsumeRecordProjectUnion union : unions) {

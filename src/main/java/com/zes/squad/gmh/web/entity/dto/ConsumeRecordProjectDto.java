@@ -14,5 +14,6 @@ public class ConsumeRecordProjectDto {
     private BigDecimal charge;
     private Long       counselorId;
     private String     counselorName;
+    private BigDecimal retailPrice;
 
 }
