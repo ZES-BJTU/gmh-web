@@ -68,9 +68,9 @@
                   <th>消费者类型</th>
                   <th>年龄</th>
                   <th>性别</th>
+                  <th>消费项目</th>
                   <th>操作员</th>
                   <th>经理/咨询师</th>
-                  <th>消费项目</th>
                   <th>项目金额</th>
                   <th>消费金额</th>
                   <th>消费方式</th>
@@ -203,7 +203,7 @@
               <th>折扣(%)</th>
               <th>实付价格</th>
               <th>经理/咨询师</th>
-              <th class="add-project"><i class="plus icon"></i></th>
+              <th class="mod-add-project"><i class="plus icon"></i></th>
             </tr>
           </thead>
           <tbody id="mod-project-list">
@@ -519,11 +519,12 @@
                 var $tr = $('<tr></tr>');
                 var $id = $('<td class="recordId" style="display:none">' + data.id + '</td>');
                 var $memberId = $('<td class="memberId" style="display:none">' + data.memberId + '</td>');
-                // var $memberName = $('<td class="memberName" style="display:none">' + data.memberName + '</td>');
+                var $memberName = $('<td class="memberName" style="display:none">' + data.memberName + '</td>');
                 var $consumerName = $('<td class="consumerName">' + data.consumerName + '</td>');
                 var $mobile = $('<td class="mobile">' + data.mobile + '</td>');
                 var $consumerType = $('<td class="consumerType">' + data.consumerDesc + '</td>');
                 var $age = $('<td class="age">' + (data.age == null ? '无' : data.age) + '</td>');
+                var $sexId = $('<td class="sexId" style="display:none">' + (data.sex == '男' ? 1 : 0) + '</td>');
                 var $sex = $('<td class="sex">' + data.sex + '</td>');
 
                 var projectIds = [];
@@ -560,10 +561,9 @@
                 var $retailPrice = $('<td class="rerailPrice">' + retailPrices.join('<br>') + '</td>');
                 var $charge = $('<td class="charge">' + charges.join('<br>') + '</td>');
 
-                // var $chargeWayId = $('<td class="chargeWayId" style="display:none">' + data.chargeWayId + '</td>');
+                var $chargeWayId = $('<td class="chargeWayId" style="display:none">' + data.chargeWayId + '</td>');
                 var $chargeWay = $('<td class="chargeWay">' + data.chargeWay + '</td>');
-                var $consumeTime = $('<td class="consumeTime">' + toDatetimeMin(data.consumeTime) +
-                  '</td>');
+                var $consumeTime = $('<td class="consumeTime">' + toDatetimeMin(data.consumeTime) + '</td>');
                 var $source = $('<td class="source">' + data.source + '</td>');
                 var remark = (data.remark == null || data.remark == '') ? '无' : String(data.remark);
                 var afterRemark = '';
@@ -576,16 +576,17 @@
                 }
                 var $remark = $('<td class="remark" title="' + remark + '">' + afterRemark + '</td>');
                 var $operate = $(
-                    '<td><button class="ui tiny orange button mod-appointment">修改</button>' +
-                    '<button class="ui tiny teal button del-appointment">打印</button></td>');
+                    '<td><button class="ui tiny orange button mod-record">修改</button>' +
+                    '<button class="ui tiny teal button print-record">打印</button></td>');
 
                 $tr.append($id);
                 $tr.append($memberId);
-                // $tr.append($memberName);
+                $tr.append($memberName);
                 $tr.append($consumerName);
                 $tr.append($mobile);
                 $tr.append($consumerType);
                 $tr.append($age);
+                $tr.append($sexId);
                 $tr.append($sex);
                 $tr.append($projectId);
                 $tr.append($projectName);
@@ -623,7 +624,11 @@
       //项目删除
       $(document).on('click', '.minus-project', function () {
         $(this).parent().remove();
-        changeCharge();
+        if($('#add-project-type').text() == 'add'){
+          changeNewCharge();
+        }else{
+          changeModCharge();
+        }
       })
 
       //切换支付方式
@@ -632,7 +637,7 @@
         var code = $(this).find('select').val();
         if(code == 1){
           //输入手机号，变更会员卡
-          changeCharge();
+          changeNewCharge();
           var mobile = Number($('#new-record-mobile').val());
           var reg = new RegExp("^1\\d{10}$");  
           if (mobile != '') {
@@ -681,7 +686,7 @@
           }
           $('#card-field').show();
         }else if(code == 2){
-          changeCharge();
+          changeNewCharge();
           $('#card-field').hide();
         }else if(code == 3){
           $('#finalCharge').val('0');
@@ -700,7 +705,7 @@
         }else{
           $(this).parent().parent().find('.charge').text(Number(pcharge));
         }
-        changeCharge();
+        changeNewCharge();
       })
 
       //允许模态框叠加
@@ -711,7 +716,7 @@
       //添加项目模态框
       $('.add-project-modal')
         .modal('attach events', '.new-record-modal .add-project')
-        // .modal('attach events', '.mod-record-modal .mod-add-project')
+        .modal('attach events', '.mod-record-modal .mod-add-project')
         .modal('setting', 'closable', false)
         .modal({
           onDeny: function () {
@@ -783,11 +788,14 @@
               '<td class="minus-project"><i class="minus icon"></i></td></tr>');
           if($('#add-project-type').text() == 'add'){
             $('#project-list').append($tr);
+            //计算总价
+            changeNewCharge();
           }else{
             $('#mod-project-list').append($tr);
+            //计算总价
+            changeModCharge();
           }
-           //计算总价
-           changeCharge();
+           
           //重新加载下拉框
           $('.ui.dropdown').dropdown();
 
@@ -925,7 +933,51 @@
         },
       });
       //修改消费记录模态框
-      $('.mod-record').on('click', function () {
+      $(document).on('click', '.mod-record', function () {
+        $('#mod-record-id').text($(this).parent().parent().find('.recordId').text());
+        $('#mod-record').find('input[name="mobile"]').val($(this).parent().parent().find('.mobile').text());
+        $('#mod-record').find('input[name="consumerName"]').val($(this).parent().parent().find('.consumerName').text());
+        $('.mod-record-sex-select select').val($(this).parent().parent().find('.sexId').text());
+        $('.mod-record-sex-select .text').removeClass('default');
+        $('.mod-record-sex-select .text').text($(this).parent().parent().find('.sex').text());
+
+        var pids = $(this).parent().parent().find('.projectId').html().split(',');
+        var pnames = $(this).parent().parent().find('.projectName').html().split('<br>');
+        var eids = $(this).parent().parent().find('.employeeId').html().split(',');
+        var enames = $(this).parent().parent().find('.employeeName').html().split('<br>');
+        var cids = $(this).parent().parent().find('.counselorId').html().split(',');
+        var cnames = $(this).parent().parent().find('.counselorName').html().split('<br>');
+        var rprices = $(this).parent().parent().find('.retailPrice').html().split('<br>');
+        var charges = $(this).parent().parent().find('.projectCharges').html().split('<br>');
+
+        var option = '';
+        $.each(counselorsData, function (i, data) {
+          option += '<option value="' + data.id + '">' + data.emName + '</option>';
+        })
+        
+        //加载多个项目
+        for(var i = 0; i < pids.length; i++){
+          var $tr = $('<tr><td style="display:none" class="projectId">' + pids[i] + '</td><td>' + pnames[i] +
+              '</td><td style="display:none" class="employeeId">' + eids[i] + '</td><td>' + enames[i] + 
+              '</td><td class="projectCharge">' + rprices[i] + 
+              '</td><td><input type="text" class="discount" placeholder="请输入折扣">' + 
+              '</td><td class="charge">' + charges[i] +
+              '</td><td class="counselor"><select class="ui fluid dropdown mod-appointment-counselor-select"><option value="">请选择经理/咨询师</option>' + option + '</select></td></tr>');
+          $('#mod-project-list').append($tr);
+        }
+
+        //重新加载下拉框
+        $('.ui.dropdown').dropdown();
+
+        // for(var i = 0;i < pids.length; i++){
+        //   if(cids != '无'){
+        //     $('#mod-project-list').find('tr').
+        //     $('.mod-record-sex-select select').val($(this).parent().parent().find('.sexId').text());
+        //     $('.mod-record-sex-select .text').removeClass('default');
+        //     $('.mod-record-sex-select .text').text($(this).parent().parent().find('.sex').text());
+        //   }
+        // }
+
         $('.mod-record-modal').modal({
             closable: false,
             onDeny: function () {
@@ -1254,7 +1306,14 @@
         $('.new-record-card-select .text').addClass('unselected');
       }
 
-      function changeCharge(){
+      function changeNewCharge(){
+        var charge = 0;
+        $('#project-list').find('.charge').each(function(){
+          charge += Number($(this).text());
+        })
+        $('#finalCharge').val(charge);
+      }
+      function changeModCharge(){
         var charge = 0;
         $('#project-list').find('.charge').each(function(){
           charge += Number($(this).text());
