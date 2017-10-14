@@ -23,6 +23,7 @@ import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.util.EnumUtils;
+import com.zes.squad.gmh.common.util.JsonUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
 import com.zes.squad.gmh.web.entity.condition.AppointmentQueryCondition;
 import com.zes.squad.gmh.web.entity.dto.AppointmentDto;

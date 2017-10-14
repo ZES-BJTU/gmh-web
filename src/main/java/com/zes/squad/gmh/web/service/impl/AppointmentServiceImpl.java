@@ -365,6 +365,17 @@ public class AppointmentServiceImpl implements AppointmentService {
             beginTimes[i] = unions.get(i).getAppointmentProjectPo().getBeginTime();
             endTimes[i] = unions.get(i).getAppointmentProjectPo().getEndTime();
         }
+        vo.setTopTypes(topTypes);
+        vo.setTopTypeNames(topTypeNames);
+        vo.setTypeIds(typeIds);
+        vo.setTypeNames(typeNames);
+        vo.setProjectIds(projectIds);
+        vo.setProjectNames(projectNames);
+        vo.setProjectCharges(projectCharges);
+        vo.setEmployeeIds(employeeIds);
+        vo.setEmployeeNames(employeeNames);
+        vo.setBeginTimes(beginTimes);
+        vo.setEndTimes(endTimes);
         vo.setLine(appointmentPo.getLine().booleanValue() ? YesOrNoEnum.YES.getDesc() : YesOrNoEnum.NO.getDesc());
         if (union.getAppointmentPo().getSex() != null) {
             vo.setSex(EnumUtils.getDescByKey(SexEnum.class, union.getAppointmentPo().getSex()));
