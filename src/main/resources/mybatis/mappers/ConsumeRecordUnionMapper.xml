@@ -43,6 +43,7 @@
 		crp.counselor_id AS crp_counselor_id,
 		p.`id` AS crp_p_project_id,
 		p.name AS crp_p_name,
+		p.retail_price AS crp_p_retail_price,
 		e.`id` AS crp_e_employee_id,
 		e.name AS crp_e_name
 		FROM consume_record cr
