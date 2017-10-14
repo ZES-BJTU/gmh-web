@@ -71,6 +71,7 @@
                   <th>操作员</th>
                   <th>经理/咨询师</th>
                   <th>消费项目</th>
+                  <th>项目金额</th>
                   <th>消费金额</th>
                   <th>消费方式</th>
                   <th>消费时间</th>
@@ -556,7 +557,7 @@
                 var $employeeName = $('<td class="employeeName">' + employeeNames.join('<br>') + '</td>');
                 var $counselorId = $('<td class="counselorId" style="display:none">' + counselorIds + '</td>');
                 var $counselorName = $('<td class="counselorName">' + counselorNames.join('<br>') + '</td>');
-                var $rerailPrice = $('<td class="rerailPrice">' + rerailPrices.join('<br>') + '</td>');
+                var $retailPrice = $('<td class="rerailPrice">' + retailPrices.join('<br>') + '</td>');
                 var $charge = $('<td class="charge">' + charges.join('<br>') + '</td>');
 
                 // var $chargeWayId = $('<td class="chargeWayId" style="display:none">' + data.chargeWayId + '</td>');
@@ -586,13 +587,13 @@
                 $tr.append($consumerType);
                 $tr.append($age);
                 $tr.append($sex);
-                $tr.append($projectIds);
+                $tr.append($projectId);
                 $tr.append($projectName);
-                $tr.append($employeeIds);
+                $tr.append($employeeId);
                 $tr.append($employeeName);
                 $tr.append($counselorId);
                 $tr.append($counselorName);
-                $tr.append($rerailPrice);
+                $tr.append($retailPrice);
                 $tr.append($charge);
                 // $tr.append($chargeWayId);
                 $tr.append($chargeWay);
