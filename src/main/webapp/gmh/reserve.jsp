@@ -374,44 +374,44 @@
       </div>
     </div>
 
-    <div class="ui mini modal finish-appointment-modal">
+    <div class="ui large modal finish-appointment-modal">
       <div class="header">完成预约</div>
       <div class="content">
         <span id="finish-appointment-id" style="display:none"></span>
-        <form id="finish-appointment" class="ui form">
-          <div class="field">
-            <label>操作员</label>
-            <input type="text" name="operator" placeholder="请输入操作员" disabled="">
-          </div>
-          <div class="field">
-            <label>经理/咨询师</label>
-            <select name="counselorId" class="ui fluid dropdown new-appointment-counselor-select">
-            <option value="">请选择经理/咨询师</option>
-          </select>
-          </div>
-          <div class="field">
-            <label>美容项目</label>
-            <input type="text" name="projectName" placeholder="请输入美容项目" disabled="">
-          </div>
-          <div class="field">
-            <label>美容项目价格</label>
-            <input type="text" name="projectCharge" id="projectCharge" placeholder="请输入美容项目价格" disabled="">
-          </div>
+        <span id="finish-appointment-phone" style="display:none"></span>
+        <form id="finish-appointment" class="ui form">                
+          <table class="ui compact table theme">
+            <thead>
+              <tr>
+                <th>美容项目</th>
+                <th>操作员</th>
+                <th>价格</th>
+                <th>折扣(%)</th>
+                <th>实付价格</th>
+                <th>经理/咨询师</th>
+              </tr>
+            </thead>
+            <tbody id="finish-project-list">
+            </tbody>
+          </table>
           <div class="field">
             <label>支付方式</label>
             <select name="chargeWay" class="ui fluid dropdown finish-appointment-chargeWay-select">
-            <option value="">请选择支付方式</option>
-            <option value="1">会员卡</option>
-            <option value="2">其他</option>
-          </select>
+              <option value="">请选择支付方式</option>
+              <option value="1">会员卡</option>
+              <option value="2">其他</option>
+              <option value="3">赠送</option>
+            </select>
+          </div>
+          <div class="field" id="card-field" style="display:none">
+            <label>会员卡</label>
+            <select name="chargeCard" class="ui fluid dropdown finish-appointment-card-select">
+              <option value="">请选择会员卡</option>
+            </select>
           </div>
           <div class="field">
-            <label>折扣(%)</label>
-            <input type="text" name="discount" id="discount" placeholder="请输入折扣">
-          </div>
-          <div class="field">
-            <label>支付金额</label>
-            <input type="text" name="charge" id="charge" placeholder="" disabled="">
+              <label>支付金额</label>
+              <input type="text" name="charge" id="finalCharge" placeholder="请输入支付金额">
           </div>
           <div class="field">
             <label>来源</label>
@@ -592,12 +592,6 @@
           }
         })
 
-        $(document).on('blur', '#discount', function () {
-          if ($(this).val() != '') {
-            $('#charge').val(Number($('#projectCharge').val()) * Number($(this).val()) * 0.01);
-          }
-        })
-
         //新增时，点击顶级分类，切换美容项分类
         $(document).on('change', '.new-appointment-top-type-select', function () {
           var topType = $(this).find('select').val();
@@ -732,7 +726,7 @@
                     afterRemark = remark;
                   }
                   var $remark = $('<td class="remark" title="' + remark + '">' + afterRemark + '</td>');
-                  var $projectCharge = $('<td class="projectCharge" style="display:none">' + data.projectCharge +
+                  var $projectCharges = $('<td class="projectCharges" style="display:none">' + data.projectCharges +
                     '</td>');
                   var $operate = $(
                     '<td><button class="ui tiny green button finish-appointment">完成</button>' +
@@ -754,7 +748,7 @@
                   $tr.append($line);
                   $tr.append($status);
                   $tr.append($remark);
-                  $tr.append($projectCharge);
+                  $tr.append($projectCharges);
                   $tr.append($operate);
                   $('#appointment-list').append($tr);
                 })
@@ -773,12 +767,17 @@
         })
 
         //添加项目模态框
+        $('.finish-appointment-modal-2')
+          .modal('attach events', '.new-appointment-modal .add-project')
+
+        //添加项目模态框
         $('.add-project-modal')
           .modal('attach events', '.new-appointment-modal .add-project')
           .modal('attach events', '.mod-appointment-modal .mod-add-project')
           .modal('setting', 'closable', false)
           .modal({
             onDeny: function () {
+              clearSelect();
               $('#newReserveTime').val('');
               $('#add-project-type').text('');
               $('#new-reserve-time').empty();
@@ -855,6 +854,7 @@
             }else{
               $('#mod-project-list').append($tr);
             }
+            clearSelect();
             $('#newReserveTime').val('');
             $('#add-project-type').text('');
             $('#new-reserve-time').empty();
@@ -1151,23 +1151,110 @@
             .modal('show');
         })
 
+        //切换支付方式
+        $(document).on('change','.finish-appointment-chargeWay-select',function(){
+          //不同支付方式的不同处理
+          var code = $(this).find('select').val();
+          if(code == 1){
+            changeCharge();
+            $('#card-field').show();
+          }else if(code == 2){
+            changeCharge();
+            $('#card-field').hide();
+          }else if(code == 3){
+            $('#finalCharge').val('0');
+            $('#card-field').hide();
+          }
+        })
+
+        //输入折扣，变更实付金额
+        $(document).on('blur', '.discount', function () {
+          var pcharge = $(this).parent().parent().find('.projectCharge').text();
+          var reg = new RegExp("^(\\d|[1-9]\\d|100)$");  
+          if ($(this).val() != '') {
+            if(reg.test($(this).val())) {  
+                $(this).parent().parent().find('.charge').text(Number(pcharge) * Number($(this).val()) * 0.01);
+            } 
+          }else{
+            $(this).parent().parent().find('.charge').text(Number(pcharge));
+          }
+          changeCharge();
+        })
+
         //完成预约模态框
         $(document).on('click', '.finish-appointment', function () {
-          loadCounselorsData();
           $('#finish-appointment-id').text($(this).parent().parent().find('.appointmentId').text());
-          $('#finish-appointment').find('input[name="operator"]').val($(this).parent().parent().find(
-            '.employeeName').text());
-          $('#finish-appointment').find('input[name="projectName"]').val($(this).parent().parent().find(
-            '.projectName').text());
-          $('#finish-appointment').find('input[name="projectCharge"]').val($(this).parent().parent().find(
-            '.projectCharge').text());
-          $('#finish-appointment').find('input[name="charge"]').val($(this).parent().parent().find(
-            '.projectCharge').text());
+          $('#finish-appointment-phone').text($(this).parent().parent().find('.memberPhone').text());
+          
+          var pids = $(this).parent().parent().find('.projectId').html().split(',');
+          var pnames = $(this).parent().parent().find('.projectName').html().split('<br>');
+          var eids = $(this).parent().parent().find('.employeeId').html().split(',');
+          var enames = $(this).parent().parent().find('.employeeName').html().split('<br>');
+          var btimes = $(this).parent().parent().find('.beginTime').html().split('<br>');
+          var etimes = $(this).parent().parent().find('.endTime').html().split('<br>');
+          var pcharges = $(this).parent().parent().find('.projectCharges').html().split(',');
+          
+          //加载多个项目
+          for(var i = 0; i < pids.length; i++){
+            var $tr = $('<tr><td style="display:none" class="projectId">' + pids[i] + '</td><td>' + pnames[i] +
+                '</td><td style="display:none" class="employeeId">' + eids[i] + '</td><td>' + enames[i] + 
+                '</td><td class="projectCharge">' + pcharges[i] + 
+                '</td><td><input type="text" class="discount" placeholder="请输入折扣">' + 
+                '</td><td class="charge">' + pcharges[i] +
+                '</td><td class="counselor"><select class="ui fluid dropdown new-appointment-counselor-select"><option value="">请选择经理/咨询师</option></select></td></tr>');
+            $('#finish-project-list').append($tr);
+          }
+          //计算总价
+          changeCharge();
+          //重新加载下拉框
+          $('.ui.dropdown').dropdown();
+
+          loadCounselorsData();
+
+          //加载会员卡
+          $('.fake-button').api({
+            action: 'record listByPhone',
+            method: 'GET',
+            on: 'now',
+            beforeXHR: function (xhr) {
+              verifyToken();
+              xhr.setRequestHeader('X-token', getSessionStorage('token'));
+              xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            },
+            beforeSend: function (settings) {
+              if ($('#finish-appointment-phone').text() != '') {
+                settings.data.phone = $('#finish-appointment-phone').text();
+                return settings;
+              } else {
+                alert('手机号为空');
+                return false;
+              }
+            },
+            onSuccess: function (response) {
+              if (response.error != null) {
+                alert(response.error);
+                verifyStatus(response.code);
+              } else {
+                $.each(response.data, function (i, data) {
+                  var $option = $('<option value="' + data.id + '">' + data.memberLevelName + '</option>');
+                  $('.finish-appointment-card-select select').append($option);
+                })
+              }
+            },
+            onFailure: function (response) {
+              alert('服务器开小差了');
+            }
+          })
+
           $('.finish-appointment-modal').modal({
               closable: false,
+              autofocus: false,
               onDeny: function () {
+                clearSelect();
+                $('#finish-project-list').children().remove();
                 $('#finish-appointment').form('clear');
                 $('#finish-appointment-id').text('');
+                $('#finish-appointment-phone').text('');
               },
               onApprove: function () {
                 $('#finish-appointment').submit();
@@ -1187,14 +1274,6 @@
               rules: [{
                 type: 'empty',
                 prompt: '支付方式不能为空'
-              }]
-            },
-            discount: {
-              identifier: 'discount',
-              rules: [{
-                type: 'regExp',
-                value: /^(|[0-9]{1,2})$/,
-                prompt: '请输入正确的折扣'
               }]
             },
             charge: {
@@ -1222,14 +1301,38 @@
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
           },
           beforeSend: function (settings) {
-            if ($('#finish-appointment-id').text() != '') {
-              settings.data.charge = $('#charge').val();
-              settings.data.id = $('#finish-appointment-id').text();
-              return settings;
-            } else {
+            var counselorStatus = 0;
+            if ($('#finish-appointment-id').text() == '') {
               alert('ID为空');
               return false;
             }
+            if(settings.data.chargeWay == 1 && settings.data.chargeCard == ''){
+              alert('请选择会员卡！');
+              return false;
+            }
+            settings.data.id = $('#finish-appointment-id').text();
+            if($('#finish-project-list').children().length == 0){
+              alert('项目为空!');
+              return false;
+            }
+            var projects = '';
+            $('#finish-project-list').children().each(function(){
+              var pid = $(this).find('.projectId').text();
+              var pcharge = $(this).find('.charge').text();
+              var counselor = $(this).find('.new-appointment-counselor-select select').val();
+              if(counselor == ''){
+                counselorStatus = 1;
+              }
+              projects += ';' + pid + ',' + pcharge  + ',' + counselor;
+            })
+            if(counselorStatus == 1){
+              alert('经理/咨询师为空!');
+              return false;
+            }
+            projects = projects.substring(1);
+            settings.data.projects = projects;
+            return settings;
+            
           },
           onSuccess: function (response) {
             if (response.error != null) {
@@ -1237,6 +1340,7 @@
               verifyStatus(response.code);
             } else {
               $('#finish-appointment-id').text('');
+              $('#finish-appointment-phone').text('');
               $('#finish-appointment').form('clear');
               $('.finish-appointment-modal').modal('hide');
               loadSearchAppointmentList(1, 10, 'search');
@@ -1246,41 +1350,6 @@
             alert('服务器开小差了');
           }
         });
-
-        //开始预约信息提交
-        // $(document).on('click', '.start-appointment', function () {
-        //   var appointmentId = $(this).parent().parent().find('.appointmentId').text();
-        //   $('.fake-button').api({
-        //     action: 'appointment start',
-        //     method: 'POST',
-        //     on: 'now',
-        //     beforeXHR: function (xhr) {
-        //       verifyToken();
-        //       xhr.setRequestHeader('X-token', getSessionStorage('token'));
-        //       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        //     },
-        //     beforeSend: function (settings) {
-        //       if (appointmentId != '') {
-        //         settings.data.id = appointmentId;
-        //         return settings;
-        //       } else {
-        //         alert('ID为空');
-        //         return false;
-        //       }
-        //     },
-        //     onSuccess: function (response) {
-        //       if (response.error != null) {
-        //         alert(response.error);
-        //         verifyStatus(response.code);
-        //       } else {
-        //         loadSearchAppointmentList(1, 10, 'search');
-        //       }
-        //     },
-        //     onFailure: function (response) {
-        //       alert('服务器开小差了');
-        //     }
-        //   })
-        // })
 
         //区分是新增预约还是修改预约
         $(document).on('click','.add-project',function(){
@@ -1343,48 +1412,6 @@
             }
           })
         })
-
-        // function loadTopTypeData() {
-        //   var data = [{
-        //       'id': 1,
-        //       'topTypeName': '美甲'
-        //     },
-        //     {
-        //       'id': 2,
-        //       'topTypeName': '美睫'
-        //     },
-        //     {
-        //       'id': 3,
-        //       'topTypeName': '美容'
-        //     },
-        //     {
-        //       'id': 4,
-        //       'topTypeName': '产品'
-        //     }
-        //   ];
-        //   $.each(data, function (i, data) {
-        //     var $option = $('<option value="' + data.id + '">' + data.topTypeName + '</option>');
-        //     $('.new-appointment-top-type-select select').append($option);
-        //     $('.mod-appointment-top-type-select select').append($option.clone());
-        //   })
-        // }
-
-        // function loadLineData() {
-        //   var data = [{
-        //       'lineType': 1,
-        //       'lineName': '是'
-        //     },
-        //     {
-        //       'lineType': 0,
-        //       'lineName': '否'
-        //     }
-        //   ];
-        //   $.each(data, function (i, data) {
-        //     var $option = $('<option value="' + data.lineType + '">' + data.lineName + '</option>');
-        //     $('.new-appointment-line-select select').append($option);
-        //     $('.mod-appointment-line-select select').append($option.clone());
-        //   })
-        // }
 
         function loadCounselorsData() {
           $.each(counselorsData, function (i, data) {
@@ -1522,30 +1549,36 @@
           })
         }
 
-        // function clearSelect() {
-        //   $('.new-appointment-top-type-select select').find('option:not(:first)').remove();
-        //   $('.new-appointment-top-type-select .text').text('');
-        //   $('.mod-appointment-top-type-select select').find('option:not(:first)').remove();
-        //   $('.mod-appointment-top-type-select .text').text('');
-        //   $('.new-appointment-type-select select').find('option:not(:first)').remove();
-        //   $('.new-appointment-type-select .text').text('');
-        //   $('.mod-appointment-type-select select').find('option:not(:first)').remove();
-        //   $('.mod-appointment-type-select .text').text('');
-        //   $('.new-appointment-project-select select').find('option:not(:first)').remove();
-        //   $('.new-appointment-project-select .text').text('');
-        //   $('.mod-appointment-project-select select').find('option:not(:first)').remove();
-        //   $('.mod-appointment-project-select .text').text('');
-        //   $('.new-appointment-employee-select select').find('option:not(:first)').remove();
-        //   $('.new-appointment-employee-select .text').text('');
-        //   $('.mod-appointment-employee-select select').find('option:not(:first)').remove();
-        //   $('.mod-appointment-employee-select .text').text('');
-        //   $('.new-appointment-line-select select').find('option:not(:first)').remove();
-        //   $('.new-appointment-line-select .text').text('');
-        //   $('.mod-appointment-line-select select').find('option:not(:first)').remove();
-        //   $('.mod-appointment-line-select .text').text('');
-        //   $('.new-appointment-counselor-select select').find('option:not(:first)').remove();
-        //   $('.new-appointment-counselor-select .text').text('');
-        // }
+        function clearSelect() {
+          // $('.new-appointment-top-type-select select').find('option:not(:first)').remove();
+          // $('.new-appointment-top-type-select .text').text('');
+          // $('.mod-appointment-top-type-select select').find('option:not(:first)').remove();
+          // $('.mod-appointment-top-type-select .text').text('');
+          $('.new-appointment-type-select select').find('option:not(:first)').remove();
+          $('.new-appointment-type-select .text').text('');
+          $('.mod-appointment-type-select select').find('option:not(:first)').remove();
+          $('.mod-appointment-type-select .text').text('');
+          $('.new-appointment-project-select select').find('option:not(:first)').remove();
+          $('.new-appointment-project-select .text').text('');
+          $('.mod-appointment-project-select select').find('option:not(:first)').remove();
+          $('.mod-appointment-project-select .text').text('');
+          $('.new-appointment-employee-select select').find('option:not(:first)').remove();
+          $('.new-appointment-employee-select .text').text('');
+          $('.mod-appointment-employee-select select').find('option:not(:first)').remove();
+          $('.mod-appointment-employee-select .text').text('');
+          $('.new-appointment-counselor-select select').find('option:not(:first)').remove();
+          $('.new-appointment-counselor-select .text').text('');
+          $('.finish-appointment-card-select select').find('option:not(:first)').remove();
+          $('.finish-appointment-card-select .text').text('');
+        }
+
+        function changeCharge(){
+          var charge = 0;
+          $('#finish-project-list').find('.charge').each(function(){
+            charge += Number($(this).text());
+          })
+          $('#finalCharge').val(charge);
+        }
       })
     </script>
   </body>
