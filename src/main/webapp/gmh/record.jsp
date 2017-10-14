@@ -526,6 +526,7 @@
                 var $age = $('<td class="age">' + (data.age == null ? '无' : data.age) + '</td>');
                 var $sexId = $('<td class="sexId" style="display:none">' + (data.sex == '男' ? 1 : 0) + '</td>');
                 var $sex = $('<td class="sex">' + data.sex + '</td>');
+                var $totalCharge = $('<td class="totalCharge" style="display:none">' + data.charge + '</td>');
 
                 var projectIds = [];
                 var projectNames = [];
@@ -558,7 +559,7 @@
                 var $employeeName = $('<td class="employeeName">' + employeeNames.join('<br>') + '</td>');
                 var $counselorId = $('<td class="counselorId" style="display:none">' + counselorIds + '</td>');
                 var $counselorName = $('<td class="counselorName">' + counselorNames.join('<br>') + '</td>');
-                var $retailPrice = $('<td class="rerailPrice">' + retailPrices.join('<br>') + '</td>');
+                var $retailPrice = $('<td class="retailPrice">' + retailPrices.join('<br>') + '</td>');
                 var $charge = $('<td class="charge">' + charges.join('<br>') + '</td>');
 
                 var $chargeWayId = $('<td class="chargeWayId" style="display:none">' + data.chargeWayId + '</td>');
@@ -588,6 +589,7 @@
                 $tr.append($age);
                 $tr.append($sexId);
                 $tr.append($sex);
+                $tr.append($totalCharge);
                 $tr.append($projectId);
                 $tr.append($projectName);
                 $tr.append($employeeId);
@@ -596,7 +598,7 @@
                 $tr.append($counselorName);
                 $tr.append($retailPrice);
                 $tr.append($charge);
-                // $tr.append($chargeWayId);
+                $tr.append($chargeWayId);
                 $tr.append($chargeWay);
                 $tr.append($consumeTime);
                 $tr.append($source);
@@ -672,6 +674,7 @@
                       $('.new-record-card-select .text').removeClass('unselected');
                       $('.new-record-card-select select').append($option);
                     })
+                    $('#card-field').show();
                   }
                 },
                 onFailure: function (response) {
@@ -684,13 +687,74 @@
           }else{
             alert('请输入手机号！');
           }
-          $('#card-field').show();
         }else if(code == 2){
           changeNewCharge();
           $('#card-field').hide();
         }else if(code == 3){
           $('#finalCharge').val('0');
           $('#card-field').hide();
+        }
+      })
+      //切换支付方式
+      $(document).on('change','.mod-record-chargeWay-select',function(){
+        //不同支付方式的不同处理
+        var code = $(this).find('select').val();
+        if(code == 1){
+          //输入手机号，变更会员卡
+          changeModCharge();
+          var mobile = Number($('#mod-record-mobile').val());
+          var reg = new RegExp("^1\\d{10}$");  
+          if (mobile != '') {
+            if(reg.test(mobile)) {  
+              //加载会员卡
+              $('.fake-button').api({
+                action: 'record listByPhone',
+                method: 'GET',
+                on: 'now',
+                beforeXHR: function (xhr) {
+                  verifyToken();
+                  xhr.setRequestHeader('X-token', getSessionStorage('token'));
+                  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                },
+                beforeSend: function (settings) {
+                  if (mobile != '') {
+                    settings.data.phone = mobile;
+                    return settings;
+                  } else {
+                    alert('手机号为空');
+                    return false;
+                  }
+                },
+                onSuccess: function (response) {
+                  clearCard();
+                  if (response.error != null) {
+                    alert(response.error);
+                    verifyStatus(response.code);
+                  } else {
+                    $.each(response.data, function (i, data) {
+                      var $option = $('<option value="' + data.id + '">' + data.memberLevelName + '</option>');
+                      $('.mod-record-card-select .text').removeClass('unselected');
+                      $('.mod-record-card-select select').append($option);
+                    })
+                    $('#mod-card-field').show();
+                  }
+                },
+                onFailure: function (response) {
+                  alert('服务器开小差了');
+                }
+              })
+            }else{
+              alert('请输入正确的手机号！');
+            } 
+          }else{
+            alert('请输入手机号！');
+          }
+        }else if(code == 2){
+          changeModCharge();
+          $('#mod-card-field').hide();
+        }else if(code == 3){
+          $('#modFinalCharge').val('0');
+          $('#mod-card-field').hide();
         }
       })
 
@@ -705,7 +769,11 @@
         }else{
           $(this).parent().parent().find('.charge').text(Number(pcharge));
         }
-        changeNewCharge();
+        if($('#add-project-type').text() == 'add'){
+          changeNewCharge();
+        }else{
+          changeModCharge();
+        }
       })
 
       //允许模态框叠加
@@ -935,11 +1003,14 @@
       //修改消费记录模态框
       $(document).on('click', '.mod-record', function () {
         $('#mod-record-id').text($(this).parent().parent().find('.recordId').text());
+        var mobile = $(this).parent().parent().find('.mobile').text();
         $('#mod-record').find('input[name="mobile"]').val($(this).parent().parent().find('.mobile').text());
         $('#mod-record').find('input[name="consumerName"]').val($(this).parent().parent().find('.consumerName').text());
         $('.mod-record-sex-select select').val($(this).parent().parent().find('.sexId').text());
         $('.mod-record-sex-select .text').removeClass('default');
         $('.mod-record-sex-select .text').text($(this).parent().parent().find('.sex').text());
+        var memberId = $(this).parent().parent().find('.memberId').text();
+        var memberName = $(this).parent().parent().find('.memberName').text();
 
         var pids = $(this).parent().parent().find('.projectId').html().split(',');
         var pnames = $(this).parent().parent().find('.projectName').html().split('<br>');
@@ -948,7 +1019,7 @@
         var cids = $(this).parent().parent().find('.counselorId').html().split(',');
         var cnames = $(this).parent().parent().find('.counselorName').html().split('<br>');
         var rprices = $(this).parent().parent().find('.retailPrice').html().split('<br>');
-        var charges = $(this).parent().parent().find('.projectCharges').html().split('<br>');
+        var charges = $(this).parent().parent().find('.charge').html().split('<br>');
 
         var option = '';
         $.each(counselorsData, function (i, data) {
@@ -962,21 +1033,81 @@
               '</td><td class="projectCharge">' + rprices[i] + 
               '</td><td><input type="text" class="discount" placeholder="请输入折扣">' + 
               '</td><td class="charge">' + charges[i] +
-              '</td><td class="counselor"><select class="ui fluid dropdown mod-appointment-counselor-select"><option value="">请选择经理/咨询师</option>' + option + '</select></td></tr>');
+              '</td><td class="counselor"><select class="ui fluid dropdown mod-record-counselor-select"><option value="">请选择经理/咨询师</option>' + option + '</select></td>'+
+              '<td class="minus-project"><i class="minus icon"></i></td></tr>');
           $('#mod-project-list').append($tr);
         }
 
         //重新加载下拉框
         $('.ui.dropdown').dropdown();
 
-        // for(var i = 0;i < pids.length; i++){
-        //   if(cids != '无'){
-        //     $('#mod-project-list').find('tr').
-        //     $('.mod-record-sex-select select').val($(this).parent().parent().find('.sexId').text());
-        //     $('.mod-record-sex-select .text').removeClass('default');
-        //     $('.mod-record-sex-select .text').text($(this).parent().parent().find('.sex').text());
-        //   }
-        // }
+        //加载经理/咨询师
+        $('.mod-record-counselor-select').each(function(i){
+         $(this).find('select').val(cids[i]);
+         $(this).find('.text').removeClass('default');
+         $(this).find('.text').text(cnames[i]);
+        })
+        
+        $('.mod-record-chargeWay-select select').val($(this).parent().parent().find('.chargeWayId').text());
+        $('.mod-record-chargeWay-select .text').removeClass('default');
+        $('.mod-record-chargeWay-select .text').text($(this).parent().parent().find('.chargeWay').text());
+
+        if($(this).parent().parent().find('.chargeWayId').text() == 1){
+          var reg = new RegExp("^1\\d{10}$");  
+          if (mobile != '') {
+            if(reg.test(mobile)) {  
+              //加载会员卡
+              $('.fake-button').api({
+                action: 'record listByPhone',
+                method: 'GET',
+                on: 'now',
+                async: 'false',
+                beforeXHR: function (xhr) {
+                  verifyToken();
+                  xhr.setRequestHeader('X-token', getSessionStorage('token'));
+                  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                },
+                beforeSend: function (settings) {
+                  if (mobile != '') {
+                    settings.data.phone = mobile;
+                    return settings;
+                  } else {
+                    alert('手机号为空');
+                    return false;
+                  }
+                },
+                onSuccess: function (response) {
+                  clearCard();
+                  if (response.error != null) {
+                    alert(response.error);
+                    verifyStatus(response.code);
+                  } else {
+                    $.each(response.data, function (i, data) {
+                      var $option = $('<option value="' + data.id + '">' + data.memberLevelName + '</option>');
+                      $('.mod-record-card-select .text').removeClass('unselected');
+                      $('.mod-record-card-select select').append($option);
+                    })
+                    $('#mod-card-field').val(memberId);
+                    $('#mod-card-field .text').removeClass('default');
+                    $('#mod-card-field .text').text(memberName);
+                    $('#mod-card-field').show();
+                  }
+                },
+                onFailure: function (response) {
+                  alert('服务器开小差了');
+                }
+              })
+            }else{
+              alert('请输入正确的手机号！');
+            } 
+          }else{
+            alert('请输入手机号！');
+          }
+        }
+
+        $('#mod-record').find('input[name="charge"]').val($(this).parent().parent().find('.totalCharge').text());
+        $('#mod-record').find('input[name="source"]').val($(this).parent().parent().find('.source').text());
+        $('#mod-record').find('textarea[name="remark"]').val($(this).parent().parent().find('.remark').attr('title'));
 
         $('.mod-record-modal').modal({
             closable: false,
@@ -1058,7 +1189,7 @@
           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         },
         beforeSend: function (settings) {
-          if ($('#mod-record-id').text() != '') {
+          if ($('#mod-record-id').text() == '') {
             alert('ID为空');
             return false;
           }
@@ -1067,7 +1198,7 @@
             alert('请选择会员卡！');
             return false;
           }
-          if($('#project-list').children().length == 0){
+          if($('#mod-project-list').children().length == 0){
             alert('项目为空!');
             return false;
           }
@@ -1298,12 +1429,18 @@
         $('.new-record-counselor-select select').find('option:not(:first)').remove();
         $('.new-record-counselor-select .text').text('请选择经理/咨询师');
         $('.new-record-card-select .text').addClass('unselected');
+        $('.mod-record-counselor-select select').find('option:not(:first)').remove();
+        $('.mod-record-counselor-select .text').text('请选择经理/咨询师');
+        $('.mod-record-card-select .text').addClass('unselected');
       }
       
       function clearCard(){
         $('.new-record-card-select select').find('option:not(:first)').remove();
         $('.new-record-card-select .text').text('请选择会员卡');
         $('.new-record-card-select .text').addClass('unselected');
+        $('.mod-record-card-select select').find('option:not(:first)').remove();
+        $('.mod-record-card-select .text').text('请选择会员卡');
+        $('.mod-record-card-select .text').addClass('unselected');
       }
 
       function changeNewCharge(){
@@ -1315,10 +1452,10 @@
       }
       function changeModCharge(){
         var charge = 0;
-        $('#project-list').find('.charge').each(function(){
+        $('#mod-project-list').find('.charge').each(function(){
           charge += Number($(this).text());
         })
-        $('#finalCharge').val(charge);
+        $('#modFinalCharge').val(charge);
       }
     })
   </script>
