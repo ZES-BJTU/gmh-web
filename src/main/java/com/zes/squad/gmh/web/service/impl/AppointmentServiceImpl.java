@@ -398,7 +398,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         PageInfo<AppointmentUnion> info = new PageInfo<>(unions);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
-        return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(), vos);
+        return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), unions.size(), vos);
     }
 
     @Override
