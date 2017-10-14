@@ -121,12 +121,15 @@ public class AppointmentController {
 
     @RequestMapping("/update")
     @ResponseBody
-    public JsonResult<Integer> update(AppointmentDto dto) {
-        ensureParameterExist(dto, ErrorMessage.paramIsNull);
-        ensureParameterExist(dto.getId(), ErrorMessage.appointmentIdIsNull);
-        ensureParameterExist(dto.getName(), "预约人姓名为空");
-        ensureParameterExist(dto.getPhone(), "预约人手机号为空");
-        ensureParameterExist(dto.getSex(), "预约人性别为空");
+    public JsonResult<Integer> update(AppointmentParams params) {
+        ensureParameterExist(params, ErrorMessage.paramIsNull);
+        ensureParameterExist(params.getId(), ErrorMessage.appointmentIdIsNull);
+        ensureParameterExist(params.getName(), "预约人姓名为空");
+        ensureParameterExist(params.getPhone(), "预约人手机号为空");
+        ensureParameterExist(params.getSex(), "预约人性别为空");
+        ensureParameterExist(params.getProjects(), "预约项目为空");
+        AppointmentDto dto = buildAppointmentDtoByParams(params);
+        dto.setId(params.getId());
         int i = appointmentService.update(dto);
         return JsonResult.success(i);
     }

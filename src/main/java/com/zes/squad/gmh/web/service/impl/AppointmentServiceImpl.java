@@ -176,24 +176,20 @@ public class AppointmentServiceImpl implements AppointmentService {
     public int update(AppointmentDto dto) {
         AppointmentPo po = appointmentMapper.selectById(dto.getId());
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
+        appointmentProjectMapper.deleteByAppointmentId(dto.getId());
         for (AppointmentProjectDto projectDto : dto.getAppointmentProjectDtos()) {
             ProjectPo projectPo = projectMapper.selectById(projectDto.getProjectId());
             ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
             EmployeePo employeePo = employeeMapper.selectById(projectDto.getEmployeeId());
             ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
             //判断是否时间上冲突
-            int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), dto.getPhone(), null,
-                    Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
-                    projectDto.getBeginTime(), projectDto.getEndTime());
-            ensureConditionSatisfied(count == 0, ErrorMessage.appointmentMemberTimeIsConflicted);
-            count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null,
+            int count = appointmentMapper.selectByCondition(ThreadContext.getStaffStoreId(), null,
                     projectDto.getEmployeeId(),
                     Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()),
                     projectDto.getBeginTime(), projectDto.getEndTime());
             ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
         }
         appointmentMapper.deleteById(dto.getId());
-        appointmentProjectMapper.deleteByAppointmentId(dto.getId());
         po.setPhone(dto.getPhone());
         po.setName(dto.getName());
         po.setSex(dto.getSex());
