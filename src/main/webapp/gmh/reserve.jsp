@@ -700,21 +700,26 @@
                   var $sexId = $('<td class="sexId" style="display:none">' + (data.sex == '男' ? 1 : 0) +
                     '</td>');
                   var $sex = $('<td class="sex" style="display:none">' + data.sex + '</td>');
-                  var $topTypeId = $('<td class="topTypeId" style="display:none">' + data.topType +
-                    '</td>');
-                  var $topTypeName = $('<td class="topTypeName" style="display:none">' + data.topTypeName +
-                    '</td>');
-                  var $typeId = $('<td class="typeId" style="display:none">' + data.typeId + '</td>');
-                  var $typeName = $('<td class="typeName" style="display:none">' + data.typeName +
-                    '</td>');
                   var $projectId = $('<td class="projectId" style="display:none">' + data.projectId +
                     '</td>');
-                  var $projectName = $('<td class="projectName">' + data.projectName + '</td>');
-                  var $employeeId = $('<td class="employeeId" style="display:none">' + data.employeeId +
-                    '</td>');
-                  var $employeeName = $('<td class="employeeName">' + data.employeeName + '</td>');
-                  var $beginTime = $('<td class="beginTime">' + toDatetimeMin(data.beginTime) + '</td>');
-                  var $endTime = $('<td class="endTime">' + toDatetimeMin(data.endTime) + '</td>');
+
+                  var $projectId = $('<td class="projectId" style="display:none">' + data.projectIds + '</td>');
+                  var $projectName = $('<td class="projectName">' + data.projectNames.join('<br>') + '</td>');
+                  var $employeeId = $('<td class="employeeId" style="display:none">' + data.employeeIds + '</td>');
+                  var $employeeName = $('<td class="employeeName">' + data.employeeNames.join('<br>') + '</td>');
+                  
+                  var btimes = [];
+                  $.each(data.beginTimes,function(i, value){
+                    btimes.push(toDatetimeMin(data.beginTimes[i]));
+                  })
+                  var etimes = [];
+                  $.each(data.endTimes,function(i, value){
+                    etimes.push(toDatetimeMin(data.endTimes[i]));
+                  })
+
+                  var $beginTime = $('<td class="beginTime">' + btimes.join('<br>') + '</td>');
+                  var $endTime = $('<td class="endTime">' + etimes.join('<br>') + '</td>');
+
                   var $line = $('<td class="line">' + data.line + '</td>');
                   var $status = $('<td class="status">' + data.status + '</td>');
                   var remark = (data.remark == null || data.remark == '') ? '无' : String(data.remark);
@@ -739,10 +744,6 @@
                   $tr.append($memberName);
                   $tr.append($memberPhone);
                   $tr.append($sex);
-                  $tr.append($topTypeId);
-                  $tr.append($topTypeName);
-                  $tr.append($typeId);
-                  $tr.append($typeName);
                   $tr.append($projectId);
                   $tr.append($projectName);
                   $tr.append($employeeId);
@@ -758,7 +759,6 @@
                 })
                 $('.paging').children().eq(pagenum - 1).addClass('active');
               }
-              // addData();
             },
             onFailure: function (response) {
               alert('服务器开小差了');
@@ -1546,56 +1546,6 @@
         //   $('.new-appointment-counselor-select .text').text('');
         // }
       })
-
-      function addData(){
-        var $tr = $('<tr></tr>');
-        var $id = $('<td class="appointmentId" style="display:none">1</td>');
-        var $memberId = $('<td class="memberId" style="display:none">1</td>');
-        var $memberName = $('<td class="memberName">张三</td>');
-        var $memberPhone = $('<td class="memberPhone">18813091990</td>');
-        var $sexId = $('<td class="sexId" style="display:none">1</td>');
-        var $sex = $('<td class="sex" style="display:none">男</td>');
-        var pid = [1,2];
-        var $projectId = $('<td class="projectId" style="display:none">' + pid + '</td>');
-        var pname = ['美容1','美容2'];
-        var $projectName = $('<td class="projectName">' + pname.join('<br>') + '</td>');
-        var eid = [1,2];
-        var $employeeId = $('<td class="employeeId" style="display:none">' + eid + '</td>');
-        var ename = ['员工1','员工2'];
-        var $employeeName = $('<td class="employeeName">' + ename.join('<br>') + '</td>');
-        var btime = ['2010-09-01 12:00','2010-09-01 12:00'];
-        var $beginTime = $('<td class="beginTime">' + btime.join('<br>') + '</td>');
-        var etime = ['2010-09-01 12:00','2010-09-01 12:00'];
-        var $endTime = $('<td class="endTime">' + btime.join('<br>') + '</td>');
-        var $line = $('<td class="line">是</td>');
-        var $status = $('<td class="status">进行中</td>');
-
-        var $remark = $('<td class="remark" title="无">无</td>');
-        var pcharge = [1000,2000];
-        var $projectCharge = $('<td class="projectCharge" style="display:none">' + pcharge + '</td>');
-        var $operate = $(
-          '<td><button class="ui tiny green button finish-appointment">完成</button>' +
-          '<button class="ui tiny orange button mod-appointment">修改</button>' +
-          '<button class="ui tiny red button del-appointment">取消</button></td>');
-
-        $tr.append($id);
-        $tr.append($memberId);
-        $tr.append($memberName);
-        $tr.append($memberPhone);
-        $tr.append($sex);
-        $tr.append($projectId);
-        $tr.append($projectName);
-        $tr.append($employeeId);
-        $tr.append($employeeName);
-        $tr.append($beginTime);
-        $tr.append($endTime);
-        $tr.append($line);
-        $tr.append($status);
-        $tr.append($remark);
-        $tr.append($projectCharge);
-        $tr.append($operate);
-        $('#appointment-list').append($tr);
-      }
     </script>
   </body>
 
