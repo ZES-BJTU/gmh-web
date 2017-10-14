@@ -758,7 +758,7 @@
                 })
                 $('.paging').children().eq(pagenum - 1).addClass('active');
               }
-              addData();
+              // addData();
             },
             onFailure: function (response) {
               alert('服务器开小差了');
