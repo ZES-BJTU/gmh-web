@@ -518,15 +518,48 @@
                 var $tr = $('<tr></tr>');
                 var $id = $('<td class="recordId" style="display:none">' + data.id + '</td>');
                 var $memberId = $('<td class="memberId" style="display:none">' + data.memberId + '</td>');
+                // var $memberName = $('<td class="memberName" style="display:none">' + data.memberName + '</td>');
                 var $consumerName = $('<td class="consumerName">' + data.consumerName + '</td>');
                 var $mobile = $('<td class="mobile">' + data.mobile + '</td>');
                 var $consumerType = $('<td class="consumerType">' + data.consumerDesc + '</td>');
                 var $age = $('<td class="age">' + (data.age == null ? '无' : data.age) + '</td>');
                 var $sex = $('<td class="sex">' + data.sex + '</td>');
-                var $employeeName = $('<td class="employeeName">' + data.employeeName + '</td>');
-                var $counselorName = $('<td class="counselorName">' + (data.counselorName == null ? '无' : data.counselorName) + '</td>');
-                var $projectName = $('<td class="projectName">' + data.projectName + '</td>');
-                var $charge = $('<td class="charge">' + data.charge + '</td>');
+
+                var projectIds = [];
+                var projectNames = [];
+                var employeeIds = [];
+                var employeeNames = [];
+                var projectNames = [];
+                var counselorIds = [];
+                var counselorNames = [];
+                var charges = [];
+                var retailPrices = [];
+
+                $.each(data.consumeRecordProjectVos,function(i,data){
+                  projectIds.push(data.projectId);
+                  projectNames.push(data.projectName);
+                  employeeIds.push(data.employeeId);
+                  employeeNames.push(data.employeeName);
+
+                  var cId = data.counselorId == null ? '无' : data.counselorId
+                  counselorIds.push(cId);
+                  var cName = data.counselorName == null ? '无' : data.counselorName
+                  counselorNames.push(cName);
+
+                  charges.push(data.charge);
+                  retailPrices.push(data.retailPrice);
+                })
+
+                var $projectId = $('<td class="projectId" style="display:none">' + projectIds + '</td>');
+                var $projectName = $('<td class="projectName">' + projectNames.join('<br>') + '</td>');
+                var $employeeId = $('<td class="employeeId" style="display:none">' + employeeIds + '</td>');
+                var $employeeName = $('<td class="employeeName">' + employeeNames.join('<br>') + '</td>');
+                var $counselorId = $('<td class="counselorId" style="display:none">' + counselorIds + '</td>');
+                var $counselorName = $('<td class="counselorName">' + counselorName.join('<br>') + '</td>');
+                var $rerailPrice = $('<td class="rerailPrice">' + rerailPrices.join('<br>') + '</td>');
+                var $charge = $('<td class="charge">' + charges.join('<br>') + '</td>');
+
+                // var $chargeWayId = $('<td class="chargeWayId" style="display:none">' + data.chargeWayId + '</td>');
                 var $chargeWay = $('<td class="chargeWay">' + data.chargeWay + '</td>');
                 var $consumeTime = $('<td class="consumeTime">' + toDatetimeMin(data.consumeTime) +
                   '</td>');
@@ -547,19 +580,26 @@
 
                 $tr.append($id);
                 $tr.append($memberId);
+                // $tr.append($memberName);
                 $tr.append($consumerName);
                 $tr.append($mobile);
                 $tr.append($consumerType);
                 $tr.append($age);
                 $tr.append($sex);
-                $tr.append($employeeName);
-                $tr.append($counselorName);
+                $tr.append($projectIds);
                 $tr.append($projectName);
+                $tr.append($employeeIds);
+                $tr.append($employeeName);
+                $tr.append($counselorId);
+                $tr.append($counselorName);
+                $tr.append($rerailPrice);
                 $tr.append($charge);
+                // $tr.append($chargeWayId);
                 $tr.append($chargeWay);
                 $tr.append($consumeTime);
                 $tr.append($source);
                 $tr.append($remark);
+                $tr.append($operate);
                 $('#record-list').append($tr);
               })
               $('.paging').children().eq(pagenum - 1).addClass('active');
