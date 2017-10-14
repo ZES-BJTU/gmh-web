@@ -496,7 +496,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         condition.setStoreId(ThreadContext.getStaffStoreId());
         List<MemberUnion> unions = memberUnionMapper.listMemberUnionsByCondition(condition);
         if (CollectionUtils.isEmpty(unions)) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY, "查询会员卡信息失败");
+            return Lists.newArrayList();
         }
         return buildMemberVosByUnions(unions);
     }
