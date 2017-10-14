@@ -27,8 +27,7 @@
 		a.`modified_time`,
 		e.`id` AS apu_e_id,
 		e.`name` AS apu_e_name,
-		m.`id` AS
-		m_id,
+		m.`id` AS m_id,
 		m.`name` AS m_name,
 		p.`id` AS apu_p_id,
 		p.`name` AS apu_p_name,

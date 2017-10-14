@@ -251,10 +251,12 @@ public class ConsumeServiceImpl implements ConsumeService {
                 projectDto.setEmployeeName(projectUnion.getEmployeePo().getName());
                 projectDto.setCharge(projectUnion.getConsumeRecordProjectPo().getCharge());
                 Long counselorId = projectUnion.getConsumeRecordProjectPo().getCounselorId();
-                projectDto.setCounselorId(counselorId);
-                EmployeePo employeePo = employeeMapper.selectById(counselorId);
-                ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-                projectDto.setCounselorName(employeePo.getName());
+                if (counselorId != null) {
+                    projectDto.setCounselorId(counselorId);
+                    EmployeePo employeePo = employeeMapper.selectById(counselorId);
+                    ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+                    projectDto.setCounselorName(employeePo.getName());
+                }
                 projectDto.setRetailPrice(projectUnion.getProjectPo().getRetailPrice());
                 projectDtos.add(projectDto);
             }
