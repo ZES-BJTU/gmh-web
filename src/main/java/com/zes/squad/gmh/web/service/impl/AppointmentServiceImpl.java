@@ -139,7 +139,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public int insert(AppointmentDto dto) {
         MemberQueryCondition memberQueryCondition = new MemberQueryCondition();
-        //        memberQueryCondition.setPhone(dto.getPhone());
+        memberQueryCondition.setPhone(dto.getPhone());
         for (AppointmentProjectDto projectDto : dto.getAppointmentProjectDtos()) {
             ProjectPo projectPo = projectMapper.selectById(projectDto.getProjectId());
             ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
@@ -152,11 +152,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         List<MemberPo> memberPos = memberMapper.selectByCondition(memberQueryCondition);
         dto.setStoreId(ThreadContext.getStaffStoreId());
-        //        dto.setMemberId(memberPo != null ? memberPo.getId() : null);
         dto.setStatus(AppointmentStatusEnum.TO_DO.getKey());
         AppointmentPo po = CommonConverter.map(dto, AppointmentPo.class);
         if (CollectionUtils.isNotEmpty(memberPos)) {
-            //            po.setMemberId(memberPo.getId());
             po.setName(memberPos.get(0).getName());
             po.setSex(Integer.valueOf(String.valueOf(memberPos.get(0).getSex())));
         }
@@ -199,7 +197,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         memberQueryCondition.setPhone(dto.getPhone());
         List<MemberPo> memberPos = memberMapper.selectByCondition(memberQueryCondition);
         if (CollectionUtils.isNotEmpty(memberPos)) {
-            //            po.setMemberId(memberPo.getId());
             po.setName(memberPos.get(0).getName());
             po.setSex(Integer.valueOf(String.valueOf(memberPos.get(0).getSex())));
         }
@@ -241,18 +238,18 @@ public class AppointmentServiceImpl implements AppointmentService {
             projectPo.setCounselorId(Long.valueOf(detail[2]));
             projectPos.add(projectPo);
         }
+        ConsumeRecordPo recordPo = new ConsumeRecordPo();
         MemberPo memberPo = memberMapper.selectById(chargeCard);
         if (memberPo == null) {
             if (chargeWay == ChargeWayEnum.CARD.getKey()) {
                 throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "非会员不能使用会员卡消费");
             }
+            recordPo.setMember(false);
+        } else {
+            recordPo.setMember(true);
+            recordPo.setMemberId(chargeCard);
         }
-        ConsumeRecordPo recordPo = new ConsumeRecordPo();
         recordPo.setStoreId(po.getStoreId());
-        //        recordPo.setProjectId(po.getProjectId());
-        //        recordPo.setEmployeeId(po.getEmployeeId());
-        recordPo.setMember(true);
-        recordPo.setMemberId(chargeCard);
         recordPo.setMobile(po.getPhone());
         recordPo.setSex(po.getSex());
         recordPo.setConsumerName(po.getName());
@@ -329,7 +326,21 @@ public class AppointmentServiceImpl implements AppointmentService {
         ensureConditionSatisfied(unions != null && !unions.isEmpty(), "预约项目查询失败");
         AppointmentVo vo = CommonConverter.map(appointmentPo, AppointmentVo.class);
         vo.setStatus(EnumUtils.getDescByKey(AppointmentStatusEnum.class, appointmentPo.getStatus()));
-        vo.setMemberName(!Strings.isNullOrEmpty(union.getMemberPo().getName()) ? union.getMemberPo().getName() : "");
+        List<MemberPo> memberPos = null;
+        if (union.getMemberPo() == null) {
+            MemberQueryCondition condition = new MemberQueryCondition();
+            condition.setPhone(appointmentPo.getPhone());
+            condition.setStoreId(ThreadContext.getStaffStoreId());
+            memberPos = memberMapper.selectByCondition(condition);
+            if (CollectionUtils.isEmpty(memberPos)) {
+                vo.setMemberName("");
+            } else {
+                vo.setMemberName(memberPos.get(0).getName());
+            }
+        } else {
+            vo.setMemberName(
+                    !Strings.isNullOrEmpty(union.getMemberPo().getName()) ? union.getMemberPo().getName() : "");
+        }
         Integer[] topTypes = new Integer[unions.size()];
         String[] topTypeNames = new String[unions.size()];
         Long[] typeIds = new Long[unions.size()];

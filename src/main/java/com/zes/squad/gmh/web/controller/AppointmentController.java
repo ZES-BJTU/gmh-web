@@ -165,7 +165,6 @@ public class AppointmentController {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.appointmentNotSelected);
         }
-        ensureParameterExist(chargeCard, "会员卡未选择");
         ensureParameterExist(totalCharge, "总消费金额为空");
         ensureParameterExist(projects, "消费项目信息为空");
         ensureParameterExist(chargeWay, ErrorMessage.consumeRecordChargeWayIsNull);

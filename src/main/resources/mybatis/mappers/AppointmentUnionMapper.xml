@@ -55,13 +55,13 @@
 		a.id =
 		ap.appointment_id
 		LEFT JOIN
+		member m
+		ON
+		a.phone = m.phone
+		LEFT JOIN
 		employee e
 		ON
 		ap.employee_id = e.`id`
-		LEFT JOIN
-		member m
-		ON
-		a.member_id = m.`id`
 		LEFT JOIN
 		project p
 		ON
@@ -106,13 +106,13 @@
 		a.id =
 		ap.appointment_id
 		LEFT JOIN
+		member m
+		ON
+		a.phone = m.phone
+		LEFT JOIN
 		employee e
 		ON
 		ap.employee_id = e.`id`
-		LEFT JOIN
-		member m
-		ON
-		a.member_id = m.`id`
 		LEFT JOIN project p
 		ON
 		ap.project_id =
@@ -134,13 +134,13 @@
 		a.id =
 		ap.appointment_id
 		LEFT JOIN
+		member m
+		ON
+		a.phone = m.phone
+		LEFT JOIN
 		employee e
 		ON ap.employee_id =
 		e.`id`
-		LEFT JOIN
-		member m
-		ON
-		a.member_id = m.`id`
 		LEFT JOIN project p
 		ON
 		ap.project_id =
