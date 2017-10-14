@@ -251,12 +251,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         recordPo.setStoreId(po.getStoreId());
         //        recordPo.setProjectId(po.getProjectId());
         //        recordPo.setEmployeeId(po.getEmployeeId());
-        if (po.getMemberId() != null) {
-            recordPo.setMember(true);
-            recordPo.setMemberId(po.getMemberId());
-        } else {
-            recordPo.setMember(false);
-        }
+        recordPo.setMember(true);
+        recordPo.setMemberId(chargeCard);
         recordPo.setMobile(po.getPhone());
         recordPo.setSex(po.getSex());
         recordPo.setConsumerName(po.getName());
@@ -274,7 +270,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             for (AppointmentProjectPo appointmentProjectPo : appointmentProjectPos) {
                 if (appointmentProjectPo.getProjectId().equals(projectPo.getProjectId())) {
                     projectPo.setEmployeeId(appointmentProjectPo.getEmployeeId());
-                    break;
                 }
             }
         }

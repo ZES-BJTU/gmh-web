@@ -8,12 +8,13 @@
 		<result column="project_id" jdbcType="BIGINT" property="projectId" />
 		<result column="employee_id" jdbcType="BIGINT" property="employeeId" />
 		<result column="charge" jdbcType="DECIMAL" property="charge" />
+		<result column="counselor_id" jdbcType="BIGINT" property="counselorId" />
 		<result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
 		<result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		`id`,`consume_record_id`,`project_id`,
-		`employee_id`,`charge`,
+		`employee_id`,`charge`,`counselor_id`,
 		`created_time`,`modified_time`
 	</sql>
 	<insert id="batchInsert"
@@ -23,13 +24,15 @@
 		(`consume_record_id`,
 		`project_id`,
 		`employee_id`,
-		`charge`)
+		`charge`,
+		`counselor_id`)
 		VALUES
 		<foreach collection="list" item="item" separator=",">
-			(#{item.consumeRecordId, jdbcType=BIGINT}
+			(#{item.consumeRecordId, jdbcType=BIGINT},
 			#{item.projectId,jdbcType=BIGINT},
 			#{item.employeeId,jdbcType=BIGINT},
-			#{item.charge,jdbcType=DECIMAL})
+			#{item.charge,jdbcType=DECIMAL},
+			#{item.counselorId,jdbcType=BIGINT})
 		</foreach>
 	</insert>
 	<delete id="deleteByConsumeRecordId" parameterType="long">
