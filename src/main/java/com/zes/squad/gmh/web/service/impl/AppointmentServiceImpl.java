@@ -139,7 +139,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public int insert(AppointmentDto dto) {
         MemberQueryCondition memberQueryCondition = new MemberQueryCondition();
-        memberQueryCondition.setPhone(dto.getPhone());
+        //        memberQueryCondition.setPhone(dto.getPhone());
         for (AppointmentProjectDto projectDto : dto.getAppointmentProjectDtos()) {
             ProjectPo projectPo = projectMapper.selectById(projectDto.getProjectId());
             ensureEntityExist(projectPo, ErrorMessage.projectNotFound);
@@ -152,11 +152,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         MemberPo memberPo = memberMapper.selectByCondition(memberQueryCondition);
         dto.setStoreId(ThreadContext.getStaffStoreId());
-        dto.setMemberId(memberPo != null ? memberPo.getId() : null);
+        //        dto.setMemberId(memberPo != null ? memberPo.getId() : null);
         dto.setStatus(AppointmentStatusEnum.TO_DO.getKey());
         AppointmentPo po = CommonConverter.map(dto, AppointmentPo.class);
         if (memberPo != null) {
-            po.setMemberId(memberPo.getId());
+            //            po.setMemberId(memberPo.getId());
             po.setName(memberPo.getName());
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
         }
@@ -199,7 +199,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         memberQueryCondition.setPhone(dto.getPhone());
         MemberPo memberPo = memberMapper.selectByCondition(memberQueryCondition);
         if (memberPo != null) {
-            po.setMemberId(memberPo.getId());
+            //            po.setMemberId(memberPo.getId());
             po.setName(memberPo.getName());
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
         }
