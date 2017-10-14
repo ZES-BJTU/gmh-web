@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
@@ -326,21 +325,22 @@ public class AppointmentServiceImpl implements AppointmentService {
         ensureConditionSatisfied(unions != null && !unions.isEmpty(), "预约项目查询失败");
         AppointmentVo vo = CommonConverter.map(appointmentPo, AppointmentVo.class);
         vo.setStatus(EnumUtils.getDescByKey(AppointmentStatusEnum.class, appointmentPo.getStatus()));
-        List<MemberPo> memberPos = null;
-        if (union.getMemberPo() == null) {
-            MemberQueryCondition condition = new MemberQueryCondition();
-            condition.setPhone(appointmentPo.getPhone());
-            condition.setStoreId(ThreadContext.getStaffStoreId());
-            memberPos = memberMapper.selectByCondition(condition);
-            if (CollectionUtils.isEmpty(memberPos)) {
-                vo.setMemberName("");
-            } else {
-                vo.setMemberName(memberPos.get(0).getName());
-            }
-        } else {
-            vo.setMemberName(
-                    !Strings.isNullOrEmpty(union.getMemberPo().getName()) ? union.getMemberPo().getName() : "");
-        }
+//        List<MemberPo> memberPos = null;
+//        if (union.getMemberPo() == null) {
+//            MemberQueryCondition condition = new MemberQueryCondition();
+//            condition.setPhone(appointmentPo.getPhone());
+//            condition.setStoreId(ThreadContext.getStaffStoreId());
+//            memberPos = memberMapper.selectByCondition(condition);
+//            if (CollectionUtils.isEmpty(memberPos)) {
+//                vo.setMemberName("");
+//            } else {
+//                vo.setMemberName(memberPos.get(0).getName());
+//            }
+//        } else {
+//            vo.setMemberName(
+//                    !Strings.isNullOrEmpty(union.getMemberPo().getName()) ? union.getMemberPo().getName() : "");
+//        }
+        vo.setMemberName(appointmentPo.getName());
         Integer[] topTypes = new Integer[unions.size()];
         String[] topTypeNames = new String[unions.size()];
         Long[] typeIds = new Long[unions.size()];
