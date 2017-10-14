@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.entity.dto;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -14,10 +15,12 @@ public class ConsumeRecordDto {
     private List<ConsumeRecordProjectDto> consumeRecordProjectDtos;
     private Boolean                       member;
     private Long                          memberId;
+    private String                        memberName;
     private String                        mobile;
     private Integer                       age;
     private Integer                       sex;
     private String                        consumerName;
+    private BigDecimal charge;
     private Integer                       chargeWay;
     private String                        source;
     private Date                          consumeTime;

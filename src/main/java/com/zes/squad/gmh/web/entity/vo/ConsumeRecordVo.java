@@ -13,10 +13,12 @@ public class ConsumeRecordVo {
     private String                       storeName;
     private String                       consumerDesc;
     private Long                         memberId;
+    private String                       memberName;
     private String                       mobile;
     private Integer                      age;
     private String                       sex;
     private String                       consumerName;
+    private Integer                      chargeWayId;
     private String                       chargeWay;
     private String                       source;
     private Date                         consumeTime;
