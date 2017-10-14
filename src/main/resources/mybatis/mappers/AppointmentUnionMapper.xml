@@ -9,7 +9,8 @@
 		<association property="memberPo"
 			resultMap="com.zes.squad.gmh.web.mapper.MemberMapper.BaseResultMap"
 			columnPrefix="m_" />
-		<collection property="appointmentProjectUnion" resultMap="com.zes.squad.gmh.web.mapper.AppointmentUnionMapper.BaseResultMap"
+		<collection property="appointmentProjectUnions"
+			resultMap="com.zes.squad.gmh.web.mapper.AppointmentUnionMapper.BaseResultMap"
 			columnPrefix="apu_" />
 	</resultMap>
 	<sql id="BaseColumnList">
@@ -26,16 +27,20 @@
 		a.`modified_time`,
 		e.`id` AS apu_e_id,
 		e.`name` AS apu_e_name,
-		m.`id` AS m_id,
+		m.`id` AS
+		m_id,
 		m.`name` AS m_name,
 		p.`id` AS apu_p_id,
 		p.`name` AS apu_p_name,
 		p.project_type_id AS apu_p_project_type_id,
-		p.retail_price AS apu_p_retail_price,
+		p.retail_price AS
+		apu_p_retail_price,
 		pt.`id` AS apu_pt_id,
-		pt.top_type AS apu_pt_top_type,
+		pt.top_type AS
+		apu_pt_top_type,
 		pt.type_name AS apu_pt_type_name,
-		ap.begin_time AS apu_ap_begin_time,
+		ap.begin_time AS
+		apu_ap_begin_time,
 		ap.end_time AS apu_ap_end_time
 	</sql>
 	<select id="listAppointmentUnionsByCondition"
@@ -47,7 +52,8 @@
 		LEFT JOIN
 		appointment_project ap
 		ON
-		a.id = ap.appointment_id
+		a.id =
+		ap.appointment_id
 		LEFT JOIN
 		employee e
 		ON
@@ -59,8 +65,9 @@
 		LEFT JOIN
 		project p
 		ON
-		ap.project_id = p.`id`
-		LEFT JOIN 
+		ap.project_id =
+		p.`id`
+		LEFT JOIN
 		project_type pt
 		ON
 		p.project_type_id = pt.`id`
@@ -96,10 +103,11 @@
 		LEFT JOIN
 		appointment_project ap
 		ON
-		a.id = ap.appointment_id
+		a.id =
+		ap.appointment_id
 		LEFT JOIN
 		employee e
-		ON 
+		ON
 		ap.employee_id = e.`id`
 		LEFT JOIN
 		member m
@@ -123,7 +131,8 @@
 		LEFT JOIN
 		appointment_project ap
 		ON
-		a.id = ap.appointment_id
+		a.id =
+		ap.appointment_id
 		LEFT JOIN
 		employee e
 		ON ap.employee_id =
