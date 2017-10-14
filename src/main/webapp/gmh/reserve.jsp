@@ -411,7 +411,7 @@
           </div>
           <div class="field">
               <label>支付金额</label>
-              <input type="text" name="charge" id="finalCharge" placeholder="请输入支付金额">
+              <input type="text" name="totalCharge" id="finalCharge" placeholder="请输入支付金额">
           </div>
           <div class="field">
             <label>来源</label>
@@ -1276,8 +1276,8 @@
                 prompt: '支付方式不能为空'
               }]
             },
-            charge: {
-              identifier: 'charge',
+            totalCharge: {
+              identifier: 'totalCharge',
               rules: [{
                 type: 'empty',
                 prompt: '支付金额不能为空'
