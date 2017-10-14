@@ -227,7 +227,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Synchronized
     @Override
     //projects数据projectId,charge,conselorId
-    public int finish(Long id, Integer chargeWay, String projects, String source, String remark) {
+    public int finish(Long id, Integer chargeWay, BigDecimal totalCharge, String projects, String source,
+                      String remark) {
         AppointmentPo po = appointmentMapper.selectById(id);
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
         String[] consumeProjects = projects.split(";");
@@ -261,7 +262,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         recordPo.setMobile(po.getPhone());
         recordPo.setSex(po.getSex());
         recordPo.setConsumerName(po.getName());
-        //        recordPo.setCharge(charge);
+        recordPo.setCharge(totalCharge);
         recordPo.setChargeWay(chargeWay);
         //        recordPo.setCounselor(counselorId);
         recordPo.setSource(source);
