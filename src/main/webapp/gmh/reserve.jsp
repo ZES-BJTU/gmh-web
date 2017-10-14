@@ -215,96 +215,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="ui tiny coupled modal mod-appointment-modal">
-      <div class="header">修改预约</div>
-      <div class="content">
-        <span id="mod-appointment-id" style="display:none"></span>
-        <div class="ui grid">
-          <div class="ten wide column">
-            <form id="mod-appointment" class="ui form">
-              <div class="field">
-                <label>预约人手机号</label>
-                <input type="text" name="phone" placeholder="请输入预约人手机号">
-              </div>
-              <div class="field">
-                <label>预约人姓名</label>
-                <input type="text" name="name" placeholder="请输入预约人姓名">
-              </div>
-              <div class="field">
-                <label>预约人性别</label>
-                <select name="sex" class="ui fluid dropdown mod-appointment-sex-select">
-                <option value="">请选择性别</option>
-                <option value="0">女</option>
-                <option value="1">男</option>
-              </select>
-              </div>
-              <div class="field">
-                <label>顶级分类</label>
-                <select name="topTypeId" class="ui fluid dropdown mod-appointment-top-type-select">
-                <option value="">请选择顶级分类</option>
-              </select>
-              </div>
-              <div class="field">
-                <label>美容项目分类</label>
-                <select name="projectTypeId" class="ui fluid dropdown mod-appointment-type-select">
-                <option value="">请选择美容项目分类</option>
-              </select>
-              </div>
-              <div class="field">
-                <label>美容项目</label>
-                <select name="projectId" class="ui fluid dropdown mod-appointment-project-select">
-                <option value="">请选择美容项目</option>
-              </select>
-              </div>
-              <div class="field">
-                <label>操作员</label>
-                <select name="employeeId" class="ui fluid dropdown mod-appointment-employee-select">
-                <option value="">请选择操作员</option>
-              </select>
-              </div>
-              <div class="field">
-                <label>开始时间</label>
-                <input type="text" name="beginTime" value="" id="modBeginTime" placeholder="请输入开始时间">
-              </div>
-              <div class="field">
-                <label>结束时间</label>
-                <input type="text" name="endTime" value="" id="modEndTime" placeholder="请输入结束时间">
-              </div>
-              <div class="field">
-                <label>是否点排</label>
-                <select name="line" class="ui fluid dropdown mod-appointment-line-select">
-                <option value="">请选择是否点排</option>
-              </select>
-              </div>
-              <div class="field">
-                <label>备注</label>
-                <textarea name="remark" rows="3"></textarea>
-              </div>
-            </form>
-          </div>
-          <div class="six wide column">
-            <form id="check-reserve-time" class="ui form">
-              <div class="field">
-                <label>查询美容师时间</label>
-                <input type="text" name="reserveTime" value="" id="modReserveTime" placeholder="请输入日期">
-              </div>
-              <div class="ui fluid submit button mod-check-reserve-btn">查询</div>
-            </form>
-            <div id="mod-reserve-time" class="reserve-time"></div>
-          </div>
-        </div>
-      </div>
-      <div class="actions">
-        <div class="ui black deny right labeled icon button">
-          取消
-          <i class="remove icon"></i>
-        </div>
-        <div class="ui positive right labeled icon button">
-          提交
-          <i class="checkmark icon"></i>
-        </div>
-      </div>
-    </div> -->
     <div class="ui tiny coupled modal add-project-modal">
       <span id="add-project-type" style="display:none"></span>
       <div class="header">添加项目</div>
@@ -767,10 +677,6 @@
         })
 
         //添加项目模态框
-        $('.finish-appointment-modal-2')
-          .modal('attach events', '.new-appointment-modal .add-project')
-
-        //添加项目模态框
         $('.add-project-modal')
           .modal('attach events', '.new-appointment-modal .add-project')
           .modal('attach events', '.mod-appointment-modal .mod-add-project')
@@ -953,6 +859,7 @@
               alert(response.error);
               verifyStatus(response.code);
             } else {
+              clearSelect();
               $('#project-list').empty();
               $('#new-appointment').form('clear');
               $('.new-appointment-modal').modal('hide');
@@ -1092,6 +999,7 @@
               alert(response.error);
               verifyStatus(response.code);
             } else {
+              clearSelect();
               $('#mod-project-list').empty();
               $('#mod-appointment-id').text('');
               $('#mod-appointment').form('clear');
@@ -1251,6 +1159,7 @@
               autofocus: false,
               onDeny: function () {
                 clearSelect();
+                $('#card-field').hide();
                 $('#finish-project-list').children().remove();
                 $('#finish-appointment').form('clear');
                 $('#finish-appointment-id').text('');
@@ -1332,13 +1241,14 @@
             projects = projects.substring(1);
             settings.data.projects = projects;
             return settings;
-            
           },
           onSuccess: function (response) {
             if (response.error != null) {
               alert(response.error);
               verifyStatus(response.code);
             } else {
+              clearSelect();
+              $('#card-field').hide();
               $('#finish-appointment-id').text('');
               $('#finish-appointment-phone').text('');
               $('#finish-appointment').form('clear');

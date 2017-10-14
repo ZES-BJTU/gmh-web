@@ -202,3 +202,6 @@ td.remark {
 .ui.table .minus-project {
   cursor: pointer;
 }
+.unselected {
+  color: rgba(191, 191, 191, 0.87);
+}

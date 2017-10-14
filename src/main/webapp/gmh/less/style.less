@@ -2,6 +2,7 @@
 @theme-color-darker : #49bfd6;
 @white-color : #ffffff;
 @gray-color : #909090;
+@select-gray : rgba(191, 191, 191, 0.87);
 body {
     background-color: @white-color;
     font-family: "Microsoft Yahei"!important;
@@ -228,4 +229,7 @@ td.remark {
 }
 .ui.table .minus-project{
     cursor: pointer;
+}
+.unselected{
+    color:@select-gray;
 }
