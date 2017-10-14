@@ -743,6 +743,7 @@
                   $tr.append($memberId);
                   $tr.append($memberName);
                   $tr.append($memberPhone);
+                  $tr.append($sexId);
                   $tr.append($sex);
                   $tr.append($projectId);
                   $tr.append($projectName);
@@ -1066,12 +1067,12 @@
           beforeSend: function (settings) {
             if ($('#mod-appointment-id').text() != '') {
               settings.data.id = $('#mod-appointment-id').text();
-              if($('#project-list').children().length == 0){
+              if($('#mod-project-list').children().length == 0){
                 alert('请添加项目!');
                 return false;
               }
               var projects = '';
-              $('#project-list').children().each(function(){
+              $('#mod-project-list').children().each(function(){
                 var pid = $(this).find('.projectId').text();
                 var eid = $(this).find('.employeeId').text();
                 var btime = toTimeStamp($(this).find('.beginTime').text());
@@ -1091,7 +1092,7 @@
               alert(response.error);
               verifyStatus(response.code);
             } else {
-              $('#project-list').empty();
+              $('#mod-project-list').empty();
               $('#mod-appointment-id').text('');
               $('#mod-appointment').form('clear');
               $('.mod-appointment-modal').modal('hide');
