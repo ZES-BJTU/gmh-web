@@ -1,5 +1,6 @@
 package com.zes.squad.gmh.web.entity.vo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class ConsumeRecordVo {
     private String                       consumerName;
     private Integer                      chargeWayId;
     private String                       chargeWay;
+    private BigDecimal                   charge;
     private String                       source;
     private Date                         consumeTime;
     private String                       remark;

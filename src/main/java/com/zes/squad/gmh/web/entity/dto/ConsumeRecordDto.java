@@ -20,7 +20,7 @@ public class ConsumeRecordDto {
     private Integer                       age;
     private Integer                       sex;
     private String                        consumerName;
-    private BigDecimal charge;
+    private BigDecimal                    charge;
     private Integer                       chargeWay;
     private String                        source;
     private Date                          consumeTime;
