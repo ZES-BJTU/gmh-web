@@ -18,9 +18,7 @@ import com.zes.squad.gmh.common.entity.PagedList;
 import com.zes.squad.gmh.common.entity.PagedLists;
 import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
-import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
-import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
@@ -70,8 +68,8 @@ public class MemberServiceImpl implements MemberService {
         MemberQueryCondition condition = new MemberQueryCondition();
         condition.setStoreId(storeId);
         condition.setPhone(dto.getPhone());
-        MemberPo memberPo = memberMapper.selectByCondition(condition);
-        LogicHelper.ensureEntityNotExist(memberPo, ErrorMessage.memberExistInStore);
+        //        MemberPo memberPo = memberMapper.selectByCondition(condition);
+        //        LogicHelper.ensureEntityNotExist(memberPo, ErrorMessage.memberExistInStore);
         dto.setStoreId(storeId);
         MemberPo po = CommonConverter.map(dto, MemberPo.class);
         if (po.getJoinDate() == null) {
@@ -89,11 +87,6 @@ public class MemberServiceImpl implements MemberService {
         MemberQueryCondition condition = new MemberQueryCondition();
         condition.setStoreId(storeId);
         condition.setPhone(dto.getPhone());
-        MemberPo memberPo = memberMapper.selectByCondition(condition);
-        if (memberPo != null && memberPo.getId() != dto.getId()) {
-            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_OPERATION_NOT_ALLOWED,
-                    ErrorMessage.memberExistInStore);
-        }
         dto.setStoreId(storeId);
         MemberPo po = CommonConverter.map(dto, MemberPo.class);
         return memberMapper.updateSelective(po);

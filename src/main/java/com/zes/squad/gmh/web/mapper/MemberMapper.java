@@ -14,7 +14,7 @@ public interface MemberMapper {
 
     List<MemberPo> selectByIds(@Param("ids") Long[] ids);
 
-    MemberPo selectByCondition(MemberQueryCondition condition);
+    List<MemberPo> selectByCondition(MemberQueryCondition condition);
 
     int insert(MemberPo po);
 

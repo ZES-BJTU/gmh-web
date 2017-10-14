@@ -159,16 +159,19 @@ public class AppointmentController {
 
     @RequestMapping("/finish")
     @ResponseBody
-    public JsonResult<Integer> finish(Long id, Integer chargeWay, BigDecimal totalCharge, String projects, String source, String remark) {
+    public JsonResult<Integer> finish(Long id, Integer chargeWay, Long chargeCard, BigDecimal totalCharge,
+                                      String projects, String source, String remark) {
         if (id == null || id == 0L) {
             return JsonResult.fail(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS.getCode(),
                     ErrorMessage.appointmentNotSelected);
         }
+        ensureParameterExist(chargeCard, "会员卡未选择");
+        ensureParameterExist(totalCharge, "总消费金额为空");
         ensureParameterExist(projects, "消费项目信息为空");
         ensureParameterExist(chargeWay, ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay)),
                 ErrorMessage.consumeRecordChargeWayIsError);
-        int i = appointmentService.finish(id, chargeWay, totalCharge, projects, source, remark);
+        int i = appointmentService.finish(id, chargeWay, chargeCard, totalCharge, projects, source, remark);
         return JsonResult.success(i);
     }
 

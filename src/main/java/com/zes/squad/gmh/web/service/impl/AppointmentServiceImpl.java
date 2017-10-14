@@ -150,15 +150,15 @@ public class AppointmentServiceImpl implements AppointmentService {
                     projectDto.getBeginTime(), projectDto.getEndTime());
             ensureConditionSatisfied(count == 0, ErrorMessage.appointmentEmployeeTimeIsConflicted);
         }
-        MemberPo memberPo = memberMapper.selectByCondition(memberQueryCondition);
+        List<MemberPo> memberPos = memberMapper.selectByCondition(memberQueryCondition);
         dto.setStoreId(ThreadContext.getStaffStoreId());
         //        dto.setMemberId(memberPo != null ? memberPo.getId() : null);
         dto.setStatus(AppointmentStatusEnum.TO_DO.getKey());
         AppointmentPo po = CommonConverter.map(dto, AppointmentPo.class);
-        if (memberPo != null) {
+        if (CollectionUtils.isNotEmpty(memberPos)) {
             //            po.setMemberId(memberPo.getId());
-            po.setName(memberPo.getName());
-            po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
+            po.setName(memberPos.get(0).getName());
+            po.setSex(Integer.valueOf(String.valueOf(memberPos.get(0).getSex())));
         }
         int result = appointmentMapper.insert(po);
         ensureConditionSatisfied(po.getId() != null, "预约标识绑定失败");
@@ -197,11 +197,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         po.setRemark(dto.getRemark());
         MemberQueryCondition memberQueryCondition = new MemberQueryCondition();
         memberQueryCondition.setPhone(dto.getPhone());
-        MemberPo memberPo = memberMapper.selectByCondition(memberQueryCondition);
-        if (memberPo != null) {
+        List<MemberPo> memberPos = memberMapper.selectByCondition(memberQueryCondition);
+        if (CollectionUtils.isNotEmpty(memberPos)) {
             //            po.setMemberId(memberPo.getId());
-            po.setName(memberPo.getName());
-            po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
+            po.setName(memberPos.get(0).getName());
+            po.setSex(Integer.valueOf(String.valueOf(memberPos.get(0).getSex())));
         }
         int result = appointmentMapper.insert(po);
         List<AppointmentProjectDto> dtos = dto.getAppointmentProjectDtos();
@@ -227,8 +227,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Synchronized
     @Override
     //projects数据projectId,charge,conselorId
-    public int finish(Long id, Integer chargeWay, BigDecimal totalCharge, String projects, String source,
-                      String remark) {
+    public int finish(Long id, Integer chargeWay, Long chargeCard, BigDecimal totalCharge, String projects,
+                      String source, String remark) {
         AppointmentPo po = appointmentMapper.selectById(id);
         ensureEntityExist(po, ErrorMessage.appointmentNotFound);
         String[] consumeProjects = projects.split(";");
@@ -241,10 +241,8 @@ public class AppointmentServiceImpl implements AppointmentService {
             projectPo.setCounselorId(Long.valueOf(detail[2]));
             projectPos.add(projectPo);
         }
-        MemberPo memberPo = null;
-        if (po.getMemberId() != null) {
-            memberPo = memberMapper.selectById(po.getMemberId());
-        } else {
+        MemberPo memberPo = memberMapper.selectById(chargeCard);
+        if (memberPo == null) {
             if (chargeWay == ChargeWayEnum.CARD.getKey()) {
                 throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "非会员不能使用会员卡消费");
             }
@@ -286,9 +284,9 @@ public class AppointmentServiceImpl implements AppointmentService {
             if (chargeWay == ChargeWayEnum.CARD.getKey()) {
                 for (ConsumeRecordProjectPo projectPo : projectPos) {
 
-                    ProjectQueryCondition condition = new ProjectQueryCondition();
-                    condition.setProjectId(projectPo.getProjectId());
-                    ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(condition).get(0);
+                    ProjectQueryCondition projectQueryCondition = new ProjectQueryCondition();
+                    projectQueryCondition.setProjectId(projectPo.getProjectId());
+                    ProjectUnion union = projectUnionMapper.listProjectUnionsByCondition(projectQueryCondition).get(0);
                     ensureEntityExist(union, ErrorMessage.appointmentNotFound);
                     BigDecimal nailMoney = memberPo.getNailMoney();
                     BigDecimal beautyMoney = memberPo.getBeautyMoney();

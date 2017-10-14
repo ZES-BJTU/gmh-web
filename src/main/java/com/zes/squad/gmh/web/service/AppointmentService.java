@@ -32,7 +32,7 @@ public interface AppointmentService {
 
     int start(Long id);
 
-    int finish(Long id, Integer chargeWay, BigDecimal totalCharge, String projects, String source, String remark);
+    int finish(Long id, Integer chargeWay, Long chargeCard, BigDecimal totalCharge, String projects, String source, String remark);
 
     List<AppointmentVo> remind();
 
