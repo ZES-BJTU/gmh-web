@@ -235,7 +235,12 @@ public class ConsumeServiceImpl implements ConsumeService {
             dto.setStoreName(union.getShopPo().getName());
             //            dto.setProjectName(union.getProjectPo() == null ? "" : union.getProjectPo().getName());
             //            dto.setEmployeeName(union.getEmployeePo() == null ? "" : union.getEmployeePo().getName());
-
+            if (union.getConsumeRecordPo().getMember().booleanValue()
+                    && union.getConsumeRecordPo().getMemberId() != null) {
+                MemberPo memberPo = memberMapper.selectById(union.getConsumeRecordPo().getMemberId());
+                ensureEntityExist(memberPo, "获取会员信息失败");
+                dto.setMemberName(memberPo.getName());
+            }
             List<ConsumeRecordProjectUnion> projectUnions = union.getConsumeRecordProjectUnions();
             List<ConsumeRecordProjectDto> projectDtos = Lists.newArrayList();
             for (ConsumeRecordProjectUnion projectUnion : projectUnions) {

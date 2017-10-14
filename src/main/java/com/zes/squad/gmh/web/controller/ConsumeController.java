@@ -194,6 +194,7 @@ public class ConsumeController extends BaseController {
         for (ConsumeRecordDto dto : pagedDtos.getData()) {
             ConsumeRecordVo vo = CommonConverter.map(dto, ConsumeRecordVo.class);
             vo.setSex(EnumUtils.getDescByKey(SexEnum.class, dto.getSex()));
+            vo.setChargeWayId(dto.getChargeWay());
             vo.setChargeWay(EnumUtils.getDescByKey(ChargeWayEnum.class, dto.getChargeWay()));
             if (dto.getMember().booleanValue()) {
                 vo.setConsumerDesc(MEMBER);
