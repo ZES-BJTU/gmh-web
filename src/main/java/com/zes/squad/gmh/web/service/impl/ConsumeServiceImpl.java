@@ -647,6 +647,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
         ensureEntityExist(shopPo, "获取门店信息失败");
         PrintSingleVo vo = new PrintSingleVo();
+        vo.setMemberName(consumeRecordPo.getConsumerName());
         if (consumeRecordPo.getMemberId() != null) {
             MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
             ensureEntityExist(memberPo, "会员信息查询失败");
@@ -727,6 +728,7 @@ public class ConsumeServiceImpl implements ConsumeService {
             ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
             ensureEntityExist(shopPo, "获取门店信息失败");
             PrintSingleVo vo = new PrintSingleVo();
+            vo.setMemberName(consumeRecordPo.getConsumerName());
             MemberQueryCondition condition = new MemberQueryCondition();
             condition.setStoreId(ThreadContext.getStaffStoreId());
             condition.setPhone(consumeRecordPo.getMobile());
