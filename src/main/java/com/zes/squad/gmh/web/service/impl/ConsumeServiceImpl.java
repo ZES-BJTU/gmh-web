@@ -109,6 +109,12 @@ public class ConsumeServiceImpl implements ConsumeService {
     @Synchronized
     @Override
     public void createConsumeRecord(ConsumeRecordDto dto) {
+        if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
+            ensureConditionSatisfied(dto.getMemberId() != null, "请选择会员卡");
+        }
+        if (dto.getChargeWay() != ChargeWayEnum.CARD.getKey()) {
+            ensureConditionSatisfied(dto.getMemberId() == null, "非会员卡支付无法选择会员卡");
+        }
         for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
             if (projectDto.getCounselorId() != null) {
                 EmployeePo employeePo = employeeMapper.selectById(projectDto.getCounselorId());
@@ -551,6 +557,12 @@ public class ConsumeServiceImpl implements ConsumeService {
         consumeRecordMapper.deleteById(dto.getId());
         consumeRecordProjectMapper.deleteByConsumeRecordId(dto.getId());
         //复用新建消费记录
+        if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
+            ensureConditionSatisfied(dto.getMemberId() != null, "请选择会员卡");
+        }
+        if (dto.getChargeWay() != ChargeWayEnum.CARD.getKey()) {
+            ensureConditionSatisfied(dto.getMemberId() == null, "非会员卡支付无法选择会员卡");
+        }
         for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
             if (projectDto.getCounselorId() != null) {
                 EmployeePo employeePo = employeeMapper.selectById(projectDto.getCounselorId());
@@ -647,6 +659,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
         ensureEntityExist(shopPo, "获取门店信息失败");
         PrintSingleVo vo = new PrintSingleVo();
+        vo.setMemberName(consumeRecordPo.getConsumerName());
         if (consumeRecordPo.getMemberId() != null) {
             MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
             ensureEntityExist(memberPo, "会员信息查询失败");
@@ -727,6 +740,7 @@ public class ConsumeServiceImpl implements ConsumeService {
             ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
             ensureEntityExist(shopPo, "获取门店信息失败");
             PrintSingleVo vo = new PrintSingleVo();
+            vo.setMemberName(consumeRecordPo.getConsumerName());
             MemberQueryCondition condition = new MemberQueryCondition();
             condition.setStoreId(ThreadContext.getStaffStoreId());
             condition.setPhone(consumeRecordPo.getMobile());

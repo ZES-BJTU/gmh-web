@@ -12,6 +12,7 @@ public class PrintSingleVo {
     private String                       address;
     private String                       shopPhone;
     private String                       memberPhone;
+    private String                       memberName;
     private Date                         consumeTime;
     private String                       chargeWay;
     private String                       chargeCard;

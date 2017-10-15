@@ -170,6 +170,12 @@ public class AppointmentController {
         ensureParameterExist(chargeWay, ErrorMessage.consumeRecordChargeWayIsNull);
         ensureParameterValid(!Strings.isNullOrEmpty(EnumUtils.getDescByKey(ChargeWayEnum.class, chargeWay)),
                 ErrorMessage.consumeRecordChargeWayIsError);
+        if (chargeWay == ChargeWayEnum.CARD.getKey()) {
+            ensureParameterValid(chargeCard != null, "请选择会员卡");
+        }
+        if (chargeWay != ChargeWayEnum.CARD.getKey()) {
+            ensureParameterValid(chargeCard == null, "非会员卡支付无法选择会员卡");
+        }
         int i = appointmentService.finish(id, chargeWay, chargeCard, totalCharge, projects, source, remark);
         return JsonResult.success(i);
     }
