@@ -161,7 +161,7 @@ public class MemberServiceImpl implements MemberService {
             po.setAge(memberPo.getAge());
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
             po.setConsumerName(memberPo.getName());
-            //            po.setCharge(nailMoney);
+            po.setCharge(nailMoney);
             po.setChargeWay(ChargeWayEnum.CASH.getKey());
             //            po.setCounselor(consultant);
             po.setSource(source);
@@ -188,7 +188,7 @@ public class MemberServiceImpl implements MemberService {
             po.setAge(memberPo.getAge());
             po.setSex(Integer.valueOf(String.valueOf(memberPo.getSex())));
             po.setConsumerName(memberPo.getName());
-            //            po.setCharge(beautyMoney);
+            po.setCharge(beautyMoney);
             po.setChargeWay(ChargeWayEnum.CASH.getKey());
             //            po.setCounselor(consultant);
             po.setSource(source);
