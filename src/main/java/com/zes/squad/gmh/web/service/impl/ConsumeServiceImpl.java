@@ -479,7 +479,9 @@ public class ConsumeServiceImpl implements ConsumeService {
                         conselorName = conselorName + "," + po.getName();
                     }
                 }
-                cell.setCellValue(conselorName.substring(1));
+                if (!conselorName.equals("")) {
+                    cell.setCellValue(conselorName.substring(1));
+                }
                 cell.setCellStyle(style);
                 //来源
                 String source = union.getConsumeRecordPo().getSource();
