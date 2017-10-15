@@ -14,8 +14,10 @@ public class PrintSingleVo {
     private String                       memberPhone;
     private Date                         consumeTime;
     private String                       chargeWay;
+    private String                       chargeCard;
     private BigDecimal                   nailMoney;
     private BigDecimal                   beautyMoney;
     private List<ConsumeRecordProjectVo> consumeRecordProjectVos;
+    private List<MemberVo>               memberVos;
 
 }

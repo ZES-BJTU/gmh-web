@@ -643,9 +643,36 @@ public class ConsumeServiceImpl implements ConsumeService {
         ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
         ensureEntityExist(shopPo, "获取门店信息失败");
         PrintSingleVo vo = new PrintSingleVo();
+        vo.setChargeCard(EnumUtils.getDescByKey(ChargeWayEnum.class, consumeRecordPo.getChargeWay()));
         vo.setAddress(shopPo.getAddress());
         vo.setShopPhone(shopPo.getPhone());
         vo.setMemberPhone(consumeRecordPo.getMobile());
+        MemberQueryCondition condition = new MemberQueryCondition();
+        condition.setStoreId(ThreadContext.getStaffStoreId());
+        condition.setPhone(consumeRecordPo.getMobile());
+        List<MemberUnion> memberUnions = memberUnionMapper.listMemberUnionsByCondition(condition);
+        if (CollectionUtils.isNotEmpty(memberUnions)) {
+            List<MemberVo> vos = Lists.newArrayList();
+            for (MemberUnion union : memberUnions) {
+                MemberVo memberVo = new MemberVo();
+                memberVo.setId(union.getMemberPo().getId());
+                memberVo.setStoreId(ThreadContext.getStaffStoreId());
+                memberVo.setMemberLevelId(union.getMemberLevelPo().getId());
+                memberVo.setMemberLevelName(union.getMemberLevelPo().getName());
+                memberVo.setPhone(union.getMemberPo().getPhone());
+                memberVo.setName(union.getMemberPo().getName());
+                memberVo.setSex(EnumUtils.getDescByKey(SexEnum.class,
+                        Integer.valueOf(String.valueOf(union.getMemberPo().getSex()))));
+                memberVo.setAge(union.getMemberPo().getAge());
+                memberVo.setBirthday(union.getMemberPo().getBirthday());
+                memberVo.setJoinDate(union.getMemberPo().getJoinDate());
+                memberVo.setValidDate(union.getMemberPo().getValidDate());
+                memberVo.setNailMoney(union.getMemberPo().getNailMoney());
+                memberVo.setBeautyMoney(union.getMemberPo().getBeautyMoney());
+                vos.add(memberVo);
+            }
+            vo.setMemberVos(vos);
+        }
         if (consumeRecordPo.getMember().booleanValue()) {
             MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
             ensureEntityExist(memberPo, "获取会员信息失败");
