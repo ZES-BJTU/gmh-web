@@ -40,7 +40,6 @@ import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
-import com.zes.squad.gmh.common.util.JsonUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
@@ -206,6 +205,10 @@ public class ConsumeServiceImpl implements ConsumeService {
                 ConsumeRecordProjectPo.class);
         for (ConsumeRecordProjectPo projectPo : pos) {
             projectPo.setConsumeRecordId(po.getId());
+            ensureConditionSatisfied(projectPo.getConsumeRecordId() != null, "消费记录标识不能为空");
+            ensureConditionSatisfied(projectPo.getProjectId() != null, "消费记录项目不能为空");
+            ensureConditionSatisfied(projectPo.getEmployeeId() != null, "消费记录操作员不能为空");
+            ensureConditionSatisfied(projectPo.getCharge() != null, "消费记录消费金额不能为空");
         }
         consumeRecordProjectMapper.batchInsert(pos);
     }
@@ -238,7 +241,6 @@ public class ConsumeServiceImpl implements ConsumeService {
     }
 
     private List<ConsumeRecordDto> buildConsumeRecordDtosByUnions(List<ConsumeRecordUnion> unions) {
-        String json = JsonUtils.toJson(unions);
         List<ConsumeRecordDto> dtos = Lists.newArrayList();
         for (ConsumeRecordUnion union : unions) {
             ConsumeRecordDto dto = CommonConverter.map(union.getConsumeRecordPo(), ConsumeRecordDto.class);
@@ -671,6 +673,10 @@ public class ConsumeServiceImpl implements ConsumeService {
                 ConsumeRecordProjectPo.class);
         for (ConsumeRecordProjectPo projectPo : pos) {
             projectPo.setConsumeRecordId(po.getId());
+            ensureConditionSatisfied(projectPo.getConsumeRecordId() != null, "消费记录标识不能为空");
+            ensureConditionSatisfied(projectPo.getProjectId() != null, "消费记录项目不能为空");
+            ensureConditionSatisfied(projectPo.getEmployeeId() != null, "消费记录操作员不能为空");
+            ensureConditionSatisfied(projectPo.getCharge() != null, "消费记录消费金额不能为空");
         }
         consumeRecordProjectMapper.batchInsert(pos);
     }

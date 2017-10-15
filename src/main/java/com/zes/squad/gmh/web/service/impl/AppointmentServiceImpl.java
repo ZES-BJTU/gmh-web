@@ -278,6 +278,10 @@ public class AppointmentServiceImpl implements AppointmentService {
                     projectPo.setEmployeeId(appointmentProjectPo.getEmployeeId());
                 }
             }
+            ensureConditionSatisfied(projectPo.getConsumeRecordId() != null, "消费记录标识不能为空");
+            ensureConditionSatisfied(projectPo.getProjectId() != null, "消费记录项目不能为空");
+            ensureConditionSatisfied(projectPo.getEmployeeId() != null, "消费记录操作员不能为空");
+            ensureConditionSatisfied(projectPo.getCharge() != null, "消费记录消费金额不能为空");
         }
         consumeRecordProjectMapper.batchInsert(projectPos);
         if (memberPo != null) {
@@ -496,7 +500,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 pos.add(appointmentPo);
             }
         }
-        
+
         if (CollectionUtils.isEmpty(pos)) {
             TimeVo vo = new TimeVo();
             vo.setTime("8:00-22:00");
