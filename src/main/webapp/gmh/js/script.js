@@ -138,12 +138,25 @@ function remindAppointment(){
                         var $tr = $('<tr></tr>');
                         var $memberName = $('<td class="memberName">' + data.memberName + '</td>');
                         var $memberPhone = $('<td class="memberPhone">' + data.phone + '</td>');
-                        var $topTypeName = $('<td class="topTypeName" style="display:none">' + data.topTypeName + '</td>');
-                        var $typeName = $('<td class="typeName" style="display:none">' + data.typeName + '</td>');
-                        var $projectName = $('<td class="projectName">' + data.projectName + '</td>');
-                        var $employeeName = $('<td class="employeeName">' + data.employeeName + '</td>');
-                        var $beginTime = $('<td class="beginTime">' + toDatetimeMin(data.beginTime) + '</td>');
-                        var $endTime = $('<td class="endTime">' + toDatetimeMin(data.endTime) + '</td>');
+
+                        var $projectId = $('<td class="projectId" style="display:none">' + data.projectId +
+                        '</td>');
+    
+                        var $projectName = $('<td class="projectName">' + data.projectNames.join('<br>') + '</td>');
+                        var $employeeName = $('<td class="employeeName">' + data.employeeNames.join('<br>') + '</td>');
+                        
+                        var btimes = [];
+                        $.each(data.beginTimes,function(i, value){
+                            btimes.push(toDatetimeMin(data.beginTimes[i]));
+                        })
+                        var etimes = [];
+                        $.each(data.endTimes,function(i, value){
+                            etimes.push(toDatetimeMin(data.endTimes[i]));
+                        })
+        
+                        var $beginTime = $('<td class="beginTime">' + btimes.join('<br>') + '</td>');
+                        var $endTime = $('<td class="endTime">' + etimes.join('<br>') + '</td>');
+
                         var $line = $('<td class="line">' + data.line + '</td>');
                         var $status = $('<td class="status">' + data.status + '</td>');
                         var remark = (data.remark == null || data.remark == '') ? '无' : String(data.remark);
@@ -159,8 +172,6 @@ function remindAppointment(){
 
                         $tr.append($memberName);
                         $tr.append($memberPhone);
-                        $tr.append($topTypeName);
-                        $tr.append($typeName);
                         $tr.append($projectName);
                         $tr.append($employeeName);
                         $tr.append($beginTime);
