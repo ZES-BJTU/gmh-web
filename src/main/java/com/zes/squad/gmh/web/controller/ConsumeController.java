@@ -66,7 +66,7 @@ public class ConsumeController extends BaseController {
     @RequestMapping("/create")
     @ResponseBody
     public JsonResult<Void> doCreateConsumeRecord(ConsumeRecordParams params) {
-        if(params.getMemberId() == null){
+        if (params.getMemberId() == null) {
             params.setMemberId(params.getMenberId());
         }
         checkConsumeRecordParams(params);
@@ -88,7 +88,7 @@ public class ConsumeController extends BaseController {
     @RequestMapping("/modify")
     @ResponseBody
     public JsonResult<Void> doModifyConsumeRecordByRecord(ConsumeRecordParams params) {
-        if(params.getMemberId() == null){
+        if (params.getMemberId() == null) {
             params.setMemberId(params.getMenberId());
         }
         checkConsumeRecordParams(params);
@@ -237,7 +237,9 @@ public class ConsumeController extends BaseController {
             dto.setProjectId(Long.valueOf(details[0]));
             dto.setEmployeeId(Long.valueOf(details[1]));
             dto.setCharge(new BigDecimal(details[2]));
-            dto.setCounselorId(Long.valueOf(details[3]));
+            if (details.length > 3) {
+                dto.setCounselorId(Long.valueOf(details[3]));
+            }
             dtos.add(dto);
         }
         return dtos;

@@ -234,7 +234,9 @@ public class AppointmentServiceImpl implements AppointmentService {
             ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
             projectPo.setProjectId(Long.valueOf(detail[0]));
             projectPo.setCharge(new BigDecimal(detail[1]));
-            projectPo.setCounselorId(detail[2].equals("0") ? null : Long.valueOf(detail[2]));
+            if (detail.length > 2) {
+                projectPo.setCounselorId(detail[2].equals("0") ? null : Long.valueOf(detail[2]));
+            }
             projectPos.add(projectPo);
         }
         ConsumeRecordPo recordPo = new ConsumeRecordPo();
