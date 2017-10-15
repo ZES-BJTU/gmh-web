@@ -71,8 +71,9 @@
                   <th>消费项目</th>
                   <th>操作员</th>
                   <th>经理/咨询师</th>
-                  <th>项目金额</th>
+                  <!-- <th>项目金额</th> -->
                   <th>消费金额</th>
+                  <th>支付金额</th>
                   <th>消费方式</th>
                   <th>消费时间</th>
                   <th>来源</th>
@@ -593,7 +594,7 @@
                 var $age = $('<td class="age">' + (data.age == null ? '无' : data.age) + '</td>');
                 var $sexId = $('<td class="sexId" style="display:none">' + (data.sex == '男' ? 1 : 0) + '</td>');
                 var $sex = $('<td class="sex">' + data.sex + '</td>');
-                var $totalCharge = $('<td class="totalCharge" style="display:none">' + data.charge + '</td>');
+                var $totalCharge = $('<td class="totalCharge">' + data.charge + '</td>');
 
                 var projectIds = [];
                 var projectNames = [];
@@ -626,7 +627,7 @@
                 var $employeeName = $('<td class="employeeName">' + employeeNames.join('<br>') + '</td>');
                 var $counselorId = $('<td class="counselorId" style="display:none">' + counselorIds + '</td>');
                 var $counselorName = $('<td class="counselorName">' + counselorNames.join('<br>') + '</td>');
-                var $retailPrice = $('<td class="retailPrice">' + retailPrices.join('<br>') + '</td>');
+                var $retailPrice = $('<td class="retailPrice" style="display:none">' + retailPrices.join('<br>') + '</td>');
                 var $charge = $('<td class="charge">' + charges.join('<br>') + '</td>');
 
                 var $chargeWayId = $('<td class="chargeWayId" style="display:none">' + data.chargeWayId + '</td>');
@@ -656,7 +657,6 @@
                 $tr.append($age);
                 $tr.append($sexId);
                 $tr.append($sex);
-                $tr.append($totalCharge);
                 $tr.append($projectId);
                 $tr.append($projectName);
                 $tr.append($employeeId);
@@ -665,6 +665,7 @@
                 $tr.append($counselorName);
                 $tr.append($retailPrice);
                 $tr.append($charge);
+                $tr.append($totalCharge);
                 $tr.append($chargeWayId);
                 $tr.append($chargeWay);
                 $tr.append($consumeTime);
