@@ -81,7 +81,7 @@
 				LIKE #{search}
 			</if>
 		</where>
-		ORDER BY a.created_time DESC
+		ORDER BY ap.begin_time DESC
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
 		SELECT
