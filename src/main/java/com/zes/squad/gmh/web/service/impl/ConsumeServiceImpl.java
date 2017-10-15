@@ -479,7 +479,7 @@ public class ConsumeServiceImpl implements ConsumeService {
                         conselorName = conselorName + "," + po.getName();
                     }
                 }
-                if (conselorName.equals("")) {
+                if (!conselorName.equals("")) {
                     cell.setCellValue(conselorName.substring(1));
                 }
                 cell.setCellStyle(style);
