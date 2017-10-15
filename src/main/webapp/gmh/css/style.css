@@ -206,12 +206,49 @@ td.remark {
   color: rgba(191, 191, 191, 0.87);
 }
 .print-img {
-  height: 130px;
+  height: 100px;
   margin-bottom: 20px;
 }
 .print-text {
   margin-top: 20px;
 }
 .print-text-en {
+  margin-top: 10px;
+}
+.modals.dimmer .ui.scrolling.modal.add-project-modal {
+  position: fixed !important;
+  margin: 3.5em 0em 0em -285px !important;
+}
+.print-wechat {
+  display: inline-block;
+  margin-top: 20px;
+}
+.print-wechat-img {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.print-wechat-2 {
+  display: inline-block;
+  margin-top: 20px;
+  height: 80px;
+  width: 200px;
+  margin-left: 15px;
+  vertical-align: top;
+  position: relative;
+}
+.print-wechat-2 .t {
+  position: absolute;
+  width: 100%;
+  top: 0px;
+  font-size: 10px;
+}
+.print-wechat-2 .b {
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  font-size: 10px;
+}
+.print-mobile {
   margin-top: 10px;
 }

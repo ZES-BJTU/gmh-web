@@ -31,6 +31,8 @@
     <div class="print-address"></div>
     <div class="print-phone"></div>
     <div class="print-time"></div>
+    <div class="print-mobile"></div>
+    <div class="print-name"></div>
     <table class="ui very basic compact table">
         <thead>
             <tr>
@@ -46,6 +48,13 @@
     </table>
     <div class="print-balance"></div>
     <div class="print-consume-time"></div>
+    <div>
+        <span class="print-wechat"><img class="print-wechat-img" src="css/images/wechat.jpg" alt=""></span>
+        <span class="print-wechat-2">
+            <span class="t">Welcome to BRAND NEW</span>
+            <span class="b">www.brandnew-gmh.com</span>
+        </span>
+    </div>
     <div class="print-text">特别提示：＊请凭此消费凭证于当月内开具发票。＊产品售出，已开封不退不换，未开封可换货，请凭此消费凭证或发票(如已开具)办理换货。＊所有优惠卡及优惠活动，一经售出，不退不换 ＊成员卡一个月内可进行卡项升级＊最终解释权归本公司所有。</div>
     <div class="print-text-en">Special tips: *Please get you invoice by this receipt within the same month. *Products sold, if the package has been opened, do not refund.If the packaging is complete, the product can be exchanged, please use this receipt or invoice (if issued) for replacement. *All discount cards and promotions,no refund, no change.*The final explanation is owned by the company.</div>
     <script>
@@ -72,8 +81,12 @@
                     $('.print-phone').html('电话：' + response.data.shopPhone);
                     $('.print-time').html('打印时间：' + toDatetimeMin(Date.parse(new Date())));
                     if(response.data.memberVos == null){
+                        $('.print-mobile').html('消费者手机号：' + response.data.memberPhone);
+                        $('.print-name').html('消费者姓名：' + response.data.memberName);
                         $('.print-balance').html('非会员' );
                     }else{
+                        $('.print-mobile').html('会员手机号：' + response.data.memberPhone);
+                        $('.print-name').html('会员姓名：' + response.data.memberName);
                         var str = ''
                         $.each(response.data.memberVos,function(i,data){
                             str += data.memberLevelName + ':<br>美容储值：' + data.beautyMoney + '美容储值：' + data.nailMoney + '<br>';

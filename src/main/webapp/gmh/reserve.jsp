@@ -1078,7 +1078,7 @@
         //输入折扣，变更实付金额
         $(document).on('blur', '.discount', function () {
           var pcharge = $(this).parent().parent().find('.projectCharge').text();
-          var reg = new RegExp("^(\\d|[1-9]\\d|100)$");  
+          var reg = new RegExp("^[1-9]\\d*$");  
           if ($(this).val() != '') {
             if(reg.test($(this).val())) {  
                 $(this).parent().parent().find('.charge').text(Number(pcharge) * Number($(this).val()) * 0.01);
