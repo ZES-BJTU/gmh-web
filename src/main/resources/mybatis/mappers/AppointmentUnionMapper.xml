@@ -93,6 +93,7 @@
 				LIKE #{search}
 			</if>
 		</where>
+		GROUP BY a.`id`
 		ORDER BY a.created_time
 	</select>
 	<select id="selectById" parameterType="long" resultMap="BaseResultMap">
@@ -159,5 +160,6 @@
 		AND
 		ap.end_time <![CDATA[<]]>
 		DATE_ADD(NOW(), INTERVAL #{minute, jdbcType=INTEGER} MINUTE)
+		GROUP BY a.`id`
 	</select>
 </mapper>
