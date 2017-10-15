@@ -146,14 +146,13 @@ public class ConsumeServiceImpl implements ConsumeService {
         if (!CollectionUtils.isEmpty(unions)) {
             MemberPo member = unions.get(0).getMemberPo();
             dto.setMember(true);
-//            dto.setMemberId(member.getId());
             dto.setAge(member.getAge());
             dto.setConsumerName(member.getName());
             dto.setSex(Integer.valueOf(String.valueOf(member.getSex())));
             //处理会员消费
-            MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
-            dto.setAge(CalculateHelper.calculateAgeByBirthday(memberPo.getBirthday()));
+            dto.setAge(CalculateHelper.calculateAgeByBirthday(member.getBirthday()));
             if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
+                MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
                 ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
                 BigDecimal nailMoney = memberPo.getNailMoney();
                 BigDecimal beautyMoney = memberPo.getBeautyMoney();
