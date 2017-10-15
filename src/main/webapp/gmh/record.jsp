@@ -336,7 +336,7 @@
           <label>手机号</label>
           <input type="text" name="phone" id="print-records-phone" placeholder="请输入手机号">
         </div>
-        <div class="field" id="mod-card-field">
+        <div class="field">
           <label>会员卡</label>
           <select name="memberId" class="ui fluid dropdown print-records-select">
             <option value="">请选择会员卡</option>
