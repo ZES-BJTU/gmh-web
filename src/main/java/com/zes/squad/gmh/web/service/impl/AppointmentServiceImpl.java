@@ -52,6 +52,7 @@ import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.po.ProjectPo;
 import com.zes.squad.gmh.web.entity.po.ProjectTypePo;
 import com.zes.squad.gmh.web.entity.union.AppointmentProjectUnion;
+import com.zes.squad.gmh.web.entity.union.AppointmentTimeUnion;
 import com.zes.squad.gmh.web.entity.union.AppointmentUnion;
 import com.zes.squad.gmh.web.entity.union.ProjectUnion;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
@@ -60,6 +61,7 @@ import com.zes.squad.gmh.web.entity.vo.TimeVo;
 import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.mapper.AppointmentMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentProjectMapper;
+import com.zes.squad.gmh.web.mapper.AppointmentTimeUnionMapper;
 import com.zes.squad.gmh.web.mapper.AppointmentUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordProjectMapper;
@@ -105,6 +107,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private MemberMapper               memberMapper;
     @Autowired
     private ProjectTypeMapper          projectTypeMapper;
+    @Autowired
+    private AppointmentTimeUnionMapper appointmentTimeUnionMapper;
 
     @Override
     public List<AppointmentVo> listAllAppointments() {
@@ -466,15 +470,31 @@ public class AppointmentServiceImpl implements AppointmentService {
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
         condition.setEmployeeId(employeeId);
         List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
-        return buildAppointmentVosByUnions(unions);
+        List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
+        return vos;
     }
 
     @Override
     public List<TimeVo> queryTime(Date time, Long employeeId) {
         EmployeePo employeePo = employeeMapper.selectById(employeeId);
         LogicHelper.ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-        List<AppointmentPo> pos = appointmentMapper.selectByEmployeeAndTime(time, employeeId, getDefaultBeginTime(time),
+        
+        
+        List<AppointmentTimeUnion> unions = appointmentTimeUnionMapper.selectByEmployeeAndTime(time, employeeId, getDefaultBeginTime(time),
                 getDefaultEndTime(time));
+        List<AppointmentPo> pos = Lists.newArrayList();
+        for(AppointmentTimeUnion union : unions){
+            for(AppointmentProjectPo projectPo : union.getAppointmentProjectPos()) {
+                AppointmentPo appointmentPo = CommonConverter.map(union, AppointmentPo.class);
+                appointmentPo.setProjectId(projectPo.getProjectId());
+                appointmentPo.setEmployeeId(projectPo.getEmployeeId());
+                appointmentPo.setBeginTime(projectPo.getBeginTime());
+                appointmentPo.setEndTime(projectPo.getEndTime());
+                pos.add(appointmentPo);
+            }
+        }
+        
+        
         if (CollectionUtils.isEmpty(pos)) {
             TimeVo vo = new TimeVo();
             vo.setTime("8:00-22:00");

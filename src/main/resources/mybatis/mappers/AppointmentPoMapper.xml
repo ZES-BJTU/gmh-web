@@ -30,23 +30,25 @@
 	<select id="selectByEmployeeAndTime" resultMap="BaseResultMap">
 		SELECT
 		<include refid="Base_Column_List" />
-		FROM appointment WHERE employee_id = #{employeeId, jdbcType=BIGINT}
+		FROM appointment a 
+		LEFT JOIN
+		appointment_project ap
+		ON a.id = ap.appointment_id
+		WHERE 
+		a.`status` IN (1,2)
 		AND
-		DATE_FORMAT(created_time,'%Y-%m-%d') = DATE_FORMAT(#{time,
+		ap.employee_id = #{employeeId, jdbcType=BIGINT}
+		AND
+		DATE_FORMAT(a.created_time,'%Y-%m-%d') = DATE_FORMAT(#{time,
 		jdbcType=TIMESTAMP},'%Y-%m-%d')
 		AND
-		`status` IN (1,2)
-		AND
-		created_time
+		a.created_time
 		BETWEEN
 		#{startTime, jdbcType=TIMESTAMP}
 		AND
-		#{endTime,
-		jdbcType=TIMESTAMP}
-		GROUP BY
-		begin_time
-		ORDER BY
-		begin_time
+		#{endTime, jdbcType=TIMESTAMP}
+		GROUP BY ap.begin_time 
+		ORDER BY ap.begin_time 
 	</select>
 	<select id="getAll" parameterType="long" resultMap="BaseResultMap">
 		select

@@ -31,6 +31,7 @@ import com.zes.squad.gmh.web.entity.dto.AppointmentProjectDto;
 import com.zes.squad.gmh.web.entity.param.AppointmentParams;
 import com.zes.squad.gmh.web.entity.param.AppointmentQueryParams;
 import com.zes.squad.gmh.web.entity.vo.AppointmentVo;
+import com.zes.squad.gmh.web.entity.vo.EmployeeAppointmentVo;
 import com.zes.squad.gmh.web.entity.vo.EmployeeItemVo;
 import com.zes.squad.gmh.web.entity.vo.TimeVo;
 import com.zes.squad.gmh.web.helper.LogicHelper;
@@ -78,10 +79,48 @@ public class AppointmentController {
 
     @RequestMapping("/listAppointmentsByEmployee")
     @ResponseBody
-    public JsonResult<List<AppointmentVo>> doListAppointmentsByEmployee(Long employeeId) {
+    public JsonResult<List<EmployeeAppointmentVo>> doListAppointmentsByEmployee(Long employeeId) {
         ensureParameterExist(employeeId, ErrorMessage.employeeIdIsNull);
         List<AppointmentVo> vos = appointmentService.listAppointmentsByEmployee(employeeId);
-        return JsonResult.success(vos);
+        List<EmployeeAppointmentVo> appointmentVos = Lists.newArrayList();
+        for (AppointmentVo vo : vos) {
+            for (int i = 0; i < vo.getProjectIds().length; i++) {
+                EmployeeAppointmentVo appointmentVo = CommonConverter.map(vo, EmployeeAppointmentVo.class);
+                if (vo.getTopTypes() != null && vo.getTopTypes().length > 0) {
+                    appointmentVo.setTopType(vo.getTopTypes()[i]);
+                }
+                if (vo.getTopTypeNames() != null && vo.getTopTypeNames().length > 0) {
+                    appointmentVo.setTopTypeName(vo.getTopTypeNames()[i]);
+                }
+                if (vo.getTypeIds() != null && vo.getTypeIds().length > 0) {
+                    appointmentVo.setTypeId(vo.getTypeIds()[i]);
+                }
+                if (vo.getTypeNames() != null && vo.getTypeNames().length > 0) {
+                    appointmentVo.setTypeName(vo.getTypeNames()[i]);
+                }
+                appointmentVo.setProjectId(vo.getProjectIds()[i]);
+                if (vo.getProjectNames() != null && vo.getProjectNames().length > 0) {
+                    appointmentVo.setProjectName(vo.getProjectNames()[i]);
+                }
+                if (vo.getProjectCharges() != null && vo.getProjectCharges().length > 0) {
+                    appointmentVo.setProjectCharge(vo.getProjectCharges()[i]);
+                }
+                if (vo.getEmployeeIds() != null && vo.getEmployeeIds().length > 0) {
+                    appointmentVo.setEmployeeId(vo.getEmployeeIds()[i]);
+                }
+                if (vo.getEmployeeNames() != null && vo.getEmployeeNames().length > 0) {
+                    appointmentVo.setEmployeeName(vo.getEmployeeNames()[i]);
+                }
+                if (vo.getBeginTimes() != null && vo.getBeginTimes().length > 0) {
+                    appointmentVo.setBeginTime(vo.getBeginTimes()[i]);
+                }
+                if (vo.getEndTimes() != null && vo.getEndTimes().length > 0) {
+                    appointmentVo.setEndTime(vo.getEndTimes()[i]);
+                }
+                appointmentVos.add(appointmentVo);
+            }
+        }
+        return JsonResult.success(appointmentVos);
     }
 
     @RequestMapping("/queryByPhone")

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zes.squad.gmh.web.mapper.AppointmentTimeUnionMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zes.squad.gmh.web.entity.union.AppointmentTimeUnion">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<association property="appointmentPo"
+			resultMap="com.zes.squad.gmh.web.mapper.AppointmentMapper.BaseResultMap" />
+		<collection property="appointmentProjectPos"
+			resultMap="com.zes.squad.gmh.web.mapper.AppointmentProjectMapper.BaseResultMap"
+			columnPrefix="ap_" />
+	</resultMap>
+	<select id="selectByEmployeeAndTime" resultMap="BaseResultMap">
+		SELECT
+		a.`store_id`,
+		a.`member_id`,
+		a.`phone`,
+		a.`name`,
+		a.`sex`,
+		a.`status`,
+		a.`line`,
+		a.`remark`,
+		ap.`project_id` AS ap_project_id,
+		ap.`employee_id` AS ap_employee_id,
+		ap.`begin_time` AS ap_begin_time,
+		ap.`end_time` AS ap_end_time
+		FROM appointment a
+		LEFT JOIN
+		appointment_project ap
+		ON a.id = ap.appointment_id
+		WHERE
+		a.`status` IN (1,2)
+		AND
+		ap.employee_id = #{employeeId, jdbcType=BIGINT}
+		AND
+		DATE_FORMAT(a.created_time,'%Y-%m-%d') = DATE_FORMAT(#{time,
+		jdbcType=TIMESTAMP},'%Y-%m-%d')
+		AND
+		a.created_time
+		BETWEEN
+		#{startTime, jdbcType=TIMESTAMP}
+		AND
+		#{endTime, jdbcType=TIMESTAMP}
+		GROUP BY ap.begin_time
+		ORDER BY ap.begin_time
+	</select>
+</mapper>
