@@ -392,6 +392,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         queryCondition.setStatus(
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
         List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(queryCondition);
+
         if (CollectionUtils.isEmpty(unions)) {
             return PagedLists.newPagedList(condition.getPageNum(), condition.getPageSize());
         }
