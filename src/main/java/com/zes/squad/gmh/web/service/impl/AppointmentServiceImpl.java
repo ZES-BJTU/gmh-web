@@ -496,7 +496,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 pos.add(appointmentPo);
             }
         }
-
+        
         if (CollectionUtils.isEmpty(pos)) {
             TimeVo vo = new TimeVo();
             vo.setTime("8:00-22:00");
@@ -553,7 +553,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 timeVos.add(timeVo);
             }
         }
-        return vos;
+        return timeVos;
     }
 
     private int getMinutesBetweenDates(Date startDate, Date endDate) {
