@@ -40,6 +40,7 @@ import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
 import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
+import com.zes.squad.gmh.common.util.JsonUtils;
 import com.zes.squad.gmh.web.context.ThreadContext;
 import com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition;
 import com.zes.squad.gmh.web.entity.condition.MemberQueryCondition;
@@ -237,6 +238,7 @@ public class ConsumeServiceImpl implements ConsumeService {
     }
 
     private List<ConsumeRecordDto> buildConsumeRecordDtosByUnions(List<ConsumeRecordUnion> unions) {
+        String json = JsonUtils.toJson(unions);
         List<ConsumeRecordDto> dtos = Lists.newArrayList();
         for (ConsumeRecordUnion union : unions) {
             ConsumeRecordDto dto = CommonConverter.map(union.getConsumeRecordPo(), ConsumeRecordDto.class);
