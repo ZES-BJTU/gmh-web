@@ -541,7 +541,9 @@ public class ConsumeServiceImpl implements ConsumeService {
     @Override
     public void modifyConsumeRecord(ConsumeRecordDto dto) {
         //恢复会员卡储值
-        if (dto.getChargeWay().intValue() == ChargeWayEnum.CARD.getKey()) {
+        ConsumeRecordPo consumeRecordPo = consumeRecordMapper.selectById(dto.getId());
+        ensureEntityExist(consumeRecordPo, "未找到消费记录");
+        if (consumeRecordPo.getChargeWay().intValue() == ChargeWayEnum.CARD.getKey()) {
             Long memberId = consumeRecordMapper.selectMemberById(dto.getId());
             ensureConditionSatisfied(memberId != null, "根据消费记录获取会员信息失败");
             MemberPo memberPo = memberMapper.selectById(memberId);
@@ -610,9 +612,9 @@ public class ConsumeServiceImpl implements ConsumeService {
             dto.setConsumerName(member.getName());
             dto.setSex(Integer.valueOf(String.valueOf(member.getSex())));
             //处理会员消费
-            MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
-            dto.setAge(CalculateHelper.calculateAgeByBirthday(memberPo.getBirthday()));
+            dto.setAge(CalculateHelper.calculateAgeByBirthday(member.getBirthday()));
             if (dto.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
+                MemberPo memberPo = memberMapper.selectById(dto.getMemberId());
                 ensureEntityExist(memberPo, ErrorMessage.memberNotFound);
                 BigDecimal nailMoney = memberPo.getNailMoney();
                 BigDecimal beautyMoney = memberPo.getBeautyMoney();
