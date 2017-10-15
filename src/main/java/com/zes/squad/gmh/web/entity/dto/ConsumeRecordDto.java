@@ -16,6 +16,8 @@ public class ConsumeRecordDto {
     private Boolean                       member;
     private Long                          memberId;
     private String                        memberName;
+    private Long                          memberLevelId;
+    private String                        memberLevelName;
     private String                        mobile;
     private Integer                       age;
     private Integer                       sex;

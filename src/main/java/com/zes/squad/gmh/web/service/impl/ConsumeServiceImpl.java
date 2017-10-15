@@ -250,6 +250,10 @@ public class ConsumeServiceImpl implements ConsumeService {
                 MemberPo memberPo = memberMapper.selectById(union.getConsumeRecordPo().getMemberId());
                 ensureEntityExist(memberPo, "获取会员信息失败");
                 dto.setMemberName(memberPo.getName());
+                MemberLevelPo memberLevelPo = memberLevelMapper.selectById(memberPo.getMemberLevelId());
+                ensureEntityExist(memberPo, "获取会员等级信息失败");
+                dto.setMemberId(memberLevelPo.getId());
+                dto.setMemberLevelName(memberLevelPo.getName());
             }
             List<ConsumeRecordProjectUnion> projectUnions = union.getConsumeRecordProjectUnions();
             List<ConsumeRecordProjectDto> projectDtos = Lists.newArrayList();
@@ -529,7 +533,7 @@ public class ConsumeServiceImpl implements ConsumeService {
 
     @Override
     public void modifyConsumeRecord(ConsumeRecordDto dto) {
-        //回复会员卡储值
+        //恢复会员卡储值
         if (dto.getChargeWay().intValue() == ChargeWayEnum.CARD.getKey()) {
             Long memberId = consumeRecordMapper.selectMemberById(dto.getId());
             ensureConditionSatisfied(memberId != null, "根据消费记录获取会员信息失败");

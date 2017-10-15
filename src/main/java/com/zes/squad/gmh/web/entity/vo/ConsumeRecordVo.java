@@ -15,6 +15,8 @@ public class ConsumeRecordVo {
     private String                       consumerDesc;
     private Long                         memberId;
     private String                       memberName;
+    private Long                         memberLevelId;
+    private String                       memberLevelName;
     private String                       mobile;
     private Integer                      age;
     private String                       sex;
