@@ -27,6 +27,9 @@
 		crp.counselor_id,
         p.name AS p_name,
         p.retail_price AS p_retail_price,
+        pt.id AS pt_id,
+        pt.top_type AS pt_top_type,
+        pt.type_name AS pt_type_name,
         e.name AS e_name
 		FROM
 		consume_record_project crp
