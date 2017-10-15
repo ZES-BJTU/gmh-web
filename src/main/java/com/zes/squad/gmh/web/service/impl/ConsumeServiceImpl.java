@@ -279,12 +279,12 @@ public class ConsumeServiceImpl implements ConsumeService {
             }
             dto.setConsumeRecordProjectDtos(projectDtos);
 
-            if (union.getConsumeRecordPo().getEmployeeId() != null
-                    && union.getConsumeRecordPo().getMember().booleanValue()) {
-                dto.setMember(true);
-            } else {
-                dto.setMember(false);
-            }
+//            if (union.getConsumeRecordPo().getEmployeeId() != null
+//                    && union.getConsumeRecordPo().getMember().booleanValue()) {
+//                dto.setMember(true);
+//            } else {
+//                dto.setMember(false);
+//            }
             dto.setSource(Strings.isNullOrEmpty(union.getConsumeRecordPo().getSource()) ? ""
                     : union.getConsumeRecordPo().getSource());
             dtos.add(dto);
