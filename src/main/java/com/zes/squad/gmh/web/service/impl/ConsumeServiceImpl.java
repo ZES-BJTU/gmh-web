@@ -193,8 +193,6 @@ public class ConsumeServiceImpl implements ConsumeService {
 
             }
         } else {
-            ensureConditionSatisfied(dto.getChargeWay() == ChargeWayEnum.CASH.getKey(),
-                    ErrorMessage.consumerShouldChooseCash);
             dto.setMember(false);
         }
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
