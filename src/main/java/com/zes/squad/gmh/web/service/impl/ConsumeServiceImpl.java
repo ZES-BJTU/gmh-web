@@ -50,6 +50,7 @@ import com.zes.squad.gmh.web.entity.po.ConsumeRecordPo;
 import com.zes.squad.gmh.web.entity.po.ConsumeRecordProjectPo;
 import com.zes.squad.gmh.web.entity.po.EmployeeJobPo;
 import com.zes.squad.gmh.web.entity.po.EmployeePo;
+import com.zes.squad.gmh.web.entity.po.MemberLevelPo;
 import com.zes.squad.gmh.web.entity.po.MemberPo;
 import com.zes.squad.gmh.web.entity.po.ShopPo;
 import com.zes.squad.gmh.web.entity.union.ConsumeRecordProjectUnion;
@@ -67,6 +68,7 @@ import com.zes.squad.gmh.web.mapper.ConsumeRecordProjectUnionMapper;
 import com.zes.squad.gmh.web.mapper.ConsumeRecordUnionMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeJobMapper;
 import com.zes.squad.gmh.web.mapper.EmployeeMapper;
+import com.zes.squad.gmh.web.mapper.MemberLevelMapper;
 import com.zes.squad.gmh.web.mapper.MemberMapper;
 import com.zes.squad.gmh.web.mapper.MemberUnionMapper;
 import com.zes.squad.gmh.web.mapper.ProjectUnionMapper;
@@ -92,6 +94,8 @@ public class ConsumeServiceImpl implements ConsumeService {
     private ProjectUnionMapper              projectUnionMapper;
     @Autowired
     private MemberMapper                    memberMapper;
+    @Autowired
+    private MemberLevelMapper               memberLevelMapper;
     @Autowired
     private ConsumeRecordUnionMapper        consumeRecordUnionMapper;
     @Autowired
@@ -643,7 +647,13 @@ public class ConsumeServiceImpl implements ConsumeService {
         ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
         ensureEntityExist(shopPo, "获取门店信息失败");
         PrintSingleVo vo = new PrintSingleVo();
-        vo.setChargeCard(EnumUtils.getDescByKey(ChargeWayEnum.class, consumeRecordPo.getChargeWay()));
+        if (consumeRecordPo.getMemberId() != null) {
+            MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
+            ensureEntityExist(memberPo, "会员信息查询失败");
+            MemberLevelPo memberLevelPo = memberLevelMapper.selectById(memberPo.getMemberLevelId());
+            ensureEntityExist(memberLevelPo, "会员卡信息查询失败");
+            vo.setChargeCard(memberLevelPo.getName());
+        }
         vo.setAddress(shopPo.getAddress());
         vo.setShopPhone(shopPo.getPhone());
         vo.setMemberPhone(consumeRecordPo.getMobile());
@@ -717,6 +727,47 @@ public class ConsumeServiceImpl implements ConsumeService {
             ShopPo shopPo = shopMapper.selectById(ThreadContext.getStaffStoreId());
             ensureEntityExist(shopPo, "获取门店信息失败");
             PrintSingleVo vo = new PrintSingleVo();
+            MemberQueryCondition condition = new MemberQueryCondition();
+            condition.setStoreId(ThreadContext.getStaffStoreId());
+            condition.setPhone(consumeRecordPo.getMobile());
+            List<MemberUnion> memberUnions = memberUnionMapper.listMemberUnionsByCondition(condition);
+            if (CollectionUtils.isNotEmpty(memberUnions)) {
+                List<MemberVo> vos = Lists.newArrayList();
+                for (MemberUnion union : memberUnions) {
+                    MemberVo memberVo = new MemberVo();
+                    memberVo.setId(union.getMemberPo().getId());
+                    memberVo.setStoreId(ThreadContext.getStaffStoreId());
+                    memberVo.setMemberLevelId(union.getMemberLevelPo().getId());
+                    memberVo.setMemberLevelName(union.getMemberLevelPo().getName());
+                    memberVo.setPhone(union.getMemberPo().getPhone());
+                    memberVo.setName(union.getMemberPo().getName());
+                    memberVo.setSex(EnumUtils.getDescByKey(SexEnum.class,
+                            Integer.valueOf(String.valueOf(union.getMemberPo().getSex()))));
+                    memberVo.setAge(union.getMemberPo().getAge());
+                    memberVo.setBirthday(union.getMemberPo().getBirthday());
+                    memberVo.setJoinDate(union.getMemberPo().getJoinDate());
+                    memberVo.setValidDate(union.getMemberPo().getValidDate());
+                    memberVo.setNailMoney(union.getMemberPo().getNailMoney());
+                    memberVo.setBeautyMoney(union.getMemberPo().getBeautyMoney());
+                    vos.add(memberVo);
+                }
+                vo.setMemberVos(vos);
+            }
+            if (memberId != null) {
+                MemberPo memberPo = memberMapper.selectById(memberId);
+                ensureEntityExist(memberPo, "会员信息获取失败");
+                MemberLevelPo memberLevelPo = memberLevelMapper.selectById(memberPo.getMemberLevelId());
+                ensureEntityExist(memberLevelPo, "会员卡信息获取失败");
+                vo.setChargeCard(memberLevelPo.getName());
+            } else {
+                if (consumeRecordPo.getMemberId() != null) {
+                    MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
+                    ensureEntityExist(memberPo, "会员信息查询失败");
+                    MemberLevelPo memberLevelPo = memberLevelMapper.selectById(memberPo.getMemberLevelId());
+                    ensureEntityExist(memberLevelPo, "会员卡信息查询失败");
+                    vo.setChargeCard(memberLevelPo.getName());
+                }
+            }
             vo.setAddress(shopPo.getAddress());
             vo.setShopPhone(shopPo.getPhone());
             vo.setMemberPhone(consumeRecordPo.getMobile());
