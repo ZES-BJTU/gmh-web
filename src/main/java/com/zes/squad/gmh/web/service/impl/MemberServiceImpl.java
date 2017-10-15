@@ -154,7 +154,7 @@ public class MemberServiceImpl implements MemberService {
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
             //            po.setProjectId(1L);
-            po.setEmployeeId(employeeId);
+        //    po.setEmployeeId(employeeId);
             po.setMember(true);
             po.setMemberId(memberPo.getId());
             po.setMobile(memberPo.getPhone());
@@ -173,6 +173,7 @@ public class MemberServiceImpl implements MemberService {
             projectPo.setCharge(nailMoney);
             projectPo.setProjectId(1L);
             projectPo.setCounselorId(consultant);
+            projectPo.setEmployeeId(employeeId);
             consumeRecordProjectMapper.batchInsert(Lists.newArrayList(projectPo));
         }
         if (beautyMoney != null && !beautyMoney.equals(BigDecimal.ZERO)) {
@@ -180,7 +181,7 @@ public class MemberServiceImpl implements MemberService {
             ConsumeRecordPo po = new ConsumeRecordPo();
             po.setStoreId(ThreadContext.getStaffStoreId());
             //            po.setProjectId(2L);
-            po.setEmployeeId(employeeId);
+          //  po.setEmployeeId(employeeId);
             po.setMember(true);
             po.setMemberId(memberPo.getId());
             po.setMobile(memberPo.getPhone());
@@ -199,6 +200,7 @@ public class MemberServiceImpl implements MemberService {
             projectPo.setCharge(beautyMoney);
             projectPo.setProjectId(2L);
             projectPo.setCounselorId(consultant);
+            projectPo.setEmployeeId(employeeId);
             consumeRecordProjectMapper.batchInsert(Lists.newArrayList(projectPo));
         }
     }
