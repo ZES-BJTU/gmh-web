@@ -809,7 +809,8 @@ public class ConsumeServiceImpl implements ConsumeService {
             vo.setAddress(shopPo.getAddress());
             vo.setShopPhone(shopPo.getPhone());
             vo.setMemberPhone(consumeRecordPo.getMobile());
-            if (consumeRecordPo.getMember().booleanValue()) {
+            if (consumeRecordPo.getMember().booleanValue()
+                    && consumeRecordPo.getChargeWay() == ChargeWayEnum.CARD.getKey()) {
                 MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
                 ensureEntityExist(memberPo, "获取会员信息失败");
                 vo.setNailMoney(memberPo.getNailMoney());
