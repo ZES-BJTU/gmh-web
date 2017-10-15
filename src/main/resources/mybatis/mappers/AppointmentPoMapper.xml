@@ -64,8 +64,10 @@
 		SELECT
 		COUNT(*)
 		FROM
-		appointment a,
+		appointment a
+		LEFT JOIN
 		appointment_project ap
+		ON a.id = a.appointment_id
 		WHERE
 		a.store_id = #{storeId,
 		jdbcType=BIGINT}
@@ -75,8 +77,6 @@
 			close=")">
 			#{item, jdbcType=INTEGER}
 		</foreach>
-		AND
-		a.id = ap.appointment_id
 		<if test="employeeId != null">
 			AND ap.employee_id = #{employeeId, jdbcType=BIGINT}
 		</if>
