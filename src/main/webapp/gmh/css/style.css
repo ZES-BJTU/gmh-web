@@ -237,10 +237,25 @@ td.remark {
   vertical-align: top;
   position: relative;
 }
-.print-wechat-2 .t {
+.print-wechat-2 .t1 {
   position: absolute;
   width: 100%;
   top: 0px;
+  left: 0px;
+  font-size: 10px;
+}
+.print-wechat-2 .t2 {
+  position: absolute;
+  width: 100%;
+  top: 15px;
+  left: 0px;
+  font-size: 10px;
+}
+.print-wechat-2 .t3 {
+  position: absolute;
+  width: 100%;
+  top: 30px;
+  left: 0px;
   font-size: 10px;
 }
 .print-wechat-2 .b {

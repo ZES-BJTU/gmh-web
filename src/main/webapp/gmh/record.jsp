@@ -142,7 +142,7 @@
         </div>
         <div class="field" id="card-field" style="display:none">
           <label>会员卡</label>
-          <select name="menberId" class="ui fluid dropdown new-record-card-select">
+          <select name="memberId" class="ui fluid dropdown new-record-card-select">
             <option value="">请选择会员卡</option>
           </select>
         </div>
@@ -220,7 +220,7 @@
         </div>
         <div class="field" id="mod-card-field" style="display:none">
           <label>会员卡</label>
-          <select name="menberId" class="ui fluid dropdown mod-record-card-select">
+          <select name="memberId" class="ui fluid dropdown mod-record-card-select">
             <option value="">请选择会员卡</option>
           </select>
         </div>
@@ -586,6 +586,7 @@
                 var $id = $('<td class="recordId" style="display:none">' + data.id + '</td>');
                 var $memberId = $('<td class="memberId" style="display:none">' + data.memberId + '</td>');
                 var $memberName = $('<td class="memberName" style="display:none">' + data.memberName + '</td>');
+                var $memberLevelName = $('<td class="memberLevelName" style="display:none">' + data.memberLevelName + '</td>');
                 var $consumerName = $('<td class="consumerName">' + data.consumerName + '</td>');
                 var $mobile = $('<td class="mobile">' + data.mobile + '</td>');
                 var $consumerType = $('<td class="consumerType">' + data.consumerDesc + '</td>');
@@ -1077,6 +1078,7 @@
         $('.mod-record-sex-select .text').text($(this).parent().parent().find('.sex').text());
         var memberId = $(this).parent().parent().find('.memberId').text();
         var memberName = $(this).parent().parent().find('.memberName').text();
+        var memberLevelName = $(this).parent().parent().find('.memberLevelName').text();
 
         var pids = $(this).parent().parent().find('.projectId').html().split(',');
         var pnames = $(this).parent().parent().find('.projectName').html().split('<br>');
@@ -1155,7 +1157,7 @@
                     })
                     $('#mod-card-field').val(memberId);
                     $('#mod-card-field .text').removeClass('default');
-                    $('#mod-card-field .text').text(memberName);
+                    $('#mod-card-field .text').text(memberLevelName);
                     $('#mod-card-field').show();
                   }
                 },
