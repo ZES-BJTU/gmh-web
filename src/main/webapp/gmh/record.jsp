@@ -55,7 +55,7 @@
           <div class="four wide right aligned column">
             <button class="ui blue button new-record">新建</button>
             <button class="ui teal button export-record">导出</button>
-            <button class="ui teal button print-record">打印</button>
+            <button class="ui teal button print-records">批量打印</button>
           </div>
         </div>
         <div class="one column row">
@@ -328,6 +328,41 @@
       </div>
     </div>
   </div>
+  <div class="ui mini modal print-records-modal">
+    <div class="header">批量打印消费记录</div>
+    <div class="content">
+      <form id="print-records" class="ui form">
+        <div class="field">
+          <label>手机号</label>
+          <input type="text" name="phone" id="print-records-phone" placeholder="请输入手机号">
+        </div>
+        <div class="field" id="mod-card-field">
+          <label>会员卡</label>
+          <select name="memberId" class="ui fluid dropdown print-records-select">
+            <option value="">请选择会员卡</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>开始时间</label>
+          <input type="text" name="startTime" value="" id="pStartTime" placeholder="请输入开始时间">
+        </div>
+        <div class="field">
+          <label>结束时间</label>
+          <input type="text" name="endTime" value="" id="pEndTime" placeholder="请输入结束时间">
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui black deny right labeled icon button">
+        取消
+        <i class="remove icon"></i>
+      </div>
+      <div class="ui positive right labeled icon button">
+        提交
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
   <script>
   
     activeMenu('record');
@@ -394,6 +429,37 @@
       }).on('changeDate', function (ev) {
         $('#endTime').focus();
         $('#endTime').blur();
+      });
+      $('#pStartTime').datetimepicker({
+        language: 'zh-CN',
+        format: 'yyyy-mm-dd',
+        weekStart: 1,
+        todayBtn: 1,
+        minView: 2,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        forceParse: true,
+        showMeridian: 1
+      }).on('changeDate', function (ev) {
+        $('#pStartTime').focus();
+        $('#pStartTime').blur();
+      });
+      $('#pEndTime').datetimepicker({
+        language: 'zh-CN',
+        format: 'yyyy-mm-dd',
+        weekStart: 1,
+        todayBtn: 1,
+        minView: 2,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        forceParse: true,
+        showMeridian: 1,
+        endDate:new Date()
+      }).on('changeDate', function (ev) {
+        $('#pEndTime').focus();
+        $('#pEndTime').blur();
       });
 
       //加载经理或者咨询师
@@ -1268,6 +1334,92 @@
           window.location.href = href;
         }
       })
+      //批量打印模态框
+      $('.print-records').on('click', function () {
+        $('.print-records-modal').modal({
+            closable: false,
+            onDeny: function () {
+              clearCard();
+              $('#print-records').form('clear');
+            },
+            onApprove: function () {
+              $('#print-records').submit();
+              return false;
+            }
+          })
+          .modal('show');
+      })
+      $('#print-records').form({
+        on: 'submit',
+        inline: true,
+        fields: {
+          recordPhone: {
+            identifier: 'phone',
+            rules: [{
+              type: 'empty',
+              prompt: '手机号不能为空'
+            }]
+          },
+        },
+        onSuccess: function (e) {
+          //阻止表单的提交
+          e.preventDefault();
+          var mobile = $('#print-records-phone').val();
+          var memberId = $('.print-records-select select').val();
+          var startTime =  $('#pStartTime').val() == '' ? '' : toTimeStamp($('#pStartTime').val());
+          var endTime = $('#pEndTime').val() == '' ? '' : toTimeStamp($('#pEndTime').val());
+          window.open('printrecordsTemplet.html?mobile='+mobile+'&memberId='+memberId+'&startTime='+startTime+'&endTime='+endTime);
+        }
+      })
+      $(document).on('blur','#print-records-phone',function(){
+        var mobile = $(this).val();
+        var reg = new RegExp("^1\\d{10}$");  
+        if (mobile != '') {
+          if(reg.test(mobile)) {  
+            //加载会员卡
+            $('.fake-button').api({
+              action: 'record listByPhone',
+              method: 'GET',
+              on: 'now',
+              async: 'false',
+              beforeXHR: function (xhr) {
+                verifyToken();
+                xhr.setRequestHeader('X-token', getSessionStorage('token'));
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+              },
+              beforeSend: function (settings) {
+                if (mobile != '') {
+                  settings.data.phone = mobile;
+                  return settings;
+                } else {
+                  alert('手机号为空');
+                  return false;
+                }
+              },
+              onSuccess: function (response) {
+                clearCard();
+                if (response.error != null) {
+                  alert(response.error);
+                  verifyStatus(response.code);
+                } else {
+                  $.each(response.data, function (i, data) {
+                    var $option = $('<option value="' + data.id + '">' + data.memberLevelName + '</option>');
+                    $('.print-records-select .text').removeClass('unselected');
+                    $('.print-records-select select').append($option);
+                  })
+                }
+              },
+              onFailure: function (response) {
+                alert('服务器开小差了');
+              }
+            })
+          }else{
+            alert('请输入正确的手机号！');
+          } 
+        }else{
+          alert('请输入手机号！');
+        }
+      })
 
       $(document).on('click','.print-record',function(){
         var recordId = $(this).parent().parent().find('.recordId').text();
@@ -1442,6 +1594,9 @@
         $('.mod-record-card-select select').find('option:not(:first)').remove();
         $('.mod-record-card-select .text').text('请选择会员卡');
         $('.mod-record-card-select .text').addClass('unselected');
+        $('.print-records-select select').find('option:not(:first)').remove();
+        $('.print-records-select .text').text('请选择会员卡');
+        $('.print-records-select .text').addClass('unselected');
       }
 
       function changeNewCharge(){
