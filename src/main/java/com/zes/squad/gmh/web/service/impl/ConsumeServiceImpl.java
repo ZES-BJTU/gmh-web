@@ -118,7 +118,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
             if (projectDto.getCounselorId() != null) {
                 EmployeePo employeePo = employeeMapper.selectById(projectDto.getCounselorId());
-                ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
+                ensureEntityExist(employeePo, "未找到咨询师/经理");
                 List<EmployeeJobPo> employeeJobPos = employeeJobMepper.selectByEmployeeId(employeePo.getId());
                 if (CollectionUtils.isEmpty(employeeJobPos)) {
                     throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
