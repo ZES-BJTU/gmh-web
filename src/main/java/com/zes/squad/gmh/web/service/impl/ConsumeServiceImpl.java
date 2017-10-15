@@ -116,6 +116,9 @@ public class ConsumeServiceImpl implements ConsumeService {
             ensureConditionSatisfied(dto.getMemberId() == null, "非会员卡支付无法选择会员卡");
         }
         for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
+            if (projectDto.getCounselorId() != null && projectDto.getCounselorId() == 0L) {
+                projectDto.setCounselorId(null);
+            }
             if (projectDto.getCounselorId() != null) {
                 EmployeePo employeePo = employeeMapper.selectById(projectDto.getCounselorId());
                 ensureEntityExist(employeePo, "未找到咨询师/经理");
@@ -568,6 +571,9 @@ public class ConsumeServiceImpl implements ConsumeService {
             ensureConditionSatisfied(dto.getMemberId() == null, "非会员卡支付无法选择会员卡");
         }
         for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
+            if (projectDto.getCounselorId() != null && projectDto.getCounselorId() == 0L) {
+                projectDto.setCounselorId(null);
+            }
             if (projectDto.getCounselorId() != null) {
                 EmployeePo employeePo = employeeMapper.selectById(projectDto.getCounselorId());
                 ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
