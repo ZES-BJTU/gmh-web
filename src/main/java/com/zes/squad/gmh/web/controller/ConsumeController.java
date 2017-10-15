@@ -66,6 +66,9 @@ public class ConsumeController extends BaseController {
     @RequestMapping("/create")
     @ResponseBody
     public JsonResult<Void> doCreateConsumeRecord(ConsumeRecordParams params) {
+        if(params.getMemberId() == null){
+            params.setMemberId(params.getMenberId());
+        }
         checkConsumeRecordParams(params);
         ConsumeRecordDto dto = CommonConverter.map(params, ConsumeRecordDto.class);
         dto.setConsumeRecordProjectDtos(buildConsumeRecordProjectDtoByProjects(params.getProjects()));
@@ -85,6 +88,9 @@ public class ConsumeController extends BaseController {
     @RequestMapping("/modify")
     @ResponseBody
     public JsonResult<Void> doModifyConsumeRecordByRecord(ConsumeRecordParams params) {
+        if(params.getMemberId() == null){
+            params.setMemberId(params.getMenberId());
+        }
         checkConsumeRecordParams(params);
         ensureParameterExist(params.getId(), "消费记录标识为空");
         ConsumeRecordDto dto = CommonConverter.map(params, ConsumeRecordDto.class);
