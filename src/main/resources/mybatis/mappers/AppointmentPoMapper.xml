@@ -67,7 +67,7 @@
 		appointment a
 		LEFT JOIN
 		appointment_project ap
-		ON a.id = a.appointment_id
+		ON a.id = ap.appointment_id
 		WHERE
 		a.store_id = #{storeId,
 		jdbcType=BIGINT}
