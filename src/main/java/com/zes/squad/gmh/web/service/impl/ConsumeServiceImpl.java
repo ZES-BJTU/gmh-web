@@ -753,6 +753,9 @@ public class ConsumeServiceImpl implements ConsumeService {
     public List<PrintSingleVo> listConsumeRecords(String mobile, Long memberId, Date startTime, Date endTime) {
         List<ConsumeRecordPo> consumeRecordPos = consumeRecordMapper.selectByCondition(ThreadContext.getStaffStoreId(),
                 mobile, memberId, startTime, endTime);
+        if (memberId != null && CollectionUtils.isEmpty(consumeRecordPos)) {
+            throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION, "未找到该会员卡对应消费记录");
+        }
         if (CollectionUtils.isEmpty(consumeRecordPos)) {
             return Lists.newArrayList();
         }

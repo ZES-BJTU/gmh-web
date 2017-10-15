@@ -120,6 +120,7 @@
 		mobile = #{mobile, jdbcType=VARCHAR}
 		<if test="memberId != null">
 			AND member_id = #{memberId, jdbcType=BIGINT}
+			AND charge_way = 1
 		</if>
 		<if test="startTime == null and endTime != null">
 			AND consume_time <![CDATA[<]]>
