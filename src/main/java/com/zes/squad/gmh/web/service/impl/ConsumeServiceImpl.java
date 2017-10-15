@@ -197,6 +197,9 @@ public class ConsumeServiceImpl implements ConsumeService {
         }
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
         po.setConsumeTime(new Date());
+        if (po.getChargeWay() == ChargeWayEnum.GIVE.getKey()) {
+            po.setCharge(BigDecimal.ZERO);
+        }
         consumeRecordMapper.insert(po);
         LogicHelper.ensureConditionSatisfied(po.getId() != null, "消费记录标识生成失败");
         List<ConsumeRecordProjectPo> pos = CommonConverter.mapList(dto.getConsumeRecordProjectDtos(),
@@ -657,6 +660,9 @@ public class ConsumeServiceImpl implements ConsumeService {
             dto.setMember(false);
         }
         ConsumeRecordPo po = CommonConverter.map(dto, ConsumeRecordPo.class);
+        if (po.getChargeWay() == ChargeWayEnum.GIVE.getKey()) {
+            po.setCharge(BigDecimal.ZERO);
+        }
         po.setConsumeTime(new Date());
         consumeRecordMapper.insert(po);
         LogicHelper.ensureConditionSatisfied(po.getId() != null, "消费记录标识生成失败");
