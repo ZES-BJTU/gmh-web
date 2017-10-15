@@ -254,7 +254,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         recordPo.setConsumerName(po.getName());
         recordPo.setCharge(totalCharge);
         recordPo.setChargeWay(chargeWay);
-        //        recordPo.setCounselor(counselorId);
         recordPo.setSource(source);
         recordPo.setConsumeTime(new Date());
         recordPo.setRemark(remark);
