@@ -237,11 +237,12 @@ public class ConsumeController extends BaseController {
             dto.setProjectId(Long.valueOf(details[0]));
             dto.setEmployeeId(Long.valueOf(details[1]));
             dto.setCharge(new BigDecimal(details[2]));
-            if (details.length > 3) {
+            if (details.length > 3 && details[3] != null && !details[3].equals("null")) {
                 dto.setCounselorId(Long.valueOf(details[3]));
             }
             dtos.add(dto);
         }
         return dtos;
     }
+
 }

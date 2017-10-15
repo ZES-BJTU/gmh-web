@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
@@ -234,7 +235,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
             projectPo.setProjectId(Long.valueOf(detail[0]));
             projectPo.setCharge(new BigDecimal(detail[1]));
-            if (detail.length > 2) {
+            if (detail.length > 2 && detail[2] != null && !Objects.equals(detail[2], "null")) {
                 projectPo.setCounselorId(detail[2].equals("0") ? null : Long.valueOf(detail[2]));
             }
             projectPos.add(projectPo);
