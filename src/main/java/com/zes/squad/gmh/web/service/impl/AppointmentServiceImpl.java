@@ -245,6 +245,10 @@ public class AppointmentServiceImpl implements AppointmentService {
             projectPos.add(projectPo);
         }
         ConsumeRecordPo recordPo = new ConsumeRecordPo();
+        recordPo.setCharge(BigDecimal.ZERO);
+        for (ConsumeRecordProjectPo consumeRecordProjectPo : projectPos) {
+            recordPo.setCharge(recordPo.getCharge().add(consumeRecordProjectPo.getCharge()));
+        }
         MemberPo memberPo = memberMapper.selectById(chargeCard);
         if (memberPo == null) {
             if (chargeWay == ChargeWayEnum.CARD.getKey()) {
@@ -478,13 +482,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<TimeVo> queryTime(Date time, Long employeeId) {
         EmployeePo employeePo = employeeMapper.selectById(employeeId);
         LogicHelper.ensureEntityExist(employeePo, ErrorMessage.employeeNotFound);
-        
-        
-        List<AppointmentTimeUnion> unions = appointmentTimeUnionMapper.selectByEmployeeAndTime(time, employeeId, getDefaultBeginTime(time),
-                getDefaultEndTime(time));
+
+        List<AppointmentTimeUnion> unions = appointmentTimeUnionMapper.selectByEmployeeAndTime(time, employeeId,
+                getDefaultBeginTime(time), getDefaultEndTime(time));
         List<AppointmentPo> pos = Lists.newArrayList();
-        for(AppointmentTimeUnion union : unions){
-            for(AppointmentProjectPo projectPo : union.getAppointmentProjectPos()) {
+        for (AppointmentTimeUnion union : unions) {
+            for (AppointmentProjectPo projectPo : union.getAppointmentProjectPos()) {
                 AppointmentPo appointmentPo = CommonConverter.map(union, AppointmentPo.class);
                 appointmentPo.setProjectId(projectPo.getProjectId());
                 appointmentPo.setEmployeeId(projectPo.getEmployeeId());
@@ -493,8 +496,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 pos.add(appointmentPo);
             }
         }
-        
-        
+
         if (CollectionUtils.isEmpty(pos)) {
             TimeVo vo = new TimeVo();
             vo.setTime("8:00-22:00");
