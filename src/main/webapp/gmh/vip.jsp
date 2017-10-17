@@ -261,6 +261,137 @@
       </div>
     </div>
   </div>
+  <div class="ui large modal new-record-modal">
+    <div class="header">新建消费记录</div>
+    <div class="content">
+      <form id="new-record" class="ui form">
+        <div class="two fields">
+          <div class="field">
+            <label>消费人手机号</label>
+            <input type="text" name="mobile" id="new-record-mobile" placeholder="请输入预约人手机号">
+          </div>
+          <div class="field">
+            <label>消费人姓名</label>
+            <input type="text" name="consumerName" placeholder="请输入预约人姓名">
+          </div>
+        </div>
+        <div class="field">
+          <label>性别</label>
+          <select name="sex" class="ui fluid dropdown new-record-sex-select">
+          <option value="">请选择性别</option>
+          <option value="0">女</option>
+          <option value="1">男</option>
+        </select>
+        </div>
+        <table class="ui compact table theme">
+          <thead>
+            <tr>
+              <th>美容项目</th>
+              <th>操作员</th>
+              <th>价格</th>
+              <th>折扣(%)</th>
+              <th>实付价格</th>
+              <th>经理/咨询师</th>
+              <th class="add-project"><i class="plus icon"></i></th>
+            </tr>
+          </thead>
+          <tbody id="project-list">
+          </tbody>
+        </table>
+        <div class="field">
+          <label>支付方式</label>
+          <select name="chargeWay" class="ui fluid dropdown new-record-chargeWay-select">
+            <option value="">请选择支付方式</option>
+            <option value="1">会员卡</option>
+            <option value="2">其他</option>
+            <option value="3">赠送</option>
+          </select>
+        </div>
+        <div class="field" id="card-field" style="display:none">
+          <label>会员卡</label>
+          <select name="memberId" class="ui fluid dropdown new-record-card-select">
+            <option value="">请选择会员卡</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>支付金额</label>
+          <input type="text" name="charge" id="finalCharge" placeholder="请输入支付金额">
+        </div>
+        <div class="field">
+          <label>来源</label>
+          <input type="text" name="source" placeholder="请输入来源">
+        </div>
+        <div class="field">
+          <label>备注</label>
+          <textarea name="remark" rows="3"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui black deny right labeled icon button">
+        取消
+        <i class="remove icon"></i>
+      </div>
+      <div class="ui positive right labeled icon button">
+        提交
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="ui tiny coupled modal add-project-modal">
+    <span id="add-project-type" style="display:none"></span>
+    <div class="header">添加项目</div>
+    <div class="content">
+      <div class="ui grid">
+        <div class="one column">
+          <form id="new-record-add-project" class="ui form">
+            <div class="field">
+              <label>顶级分类</label>
+              <select name="topTypeId" class="ui fluid dropdown new-record-top-type-select">
+              <option value="">请选择顶级分类</option>
+              <option value="1">美甲</option>
+              <option value="2">美睫</option>
+              <option value="3">美容</option>
+              <option value="4">产品</option>
+            </select>
+            </div>
+            <div class="field">
+              <label>美容项目分类</label>
+              <select name="projectTypeId" class="ui fluid dropdown new-record-type-select">
+              <option value="">请选择美容项目分类</option>
+            </select>
+            </div>
+            <div class="field">
+              <label>美容项目</label>
+              <select name="projectId" class="ui fluid dropdown new-record-project-select">
+              <option value="">请选择美容项目</option>
+            </select>
+            </div>
+            <div class="field">
+              <label>操作员</label>
+              <select name="employeeId" class="ui fluid dropdown new-record-employee-select">
+                <option value="">请选择操作员</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>美容项目价格</label>
+              <input type="text" name="beginTime" value="" id="projectCharge" placeholder="美容项目价格" disabled="">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="ui black deny right labeled icon button">
+        取消
+        <i class="remove icon"></i>
+      </div>
+      <div class="ui positive right labeled icon button">
+        添加
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </div>
   <script>
   
     activeMenu('vip');
@@ -370,6 +501,67 @@
           alert('服务器开小差了');
         }
       })
+
+      //加载经理或者咨询师
+      $('.fake-button').api({
+        action: 'employee listCounselors',
+        method: 'GET',
+        on: 'now',
+        beforeXHR: function (xhr) {
+          verifyToken();
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        },
+        onSuccess: function (response) {
+          if (response.error != null) {
+            alert(response.error);
+            verifyStatus(response.code);
+          } else {
+            counselorsData = response.data;
+          }
+        },
+        onFailure: function (response) {
+          alert('服务器开小差了');
+        }
+      })
+
+      //新增时，点击顶级分类，切换美容项分类
+      $(document).on('change', '.new-record-top-type-select', function () {
+        var topType = $(this).find('select').val();
+        if (topType == '') {
+          return;
+        }
+        loadProjectTypeByTopType(topType, $('.new-record-type-select select'), 'new', null);
+        $('.new-record-project-select select').find('option:not(:first)').remove();
+        $('.new-record-project-select .text').text('');
+        $('.new-record-project-select select').val('');
+        $('.new-record-project-select select').parent().find('.text').addClass('default');
+        $('.new-record-project-select select').parent().find('.text').text('请选择美容项目');
+        $('.new-record-employee-select select').find('option:not(:first)').remove();
+        $('.new-record-employee-select .text').text('');
+        $('.new-record-employee-select select').val('');
+        $('.new-record-employee-select select').parent().find('.text').addClass('default');
+        $('.new-record-employee-select select').parent().find('.text').text('请选择操作员');
+      })
+
+      //新增时，点击美容项目分类，切换美容项目
+      $(document).on('change', '.new-record-type-select', function () {
+        var typeId = $(this).find('select').val();
+        if (typeId == '') {
+          return;
+        }
+        loadProjectByProjectType(typeId, $('.new-record-project-select select'), 'new', null);
+      })
+
+      //新增时，点击美容项目，切换操作员
+      $(document).on('change', '.new-record-project-select', function () {
+        var projectId = $(this).find('select').val();
+        if (projectId == '') {
+          return;
+        }
+        loadEmployeeByProject(projectId, $('.new-record-employee-select select'), 'new', null);
+        loadProjectCharge(projectId);
+      })
       //加载所有员工
       //会员管理搜索
       $('.vip-search').form({
@@ -456,7 +648,7 @@
                 var $remark = $('<td class="remark" title="' + remark + '">' + afterRemark + '</td>');
                 //  var $remark = $('<td class="remark">' + data.remark + '</td>');
                 var $operate = $(
-                  '<td><button class="ui tiny green button charge-vip">充值</button><button class="ui tiny orange button mod-vip">修改</button><button class="ui tiny red button del-vip">删除</button></td>'
+                  '<td><button class="ui tiny teal button consume-vip"</button>消费<button class="ui tiny green button charge-vip">充值</button><button class="ui tiny orange button mod-vip">修改</button><button class="ui tiny red button del-vip">删除</button></td>'
                 )
                 $tr.append($id);
                 $tr.append($vipName);
@@ -883,6 +1075,321 @@
         }
       });
 
+      //项目删除
+      $(document).on('click', '.minus-project', function () {
+        $(this).parent().remove();
+        changeCharge();
+      })
+
+      //切换支付方式
+      $(document).on('change','.new-record-chargeWay-select',function(){
+        //不同支付方式的不同处理
+        var code = $(this).find('select').val();
+        if(code == 1){
+          //输入手机号，变更会员卡
+          changeCharge();
+          var mobile = Number($('#new-record-mobile').val());
+          var reg = new RegExp("^1\\d{10}$");  
+          if (mobile != '') {
+            if(reg.test(mobile)) {  
+              //加载会员卡
+              $('.fake-button').api({
+                action: 'record listByPhone',
+                method: 'GET',
+                on: 'now',
+                beforeXHR: function (xhr) {
+                  verifyToken();
+                  xhr.setRequestHeader('X-token', getSessionStorage('token'));
+                  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                },
+                beforeSend: function (settings) {
+                  if (mobile != '') {
+                    settings.data.phone = mobile;
+                    return settings;
+                  } else {
+                    alert('手机号为空');
+                    return false;
+                  }
+                },
+                onSuccess: function (response) {
+                  clearCard();
+                  if (response.error != null) {
+                    alert(response.error);
+                    verifyStatus(response.code);
+                  } else {
+                    $.each(response.data, function (i, data) {
+                      var $option = $('<option value="' + data.id + '">' + data.memberLevelName + '</option>');
+                      $('.new-record-card-select .text').removeClass('unselected');
+                      $('.new-record-card-select select').append($option);
+                    })
+                    $('#card-field').show();
+                  }
+                },
+                onFailure: function (response) {
+                  alert('服务器开小差了');
+                }
+              })
+            }else{
+              alert('请输入正确的手机号！');
+            } 
+          }else{
+            alert('请输入手机号！');
+          }
+        }else if(code == 2){
+          changeCharge();
+          $('#card-field').hide();
+        }else if(code == 3){
+          $('#finalCharge').val('0');
+          $('#card-field').hide();
+        }
+      })
+
+      //输入折扣，变更实付金额
+      $(document).on('blur', '.discount', function () {
+        var pcharge = $(this).parent().parent().find('.projectCharge').text();
+        var reg = new RegExp("^[1-9]\\d*$");    
+        if ($(this).val() != '') {
+          if(reg.test($(this).val())) {  
+              $(this).parent().parent().find('.charge').val(Number(pcharge) * Number($(this).val()) * 0.01);
+          } 
+        }else{
+          $(this).parent().parent().find('.charge').val(Number(pcharge));
+        }
+        changeCharge();
+      })
+      //输入实际价钱，变更折扣和总价
+      $(document).on('blur', '.discount-charge', function () {
+        var pcharge = $(this).parent().parent().find('.projectCharge').text();
+        var reg = new RegExp("^[1-9]\\d*$");    
+        if ($(this).val() != '') {
+          if(reg.test($(this).val())) {  
+              $(this).parent().parent().find('.discount').val(Number($(this).val()) * 100 / Number(pcharge));
+          } 
+        }else{
+          $(this).val(0);
+        }
+        changeCharge();
+      })
+
+      //允许模态框叠加
+      $('.coupled.modal').modal({
+        allowMultiple: true
+      })
+
+      //添加项目模态框
+      $('.add-project-modal')
+        .modal('attach events', '.new-record-modal .add-project')
+        .modal('setting', 'closable', false)
+        .modal({
+          onDeny: function () {
+            clearSelect();
+            $('#add-project-type').text('');
+            $('#new-record-add-project').form('clear');
+          },
+          onApprove: function () {
+            $('#new-record-add-project').submit();
+            return false;
+          }
+        })
+
+      $('#new-record-add-project').form({
+        on: 'submit',
+        inline: true,
+        fields: {
+          newTopTypeId: {
+            identifier: 'topTypeId',
+            rules: [{
+              type: 'empty',
+              prompt: '顶层分类不能为空'
+            }]
+          },
+          newProjectTypeId: {
+            identifier: 'projectTypeId',
+            rules: [{
+              type: 'empty',
+              prompt: '美容项目分类不能为空'
+            }]
+          },
+          newProjectId: {
+            identifier: 'projectId',
+            rules: [{
+              type: 'empty',
+              prompt: '美容项目不能为空'
+            }]
+          },
+          newEmployeeId: {
+            identifier: 'employeeId',
+            rules: [{
+              type: 'empty',
+              prompt: '操作员不能为空'
+            }]
+          }
+        },
+        onSuccess: function (e) {
+          //阻止表单的提交
+          e.preventDefault();
+          var beginTime = $('#beginTime').val();
+          var endTime = $('#endTime').val();
+          var projectId = $('.new-record-project-select select').val();
+          var projectName = $('.new-record-project-select .text').text();
+          var employeeId = $('.new-record-employee-select select').val();
+          var employeeNmame = $('.new-record-employee-select .text').text();
+          var projectCharge = $('#projectCharge').val();
+
+          var option = '';
+          $.each(counselorsData, function (i, data) {
+            option += '<option value="' + data.id + '">' + data.emName + '</option>';
+          })
+
+          var $tr = $('<tr><td style="display:none" class="projectId">' + projectId + '</td><td>' + projectName +
+              '</td><td style="display:none" class="employeeId">' + employeeId + '</td><td>' + employeeNmame + 
+              '</td><td class="projectCharge">' + projectCharge + 
+              '</td><td><input type="text" class="discount" placeholder="请输入折扣">' + 
+              '</td><td><input type="text" class="charge discount-charge" placeholder="请输入实付价格" value="' + projectCharge + '">' +
+              '</td><td class="counselor"><select class="ui fluid dropdown new-record-counselor-select"><option value="">请选择经理/咨询师</option>' + option + '</select></td>'+
+              '<td class="minus-project"><i class="minus icon"></i></td></tr>');
+            $('#project-list').append($tr);
+            //计算总价
+            changeCharge();
+           
+          //重新加载下拉框
+          $('.ui.dropdown').dropdown();
+
+          clearSelect();
+          $('#newReserveTime').val('');
+          $('#add-project-type').text('');
+          $('#new-record-time').empty();
+          $('#new-record-add-project').form('clear');
+          $('.add-project-modal').modal('hide');
+        }
+      })
+
+      //消费
+      $(document).on('click','.consume-vip',function(){
+        $('#new-record-mobile').val($(this).parent().parent().find('.vipMobile').text());
+        $('.new-record-modal').modal({
+          closable: false,
+          onDeny: function () {
+            clearCounselor();
+            clearCard();
+            $('#project-list').empty();
+            $('#card-field').hide();
+            $('#new-record').form('clear');
+          },
+          onApprove: function () {
+            $('#new-record').submit();
+            return false;
+          }
+        })
+        .modal('show');
+      })
+      //新建消费记录信息提交
+      $('#new-record').form({
+        on: 'submit',
+        inline: true,
+        fields: {
+          newConsumerName: {
+            identifier: 'consumerName',
+            rules: [{
+              type: 'empty',
+              prompt: '消费人姓名不能为空'
+            }]
+          },
+          newMobile: {
+            identifier: 'mobile',
+            rules: [{
+              type: 'empty',
+              prompt: '消费人手机号不能为空'
+            }, {
+              type: 'number',
+              prompt: '请输入正确的手机号'
+            }, {
+              type: 'exactLength[11]',
+              prompt: '请输入11位手机号'
+            }]
+          },
+          newSex: {
+            identifier: 'sex',
+            rules: [{
+              type: 'empty',
+              prompt: '性别不能为空'
+            }]
+          },
+          newChargeWay: {
+            identifier: 'chargeWay',
+            rules: [{
+              type: 'empty',
+              prompt: '支付方式不能为空'
+            }]
+          },
+          newCharge: {
+            identifier: 'charge',
+            rules: [{
+              type: 'empty',
+              prompt: '支付金额不能为空'
+            }, {
+              type: 'decimal',
+              prompt: '请输入数字'
+            }]
+          }
+        },
+        onSuccess: function (e) {
+          //阻止表单的提交
+          e.preventDefault();
+        }
+      }).api({
+        action: 'record create',
+        method: 'POST',
+        serializeForm: true,
+        beforeXHR: function (xhr) {
+          verifyToken();
+          xhr.setRequestHeader('X-token', getSessionStorage('token'));
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        },
+        beforeSend: function (settings) {
+          var counselorStatus = 0;
+          if(settings.data.chargeWay == 1 && settings.data.chargeCard == ''){
+            alert('请选择会员卡！');
+            return false;
+          }
+          if($('#project-list').children().length == 0){
+            alert('项目为空!');
+            return false;
+          }
+          var projects = '';
+          $('#project-list').children().each(function(){
+            var pid = $(this).find('.projectId').text();
+            var eid = $(this).find('.employeeId').text();
+            var pcharge = $(this).find('.charge').text();
+            var counselor = $(this).find('.new-record-counselor-select select').val();
+            if(counselor == ''){
+              counselor = 0;
+            }
+            projects += ';' + pid + ',' + eid + ',' + pcharge  + ',' + counselor;
+          })
+          projects = projects.substring(1);
+          settings.data.projects = projects;
+          return settings;
+        },
+        onSuccess: function (response) {
+          if (response.error != null) {
+            alert(response.error);
+            verifyStatus(response.code);
+          } else {
+            clearCounselor();
+            clearCard();
+            $('#project-list').empty();
+            $('#card-field').hide();
+            $('#new-record').form('clear');
+            $('.new-record-modal').modal('hide');
+            loadSearchVipList(1, 10, 'search');
+          }
+        },
+        onFailure: function (response) {
+          alert('服务器开小差了');
+        },
+      });
+
       function loadVipLevelData() {
         $.each(vipLevelData, function (i, data) {
           var $option = $('<option value="' + data.id + '">' + data.levelName + '</option>');
@@ -897,11 +1404,147 @@
           })
         }
       function loadConsultantData() {
-          $.each(consultantData, function (i, data) {
-            var $option = $('<option value="' + data.employeeId + '">' + data.employeeName + '</option>');
-            $('.consultant-select select').append($option);
-          })
-        }
+        $.each(consultantData, function (i, data) {
+          var $option = $('<option value="' + data.employeeId + '">' + data.employeeName + '</option>');
+          $('.consultant-select select').append($option);
+        })
+      }
+
+      function loadProjectTypeByTopType(topType, $select, type, info) {
+        $('.fake-button').api({
+          action: 'projectType listByTopType',
+          method: 'GET',
+          on: 'now',
+          beforeXHR: function (xhr) {
+            verifyToken();
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          },
+          beforeSend: function (settings) {
+            settings.data.topType = topType;
+            return settings;
+          },
+          onSuccess: function (response) {
+            if (response.error != null) {
+              alert(response.error);
+              verifyStatus(response.code);
+            } else {
+              $select.find('option:not(:first)').remove();
+              $.each(response.data, function (i, data) {
+                var $option = $('<option value="' + data.id + '">' + data.typeName + '</option>');
+                $select.append($option);
+              })
+            }
+
+            $select.val('');
+            $select.parent().find('.text').addClass('default');
+            $select.parent().find('.text').text('请选择美容项目分类');
+          },
+          onFailure: function (response) {
+            alert('服务器开小差了');
+          }
+        })
+      }
+
+      function loadProjectByProjectType(typeId, $select, type, info) {
+        $('.fake-button').api({
+          action: 'project listByProjectType',
+          method: 'GET',
+          on: 'now',
+          beforeXHR: function (xhr) {
+            verifyToken();
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          },
+          beforeSend: function (settings) {
+            settings.data.typeId = typeId;
+            return settings;
+          },
+          onSuccess: function (response) {
+            if (response.error != null) {
+              alert(response.error);
+              verifyStatus(response.code);
+            } else {
+              $select.find('option:not(:first)').remove();
+              $.each(response.data, function (i, data) {
+                var $option = $('<option value=' + data.id + '>' + data.projectName + '</option>');
+                $select.append($option);
+              })
+            }
+            $select.val('');
+            $select.parent().find('.text').addClass('default');
+            $select.parent().find('.text').text('请选择美容项目');
+          },
+          onFailure: function (response) {
+            alert('服务器开小差了');
+          }
+        })
+      }
+
+      function loadEmployeeByProject(projectId, $select, type, info) {
+        $('.fake-button').api({
+          action: 'appointment listEmployeesByProject',
+          method: 'GET',
+          on: 'now',
+          beforeXHR: function (xhr) {
+            verifyToken();
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          },
+          beforeSend: function (settings) {
+            settings.data.projectId = projectId;
+            return settings;
+          },
+          onSuccess: function (response) {
+            if (response.error != null) {
+              alert(response.error);
+              verifyStatus(response.code);
+            } else {
+              $select.find('option:not(:first)').remove();
+              $.each(response.data, function (i, data) {
+                var $option = $('<option value="' + data.employeeId + '">' + data.employeeName +
+                  '</option>');
+                $select.append($option);
+              })
+            }
+
+            $select.val('');
+            $select.parent().find('.text').addClass('default');
+            $select.parent().find('.text').text('请选择操作员');
+          },
+          onFailure: function (response) {
+            alert('服务器开小差了');
+          }
+        })
+      }
+
+      function loadProjectCharge(projectId) {
+        $('.fake-button').api({
+          action: 'project query',
+          method: 'GET',
+          on: 'now',
+          beforeXHR: function (xhr) {
+            verifyToken();
+            xhr.setRequestHeader('X-token', getSessionStorage('token'));
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          },
+          beforeSend: function (settings) {
+            settings.data.id = projectId;
+            return settings;
+          },
+          onSuccess: function (response) {
+            if (response.error != null) {
+              alert(response.error);
+              verifyStatus(response.code);
+            } else {
+              $('#projectCharge').val(response.data.retailPrice);
+            }
+          },
+          onFailure: function (response) {
+            alert('服务器开小差了');
+          }
+        })
+      }
 
       function clearVipSelect() {
         $('.new-vip-select select').find('option:not(:first)').remove();
@@ -913,6 +1556,41 @@
         $('.consultant-select select').find('option:not(:first)').remove();
         $('.consultant-select .text').text('');
         $('textarea[name="remark"]').text('');
+      }
+      function changeCharge(){
+        var charge = 0;
+        $('#project-list').find('.charge').each(function(){
+          charge += Number($(this).val());
+        })
+        $('#finalCharge').val(charge);
+      }
+      function clearCard(){
+        $('.new-record-card-select select').find('option:not(:first)').remove();
+        $('.new-record-card-select .text').text('请选择会员卡');
+        $('.new-record-card-select .text').addClass('unselected');
+        $('.mod-record-card-select select').find('option:not(:first)').remove();
+        $('.mod-record-card-select .text').text('请选择会员卡');
+        $('.mod-record-card-select .text').addClass('unselected');
+        $('.print-records-select select').find('option:not(:first)').remove();
+        $('.print-records-select .text').text('请选择会员卡');
+        $('.print-records-select .text').addClass('unselected');
+      }
+      function clearSelect() {
+        $('.new-record-type-select select').find('option:not(:first)').remove();
+        $('.new-record-type-select .text').text('');
+        $('.new-record-project-select select').find('option:not(:first)').remove();
+        $('.new-record-project-select .text').text('');
+        $('.new-record-employee-select select').find('option:not(:first)').remove();
+        $('.new-record-employee-select .text').text('');
+      }
+
+      function clearCounselor(){
+        $('.new-record-counselor-select select').find('option:not(:first)').remove();
+        $('.new-record-counselor-select .text').text('请选择经理/咨询师');
+        $('.new-record-card-select .text').addClass('unselected');
+        $('.mod-record-counselor-select select').find('option:not(:first)').remove();
+        $('.mod-record-counselor-select .text').text('请选择经理/咨询师');
+        $('.mod-record-card-select .text').addClass('unselected');
       }
     })
   </script>
