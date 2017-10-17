@@ -829,15 +829,32 @@
       //输入折扣，变更实付金额
       $(document).on('blur', '.discount', function () {
         var pcharge = $(this).parent().parent().find('.projectCharge').text();
-        var reg = new RegExp("^(\\d|[1-9]\\d|100)$");  
+        var reg = new RegExp("^[1-9]\\d*$");    
         if ($(this).val() != '') {
           if(reg.test($(this).val())) {  
-              $(this).parent().parent().find('.charge').text(Number(pcharge) * Number($(this).val()) * 0.01);
+              $(this).parent().parent().find('.charge').val(Number(pcharge) * Number($(this).val()) * 0.01);
           } 
         }else{
-          $(this).parent().parent().find('.charge').text(Number(pcharge));
+          $(this).parent().parent().find('.charge').val(Number(pcharge));
         }
-        if($('#add-project-type').text() == 'add'){
+        if($(this).parent().parent().parent().attr('id') == 'project-list'){
+          changeNewCharge();
+        }else{
+          changeModCharge();
+        }
+      })
+      //输入实际价钱，变更折扣和总价
+      $(document).on('blur', '.discount-charge', function () {
+        var pcharge = $(this).parent().parent().find('.projectCharge').text();
+        var reg = new RegExp("^[1-9]\\d*$");    
+        if ($(this).val() != '') {
+          if(reg.test($(this).val())) {  
+              $(this).parent().parent().find('.discount').val(Number($(this).val()) * 100 / Number(pcharge));
+          } 
+        }else{
+          $(this).val(0);
+        }
+        if($(this).parent().parent().parent().attr('id') == 'project-list'){
           changeNewCharge();
         }else{
           changeModCharge();
@@ -919,7 +936,7 @@
               '</td><td style="display:none" class="employeeId">' + employeeId + '</td><td>' + employeeNmame + 
               '</td><td class="projectCharge">' + projectCharge + 
               '</td><td><input type="text" class="discount" placeholder="请输入折扣">' + 
-              '</td><td class="charge">' + projectCharge +
+              '</td><td><input type="text" class="charge discount-charge" placeholder="请输入实付价格" value="' + projectCharge + '">' +
               '</td><td class="counselor"><select class="ui fluid dropdown new-record-counselor-select"><option value="">请选择经理/咨询师</option>' + option + '</select></td>'+
               '<td class="minus-project"><i class="minus icon"></i></td></tr>');
           if($('#add-project-type').text() == 'add'){
@@ -1605,14 +1622,14 @@
       function changeNewCharge(){
         var charge = 0;
         $('#project-list').find('.charge').each(function(){
-          charge += Number($(this).text());
+          charge += Number($(this).val());
         })
         $('#finalCharge').val(charge);
       }
       function changeModCharge(){
         var charge = 0;
         $('#mod-project-list').find('.charge').each(function(){
-          charge += Number($(this).text());
+          charge += Number($(this).val());
         })
         $('#modFinalCharge').val(charge);
       }
