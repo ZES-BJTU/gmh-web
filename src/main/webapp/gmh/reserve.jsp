@@ -1240,7 +1240,7 @@
             var projects = '';
             $('#finish-project-list').children().each(function(){
               var pid = $(this).find('.projectId').text();
-              var pcharge = $(this).find('.charge').text();
+              var pcharge = $(this).find('.charge').val();
               var counselor = $(this).find('.new-appointment-counselor-select select').val();
               if(counselor == ''){
                 counselor = 0;

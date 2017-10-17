@@ -1360,7 +1360,7 @@
           $('#project-list').children().each(function(){
             var pid = $(this).find('.projectId').text();
             var eid = $(this).find('.employeeId').text();
-            var pcharge = $(this).find('.charge').text();
+            var pcharge = $(this).find('.charge').val();
             var counselor = $(this).find('.new-record-counselor-select select').val();
             if(counselor == ''){
               counselor = 0;
