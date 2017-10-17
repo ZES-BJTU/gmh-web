@@ -321,7 +321,7 @@
           </div>
           <div class="field">
               <label>支付金额</label>
-              <input type="text" name="totalCharge" id="finalCharge" placeholder="请输入支付金额">
+              <input type="text" name="totalCharge" id="finalCharge" placeholder="请输入支付金额" disabled="">
           </div>
           <div class="field">
             <label>来源</label>
@@ -852,6 +852,7 @@
             })
             projects = projects.substring(1);
             settings.data.projects = projects;
+            settings.data.charge = $('#finalCharge').val();
             return settings;
           },
           onSuccess: function (response) {

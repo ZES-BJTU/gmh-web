@@ -268,11 +268,11 @@
         <div class="two fields">
           <div class="field">
             <label>消费人手机号</label>
-            <input type="text" name="mobile" id="new-record-mobile" placeholder="请输入预约人手机号">
+            <input type="text" name="mobile" id="new-record-mobile" placeholder="请输入手机号">
           </div>
           <div class="field">
             <label>消费人姓名</label>
-            <input type="text" name="consumerName" placeholder="请输入预约人姓名">
+            <input type="text" name="consumerName" id="new-record-name" placeholder="请输入姓名">
           </div>
         </div>
         <div class="field">
@@ -315,7 +315,7 @@
         </div>
         <div class="field">
           <label>支付金额</label>
-          <input type="text" name="charge" id="finalCharge" placeholder="请输入支付金额">
+          <input type="text" name="charge" id="finalCharge" placeholder="请输入支付金额" disabled="">
         </div>
         <div class="field">
           <label>来源</label>
@@ -1267,6 +1267,10 @@
       //消费
       $(document).on('click','.consume-vip',function(){
         $('#new-record-mobile').val($(this).parent().parent().find('.vipMobile').text());
+        $('#new-record-name').val($(this).parent().parent().find('.vipName').text());
+        $('.new-record-sex-select select').val($(this).parent().parent().find('.vipSexId').text());
+        $('.new-record-sex-select .text').removeClass('default');
+        $('.new-record-sex-select .text').text($(this).parent().parent().find('.vipSex').text());
         $('.new-record-modal').modal({
           closable: false,
           onDeny: function () {
@@ -1369,6 +1373,7 @@
           })
           projects = projects.substring(1);
           settings.data.projects = projects;
+          settings.data.charge = $('#finalCharge').val();
           return settings;
         },
         onSuccess: function (response) {

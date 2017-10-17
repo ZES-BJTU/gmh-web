@@ -102,11 +102,11 @@
         <div class="two fields">
           <div class="field">
             <label>消费人手机号</label>
-            <input type="text" name="mobile" id="new-record-mobile" placeholder="请输入预约人手机号">
+            <input type="text" name="mobile" id="new-record-mobile" placeholder="请输入手机号">
           </div>
           <div class="field">
             <label>消费人姓名</label>
-            <input type="text" name="consumerName" placeholder="请输入预约人姓名">
+            <input type="text" name="consumerName" placeholder="请输入姓名">
           </div>
         </div>
         <div class="field">
@@ -149,7 +149,7 @@
         </div>
         <div class="field">
           <label>支付金额</label>
-          <input type="text" name="charge" id="finalCharge" placeholder="请输入支付金额">
+          <input type="text" name="charge" id="finalCharge" placeholder="请输入支付金额" disabled="">
         </div>
         <div class="field">
           <label>来源</label>
@@ -180,11 +180,11 @@
         <div class="two fields">
           <div class="field">
             <label>消费人手机号</label>
-            <input type="text" name="mobile" id="mod-record-mobile" placeholder="请输入预约人手机号">
+            <input type="text" name="mobile" id="mod-record-mobile" placeholder="请输入手机号">
           </div>
           <div class="field">
             <label>消费人姓名</label>
-            <input type="text" name="consumerName" placeholder="请输入预约人姓名">
+            <input type="text" name="consumerName" placeholder="请输入姓名">
           </div>
         </div>
         <div class="field">
@@ -227,7 +227,7 @@
         </div>
         <div class="field">
           <label>支付金额</label>
-          <input type="text" name="charge" id="modFinalCharge" placeholder="请输入支付金额">
+          <input type="text" name="charge" id="modFinalCharge" placeholder="请输入支付金额" disabled="">
         </div>
         <div class="field">
           <label>来源</label>
@@ -1065,6 +1065,7 @@
           })
           projects = projects.substring(1);
           settings.data.projects = projects;
+          settings.data.charge = $('#finalCharge').val();
           return settings;
         },
         onSuccess: function (response) {
@@ -1301,6 +1302,7 @@
           })
           projects = projects.substring(1);
           settings.data.projects = projects;
+          settings.data.charge = $('#modFinalCharge').val();
           return settings;
         },
         onSuccess: function (response) {
