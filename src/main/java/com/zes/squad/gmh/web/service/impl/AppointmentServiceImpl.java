@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.zes.squad.gmh.common.converter.CommonConverter;
 import com.zes.squad.gmh.common.entity.PagedList;
@@ -235,12 +236,19 @@ public class AppointmentServiceImpl implements AppointmentService {
         String[] consumeProjects = projects.split(";");
         List<ConsumeRecordProjectPo> projectPos = Lists.newArrayList();
         for (String project : consumeProjects) {
-            String[] detail = project.split(",");
+            String[] details = project.split(",");
             ConsumeRecordProjectPo projectPo = new ConsumeRecordProjectPo();
-            projectPo.setProjectId(Long.valueOf(detail[0]));
-            projectPo.setCharge(new BigDecimal(detail[1]));
-            if (detail.length > 2 && detail[2] != null && !Objects.equals(detail[2], "null")) {
-                projectPo.setCounselorId(detail[2].equals("0") ? null : Long.valueOf(detail[2]));
+            ensureConditionSatisfied(details != null && details.length > 1, "消费项目信息缺失");
+            if (Strings.isNullOrEmpty(details[0])) {
+                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "消费项目为空");
+            }
+            if (Strings.isNullOrEmpty(details[1])) {
+                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "项目消费金额为空");
+            }
+            projectPo.setProjectId(Long.valueOf(details[0]));
+            projectPo.setCharge(new BigDecimal(details[1]));
+            if (details.length > 2 && details[2] != null && !Objects.equals(details[2], "null")) {
+                projectPo.setCounselorId(details[2].equals("0") ? null : Long.valueOf(details[2]));
             }
             projectPos.add(projectPo);
         }
