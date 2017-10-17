@@ -115,9 +115,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         if (dto.getChargeWay() != ChargeWayEnum.CARD.getKey()) {
             ensureConditionSatisfied(dto.getMemberId() == null, "非会员卡支付无法选择会员卡");
         }
-        dto.setCharge(BigDecimal.ZERO);
         for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
-            dto.setCharge(dto.getCharge().add(projectDto.getCharge()));
             if (projectDto.getCounselorId() != null && projectDto.getCounselorId() == 0L) {
                 projectDto.setCounselorId(null);
             }
@@ -580,9 +578,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         if (dto.getChargeWay() != ChargeWayEnum.CARD.getKey()) {
             ensureConditionSatisfied(dto.getMemberId() == null, "非会员卡支付无法选择会员卡");
         }
-        dto.setCharge(BigDecimal.ZERO);
         for (ConsumeRecordProjectDto projectDto : dto.getConsumeRecordProjectDtos()) {
-            dto.setCharge(dto.getCharge().add(projectDto.getCharge()));
             if (projectDto.getCounselorId() != null && projectDto.getCounselorId() == 0L) {
                 projectDto.setCounselorId(null);
             }

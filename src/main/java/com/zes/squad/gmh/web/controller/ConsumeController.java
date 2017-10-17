@@ -30,6 +30,7 @@ import com.zes.squad.gmh.common.enums.ChargeWayEnum;
 import com.zes.squad.gmh.common.enums.SexEnum;
 import com.zes.squad.gmh.common.exception.ErrorCodeEnum;
 import com.zes.squad.gmh.common.exception.ErrorMessage;
+import com.zes.squad.gmh.common.exception.GmhException;
 import com.zes.squad.gmh.common.util.EnumUtils;
 import com.zes.squad.gmh.common.util.JsonUtils;
 import com.zes.squad.gmh.web.common.JsonResult;
@@ -44,6 +45,7 @@ import com.zes.squad.gmh.web.entity.param.ConsumeRecordQueryParams;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordProjectVo;
 import com.zes.squad.gmh.web.entity.vo.ConsumeRecordVo;
 import com.zes.squad.gmh.web.entity.vo.MemberVo;
+import com.zes.squad.gmh.web.helper.LogicHelper;
 import com.zes.squad.gmh.web.service.ConsumeService;
 import com.zes.squad.gmh.web.service.StaffService;
 import com.zes.squad.gmh.web.view.ExcelView;
@@ -233,7 +235,17 @@ public class ConsumeController extends BaseController {
         List<ConsumeRecordProjectDto> dtos = Lists.newArrayList();
         for (String project : projects.split(";")) {
             String[] details = project.split(",");
+            LogicHelper.ensureConditionSatisfied(details != null && details.length > 2, "消费项目信息缺失");
             ConsumeRecordProjectDto dto = new ConsumeRecordProjectDto();
+            if (Strings.isNullOrEmpty(details[0])) {
+                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "消费项目为空");
+            }
+            if (Strings.isNullOrEmpty(details[1])) {
+                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "操作员为空");
+            }
+            if (Strings.isNullOrEmpty(details[2])) {
+                throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_INVALID_PARAMETERS, "项目消费金额为空");
+            }
             dto.setProjectId(Long.valueOf(details[0]));
             dto.setEmployeeId(Long.valueOf(details[1]));
             dto.setCharge(new BigDecimal(details[2]));
