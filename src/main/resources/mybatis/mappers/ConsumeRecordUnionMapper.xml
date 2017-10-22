@@ -13,8 +13,55 @@
 			resultMap="com.zes.squad.gmh.web.mapper.ConsumeRecordProjectUnionMapper.BaseResultMap"
 			columnPrefix="crp_" />
 	</resultMap>
-	<select id="listConsumeRecordsByCondition"
+	<select id="listIdsByCondition"
 		parameterType="com.zes.squad.gmh.web.entity.condition.ConsumeRecordQueryCondition"
+		resultType="long">
+		SELECT
+		cr.`id`
+		FROM consume_record cr
+		LEFT JOIN
+		consume_record_project crp
+		ON
+		cr.id = crp.consume_record_id
+		LEFT JOIN
+		shop s
+		ON
+		cr.store_id = s.`id`
+		LEFT JOIN
+		project p
+		ON crp.project_id = p.`id`
+		LEFT JOIN
+		employee e
+		ON
+		crp.employee_id = e.`id`
+		<where>
+			<if test="storeId != null">
+				AND cr.store_id = #{storeId, jdbcType=BIGINT}
+			</if>
+			<if test="startTime != null and endTime != null">
+				AND cr.consume_time BETWEEN
+				#{startTime,
+				jdbcType=TIMESTAMP} AND
+				DATE_ADD(#{endTime, jdbcType=TIMESTAMP},
+				INTERVAL 1 DAY)
+			</if>
+			<if test="startTime != null and endTime == null">
+				AND cr.consume_time <![CDATA[>]]>
+				#{startTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="startTime == null and endTime != null">
+				AND cr.consume_time <![CDATA[<]]>
+				#{endTime, jdbcType=TIMESTAMP}
+			</if>
+			<if test="searchString != null and searchString != ''">
+				<bind name="search" value="'%' + searchString + '%'" />
+				AND CONCAT_WS("",p.name,e.name,cr.mobile,cr.consumer_name) LIKE
+				#{search}
+			</if>
+		</where>
+		ORDER BY cr.consume_time DESC
+	</select>
+	<select id="listConsumeRecordsByCondition" parameterType="list"
 		resultMap="BaseResultMap">
 		SELECT
 		cr.`id`,
@@ -33,10 +80,12 @@
 		cr.source,
 		cr.consume_time,
 		cr.remark,
-		s.`id` AS s_id,
+		s.`id`
+		AS s_id,
 		s.name AS s_name,
 		crp.`id` AS crp_id,
-		crp.consume_record_id AS crp_consume_record_id,
+		crp.consume_record_id AS
+		crp_consume_record_id,
 		crp.project_id AS crp_project_id,
 		crp.employee_id AS crp_employee_id,
 		crp.charge AS crp_charge,
@@ -44,47 +93,31 @@
 		p.`id` AS crp_p_project_id,
 		p.name AS crp_p_name,
 		p.retail_price AS crp_p_retail_price,
-		e.`id` AS crp_e_employee_id,
+		e.`id` AS
+		crp_e_employee_id,
 		e.name AS crp_e_name
 		FROM consume_record cr
-		LEFT JOIN 
+		LEFT JOIN
 		consume_record_project crp
 		ON
 		cr.id = crp.consume_record_id
-		LEFT JOIN 
+		LEFT JOIN
 		shop s
 		ON
 		cr.store_id = s.`id`
-		LEFT JOIN 
+		LEFT JOIN
 		project p
 		ON crp.project_id = p.`id`
-		LEFT JOIN 
+		LEFT JOIN
 		employee e
-		ON 
+		ON
 		crp.employee_id = e.`id`
 		<where>
-			<if test="storeId != null">
-				AND cr.store_id = #{storeId, jdbcType=BIGINT}
-			</if>
-			<if test="startTime != null and endTime != null">
-				AND cr.consume_time BETWEEN
-				#{startTime,
-				jdbcType=TIMESTAMP} AND
-				DATE_ADD(#{endTime, jdbcType=TIMESTAMP}, INTERVAL 1 DAY)
-			</if>
-			<if test="startTime != null and endTime == null">
-				AND cr.consume_time <![CDATA[>]]>
-				#{startTime, jdbcType=TIMESTAMP}
-			</if>
-			<if test="startTime == null and endTime != null">
-				AND cr.consume_time <![CDATA[<]]>
-				#{endTime, jdbcType=TIMESTAMP}
-			</if>
-			<if test="searchString != null and searchString != ''">
-				<bind name="search" value="'%' + searchString + '%'" />
-				AND CONCAT_WS("",p.name,e.name,cr.mobile,cr.consumer_name) LIKE
-				#{search}
-			</if>
+			cr.id IN
+			<foreach collection="list" item="id" separator="," open="("
+				close=")">
+				#{id, jdbcType=BIGINT}
+			</foreach>
 		</where>
 		ORDER BY cr.consume_time DESC
 	</select>

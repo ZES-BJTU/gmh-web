@@ -12,10 +12,18 @@ public interface AppointmentUnionMapper {
     /**
      * 条件查询预约记录
      * 
+     * @param ids
+     * @return
+     */
+    List<AppointmentUnion> listAppointmentUnionsByCondition(List<Long> ids);
+
+    /**
+     * 条件查询预约记录id集合
+     * 
      * @param condition
      * @return
      */
-    List<AppointmentUnion> listAppointmentUnionsByCondition(AppointmentUnionQueryCondition condition);
+    List<Long> listIdsByCondition(AppointmentUnionQueryCondition condition);
 
     /**
      * 根据id查询

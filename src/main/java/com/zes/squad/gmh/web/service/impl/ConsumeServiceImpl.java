@@ -214,22 +214,24 @@ public class ConsumeServiceImpl implements ConsumeService {
     @Override
     public PagedList<ConsumeRecordDto> listPagedConsumeRecords(ConsumeRecordQueryCondition condition) {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
-        List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(condition);
-        if (CollectionUtils.isEmpty(unions)) {
+        List<Long> ids = consumeRecordUnionMapper.listIdsByCondition(condition);
+        if(CollectionUtils.isEmpty(ids)) {
             return PagedLists.newPagedList(condition.getPageNum(), condition.getPageSize());
         }
-        PageInfo<ConsumeRecordUnion> info = new PageInfo<>(unions);
+        List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(ids);
+        PageInfo<Long> info = new PageInfo<>(ids);
         List<ConsumeRecordDto> dtos = buildConsumeRecordDtosByUnions(unions);
         return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
     }
 
     @Override
     public HSSFWorkbook exportToExcel(ConsumeRecordQueryCondition condition) {
-        List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(condition);
-        if (CollectionUtils.isEmpty(unions)) {
+        List<Long> ids = consumeRecordUnionMapper.listIdsByCondition(condition);
+        if(CollectionUtils.isEmpty(ids)) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
                     ErrorMessage.consumeRecordIsEmpty);
         }
+        List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(ids);
         //写文件
         HSSFWorkbook workbook = exportRecordToFile(unions);
         if (workbook == null) {

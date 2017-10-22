@@ -10,9 +10,17 @@ public interface ConsumeRecordUnionMapper {
     /**
      * 条件查询
      * 
+     * @param ids
+     * @return
+     */
+    List<ConsumeRecordUnion> listConsumeRecordsByCondition(List<Long> ids);
+
+    /**
+     * 条件查询id集合
+     * 
      * @param condition
      * @return
      */
-    List<ConsumeRecordUnion> listConsumeRecordsByCondition(ConsumeRecordQueryCondition condition);
+    List<Long> listIdsByCondition(ConsumeRecordQueryCondition condition);
 
 }

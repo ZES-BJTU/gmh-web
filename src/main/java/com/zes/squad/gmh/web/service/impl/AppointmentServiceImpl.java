@@ -117,7 +117,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setStatus(
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
-        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
+        List<Long> ids = appointmentUnionMapper.listIdsByCondition(condition);
+        if (CollectionUtils.isEmpty(ids)) {
+            return Lists.newArrayList();
+        }
+        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(ids);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
         return vos;
     }
@@ -127,7 +131,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentUnionQueryCondition condition = new AppointmentUnionQueryCondition();
         condition.setStoreId(ThreadContext.getStaffStoreId());
         condition.setPhone(phone);
-        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
+        List<Long> ids = appointmentUnionMapper.listIdsByCondition(condition);
+        if (CollectionUtils.isEmpty(ids)) {
+            return Lists.newArrayList();
+        }
+        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(ids);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
         return vos;
     }
@@ -414,14 +422,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         queryCondition.setSearchString(condition.getSearchString());
         queryCondition.setStatus(
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
-        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(queryCondition);
-
-        if (CollectionUtils.isEmpty(unions)) {
+        List<Long> ids = appointmentUnionMapper.listIdsByCondition(queryCondition);
+        if (CollectionUtils.isEmpty(ids)) {
             return PagedLists.newPagedList(condition.getPageNum(), condition.getPageSize());
         }
-        PageInfo<AppointmentUnion> info = new PageInfo<>(unions);
+        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(ids);
+        PageInfo<Long> info = new PageInfo<>(ids);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
-        return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), unions.size(), vos);
+        return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(), vos);
     }
 
     @Override
@@ -485,7 +493,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         condition.setStatus(
                 Lists.newArrayList(AppointmentStatusEnum.TO_DO.getKey(), AppointmentStatusEnum.IN_PROCESS.getKey()));
         condition.setEmployeeId(employeeId);
-        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(condition);
+        List<Long> ids = appointmentUnionMapper.listIdsByCondition(condition);
+        if (CollectionUtils.isEmpty(ids)) {
+            return Lists.newArrayList();
+        }
+        List<AppointmentUnion> unions = appointmentUnionMapper.listAppointmentUnionsByCondition(ids);
         List<AppointmentVo> vos = buildAppointmentVosByUnions(unions);
         return vos;
     }
