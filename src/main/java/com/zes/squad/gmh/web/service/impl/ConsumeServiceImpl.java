@@ -220,7 +220,7 @@ public class ConsumeServiceImpl implements ConsumeService {
         }
         PageInfo<ConsumeRecordUnion> info = new PageInfo<>(unions);
         List<ConsumeRecordDto> dtos = buildConsumeRecordDtosByUnions(unions);
-        return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), unions.size(), dtos);
+        return PagedLists.newPagedList(info.getPageNum(), info.getPageSize(), info.getTotal(), dtos);
     }
 
     @Override
