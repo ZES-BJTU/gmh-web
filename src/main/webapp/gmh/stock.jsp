@@ -73,7 +73,7 @@
         </div>
         <div class="row">
           <div class="column">
-            <div class="ui borderless menu paging">
+            <div class="ui pagination menu paging">
             </div>
           </div>
         </div>
@@ -228,9 +228,41 @@
       $('.stock-search').form('submit');
 
       //分页按钮点击事件
-      $(document).on('click', '.paging .item', function () {
-        loadSearchStockList($(this).text(), 10, 'paging');
+      $(document).on('click', '.paging .last-page', function () {
+        var pageNow = Number($('.page-now').val());
+        if(pageNow > 1){
+          loadSearchStockList(Number(pageNow - 1), 10, 'paging');
+        }else{
+          alert('已是第一页！')
+        }
       })
+      //分页按钮点击事件
+      $(document).on('click', '.paging .next-page', function () {
+        var pageNow = Number($('.page-now').val());
+        var pageTotal = Number($('.page-total').text());
+        if(pageNow < pageTotal){
+          loadSearchStockList(Number(pageNow + 1), 10, 'paging');
+        }else{
+          alert('已是最后一页！')
+        }
+      })
+      //监听回车事件
+      $(document).on('keyup','.page-now', function(event) {
+        if (event.keyCode == "13") {
+          //回车执行查询
+          var pageNow = Number($('.page-now').val());
+          var pageTotal = Number($('.page-total').text());
+          if(/^[0-9]*[1-9][0-9]*$/ .test(Number($('.page-now').val()))){
+            if(pageNow <= pageTotal){
+              loadSearchStockList(Number($('.page-now').val()), 10, 'paging');
+            }else{
+              alert('最多' + pageTotal + '页！')
+            }
+          }else{
+            alert("请输入正确的页码!");
+          }
+        }
+      });
 
       function loadSearchStockList(pagenum, pagesize, type) {
         $('.load-stock-list').api({
@@ -265,10 +297,10 @@
             } else {
               $('#stock-list').empty();
               $('.paging').empty();
-              for (var i = 0; i < response.data.totalPages; i++) {
-                var $item = $('<a class="item">' + (i + 1) + '</a>');
-                $('.paging').append($item);
-              }
+              $('.paging').append($('<a class="item last-page"><i class="icon left arrow"></i></a>'));
+              $('.paging').append($('<a class="item">第<input class="page-now" value=' + pagenum + '>页 / 共<span class="page-total">' + response.data.totalPages + '</span>页</a>'));
+              $('.paging').append($('<a class="item next-page"><i class="icon right arrow"></i></a>'));
+              
               $.each(response.data.data, function (i, data) {
                 var $tr = $('<tr></tr>');
                 var $id = $('<td class="stockId" style="display:none">' + data.id + '</td>');
@@ -291,7 +323,6 @@
                 $tr.append($operate);
                 $('#stock-list').append($tr);
               })
-              $('.paging').children().eq(pagenum - 1).addClass('active');
             }
           },
           onFailure: function (response) {
