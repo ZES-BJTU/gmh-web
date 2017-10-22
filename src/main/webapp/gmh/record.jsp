@@ -1119,7 +1119,7 @@
               '</td><td style="display:none" class="employeeId">' + eids[i] + '</td><td>' + enames[i] + 
               '</td><td class="projectCharge">' + rprices[i] + 
               '</td><td><input type="text" class="discount" placeholder="请输入折扣">' + 
-              '</td><td class="charge">' + charges[i] +
+                '</td><td><input type="text" class="charge discount-charge" placeholder="请输入实付价格" value="' + charges[i] + '">' +
               '</td><td class="counselor"><select class="ui fluid dropdown mod-record-counselor-select"><option value="">请选择经理/咨询师</option>' + option + '</select></td>'+
               '<td class="minus-project"><i class="minus icon"></i></td></tr>');
           $('#mod-project-list').append($tr);
