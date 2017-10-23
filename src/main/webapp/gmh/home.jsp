@@ -161,7 +161,7 @@
   	      yAxis: {
   	        type: 'value',
   	      	axisLabel: {
-  	        	formatter: '{value} 次'
+  	        	formatter: '{value} 元'
   	        },
   	    	minInterval: 1
   	      },
