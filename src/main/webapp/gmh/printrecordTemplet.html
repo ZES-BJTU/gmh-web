@@ -91,7 +91,7 @@
                         $('.print-name').html('会员姓名：' + response.data.memberName);
                         var str = ''
                         $.each(response.data.memberVos,function(i,data){
-                            str += data.memberLevelName + ':<br>美容储值：' + data.beautyMoney + '美容储值：' + data.nailMoney + '<br>';
+                            str += data.memberLevelName + ':<br>美容储值：￥' + data.beautyMoney + '&nbsp美甲美睫储值：￥' + data.nailMoney + '<br>';
                         })
                         $('.print-balance').html(str);
                     }

@@ -20,7 +20,20 @@
 			expression="org.springframework.stereotype.Component" />
 	</context:component-scan>
 
-	<mvc:annotation-driven conversion-service="customConversionService" />
+	<mvc:annotation-driven conversion-service="customConversionService">
+		<mvc:message-converters>
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="objectMapper">
+					<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+						<property name="serializationInclusion">
+							<value type="com.fasterxml.jackson.annotation.JsonInclude.Include">NON_NULL</value>
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
 
 	<bean id="customConversionService"
 		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">

@@ -215,7 +215,7 @@ public class ConsumeServiceImpl implements ConsumeService {
     public PagedList<ConsumeRecordDto> listPagedConsumeRecords(ConsumeRecordQueryCondition condition) {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
         List<Long> ids = consumeRecordUnionMapper.listIdsByCondition(condition);
-        if(CollectionUtils.isEmpty(ids)) {
+        if (CollectionUtils.isEmpty(ids)) {
             return PagedLists.newPagedList(condition.getPageNum(), condition.getPageSize());
         }
         List<ConsumeRecordUnion> unions = consumeRecordUnionMapper.listConsumeRecordsByCondition(ids);
@@ -227,7 +227,7 @@ public class ConsumeServiceImpl implements ConsumeService {
     @Override
     public HSSFWorkbook exportToExcel(ConsumeRecordQueryCondition condition) {
         List<Long> ids = consumeRecordUnionMapper.listIdsByCondition(condition);
-        if(CollectionUtils.isEmpty(ids)) {
+        if (CollectionUtils.isEmpty(ids)) {
             throw new GmhException(ErrorCodeEnum.BUSINESS_EXCEPTION_COLLECTION_IS_EMPTY,
                     ErrorMessage.consumeRecordIsEmpty);
         }
@@ -725,9 +725,11 @@ public class ConsumeServiceImpl implements ConsumeService {
         }
         if (consumeRecordPo.getMember().booleanValue()) {
             MemberPo memberPo = memberMapper.selectById(consumeRecordPo.getMemberId());
-            ensureEntityExist(memberPo, "获取会员信息失败");
-            vo.setNailMoney(memberPo.getNailMoney());
-            vo.setBeautyMoney(memberPo.getBeautyMoney());
+            //            ensureEntityExist(memberPo, "获取会员信息失败");
+            if (memberPo != null) {
+                vo.setNailMoney(memberPo.getNailMoney());
+                vo.setBeautyMoney(memberPo.getBeautyMoney());
+            }
         }
         vo.setConsumeTime(consumeRecordPo.getConsumeTime());
         vo.setChargeWay(EnumUtils.getDescByKey(ChargeWayEnum.class, consumeRecordPo.getChargeWay()));
